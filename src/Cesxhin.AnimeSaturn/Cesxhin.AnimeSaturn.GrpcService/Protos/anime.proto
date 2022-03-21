@@ -1,0 +1,31 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Cesxhin.AnimeSaturn.GrpcService";
+
+package anime;
+
+// The greeting service definition.
+service Anime {
+  // Sends a greeting
+  rpc AnimeAsk (AnimeRequest) returns (AnimeReply);
+}
+
+// The request message containing the user's name.
+message AnimeRequest {
+  AnimeDTO name = 1;
+  string Author = 2;
+  string Name = 3;
+  string Description = 4;
+  string Vote = 5;
+  bool Finish = 6;
+  string DurationEpisode = 7;
+  int EpisodeTotal = 8;
+  DateTime DateRelease = 9;
+  byte[] Image = 10;
+  string UrlPage = 11;
+}
+
+// The response message containing the greetings.
+message AnimeReply {
+  AnimeDTO message = 1;
+}

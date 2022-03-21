@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>58cf7c17-ae7b-4876-8db3-5b82ce5d852d</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cesxhin.AnimeSaturn.Application\Cesxhin.AnimeSaturn.Application.csproj" />
+    <ProjectReference Include="..\Cesxhin.AnimeSaturn.Domain\Cesxhin.AnimeSaturn.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

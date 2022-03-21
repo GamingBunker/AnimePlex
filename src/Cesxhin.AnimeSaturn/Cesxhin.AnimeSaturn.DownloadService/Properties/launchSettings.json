@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Cesxhin.AnimeSaturn.DownloadService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "USERNAME_RABBIT": "guest",
+        "BASE_PATH": "D:\\\\TestAnime",
+        "DOTNET_ENVIRONMENT": "Development",
+        "ADDRESS_RABBIT": "192.168.20.14",
+        "PASSWORD_RABBIT": "guest"
+      },
+      "dotnetRunMessages": "true"
+    }
+  }
+}

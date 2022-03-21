@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.Api", "Cesxhin.AnimeSaturn.Api\Cesxhin.AnimeSaturn.Api.csproj", "{AFFCAE12-C72D-4276-9C9F-2FD18E92F056}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.Domain", "Cesxhin.AnimeSaturn.Domain\Cesxhin.AnimeSaturn.Domain.csproj", "{DB2E43D6-21B9-410E-864E-30FB9EDB799C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.Persistence", "Cesxhin.AnimeSaturn.Persistence\Cesxhin.AnimeSaturn.Persistence.csproj", "{BA360791-743C-4806-84D7-4C951CB50C43}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.Application", "Cesxhin.AnimeSaturn.Application\Cesxhin.AnimeSaturn.Application.csproj", "{4ADAB0E0-BCFA-4D89-9054-89AD4120907B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.WebApp", "Cesxhin.AnimeSaturn.WebApp\Cesxhin.AnimeSaturn.WebApp.csproj", "{E76FD62C-C26F-4F59-B70C-90BFD709761F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cesxhin.AnimeSaturn.UpdateService", "Cesxhin.AnimeSaturn.UpdateService\Cesxhin.AnimeSaturn.UpdateService.csproj", "{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cesxhin.AnimeSaturn.DownloadService", "Cesxhin.AnimeSaturn.DownloadService\Cesxhin.AnimeSaturn.DownloadService.csproj", "{B8F48F77-5A92-4B8D-B56B-55AE64427652}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AFFCAE12-C72D-4276-9C9F-2FD18E92F056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFFCAE12-C72D-4276-9C9F-2FD18E92F056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFFCAE12-C72D-4276-9C9F-2FD18E92F056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFFCAE12-C72D-4276-9C9F-2FD18E92F056}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB2E43D6-21B9-410E-864E-30FB9EDB799C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB2E43D6-21B9-410E-864E-30FB9EDB799C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB2E43D6-21B9-410E-864E-30FB9EDB799C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB2E43D6-21B9-410E-864E-30FB9EDB799C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA360791-743C-4806-84D7-4C951CB50C43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA360791-743C-4806-84D7-4C951CB50C43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA360791-743C-4806-84D7-4C951CB50C43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA360791-743C-4806-84D7-4C951CB50C43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ADAB0E0-BCFA-4D89-9054-89AD4120907B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ADAB0E0-BCFA-4D89-9054-89AD4120907B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ADAB0E0-BCFA-4D89-9054-89AD4120907B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ADAB0E0-BCFA-4D89-9054-89AD4120907B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E76FD62C-C26F-4F59-B70C-90BFD709761F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E76FD62C-C26F-4F59-B70C-90BFD709761F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E76FD62C-C26F-4F59-B70C-90BFD709761F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E76FD62C-C26F-4F59-B70C-90BFD709761F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8F48F77-5A92-4B8D-B56B-55AE64427652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8F48F77-5A92-4B8D-B56B-55AE64427652}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8F48F77-5A92-4B8D-B56B-55AE64427652}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8F48F77-5A92-4B8D-B56B-55AE64427652}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {80166EB6-2E0F-4704-AFD9-8F972330A013}
+	EndGlobalSection
+EndGlobal
