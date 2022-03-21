@@ -8,8 +8,8 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
     public class Anime
     {
         [Identity]
-        [Map("author")]
-        public string Author { get; set; }
+        [Map("studio")]
+        public string Studio { get; set; }
         [Map("name")]
         public string Name { get; set; }
         [Map("description")]
@@ -43,7 +43,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
                 Image = anime.Image,
                 Finish = anime.Finish,
                 UrlPage = anime.UrlPage,
-                Author = anime.Author
+                Studio = anime.Studio
             };
         }
     }

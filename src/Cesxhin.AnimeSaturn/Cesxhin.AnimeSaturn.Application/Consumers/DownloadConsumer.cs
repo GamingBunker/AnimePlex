@@ -2,9 +2,11 @@
 using MassTransit;
 using NLog;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Consumers
@@ -13,48 +15,103 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private string _folder = Environment.GetEnvironmentVariable("BASE_PATH");
-
+        private static void InitiateSSLTrust()
+        {
+            try
+            {
+                //Change SSL checks so that all checks pass
+                ServicePointManager.ServerCertificateValidationCallback =
+                   new RemoteCertificateValidationCallback(
+                        delegate
+                        { return true; }
+                    );
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+            }
+        }
         public Task Consume(ConsumeContext<EpisodeDTO> context)
         {
             //get body
             var episode = context.Message;
 
-            //split url
-            string[] path = episode.UrlVideo.Split('/');
-
             //set path
-            string filePath = $"{_folder}/{episode.IDAnime}/{path[path.Length - 1]}";
-            string directoryPath = $"{_folder}/{episode.IDAnime}";
+            string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent}/{episode.IDAnime}-s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}.mp4";
+            string directoryPath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent}";
 
             //check
             if (!File.Exists(filePath))
             {
-                using (var client = new WebClient())
+                //check directory
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+
+                //check file
+                if (File.Exists(filePath))
                 {
-                    //task
-                    client.DownloadProgressChanged += client_DownloadProgressChanged(filePath);
-                    client.DownloadFileCompleted += client_DownloadFileCompleted(filePath);
+                    logger.Info("it already exists");
+                    return Task.CompletedTask;
+                }
 
-                    //add referer for download, also recive error 403 forbidden
-                    client.Headers.Add("Referer", episode.Referer);
-                    logger.Info("try download: " + episode.UrlVideo);
-
-                    //check directory
-                    if (!Directory.Exists(directoryPath))
-                        Directory.CreateDirectory(directoryPath);
-
-                    //check file
-                    if (File.Exists(filePath))
+                if (episode.UrlVideo != null)
+                {
+                    //url traditional
+                    using (var client = new WebClient())
                     {
-                        logger.Info("it already exists");
-                        return Task.CompletedTask;
-                    }
+                        //task
+                        client.DownloadProgressChanged += client_DownloadProgressChanged(filePath);
+                        client.DownloadFileCompleted += client_DownloadFileCompleted(filePath);
 
-                    //start download
-                    client.DownloadFileAsync(new Uri(episode.UrlVideo), filePath);
+                        //add referer for download, also recive error 403 forbidden
+                        client.Headers.Add("Referer", episode.Referer);
+                        logger.Info("try download: " + episode.UrlVideo);
+
+                        //start download
+                        client.DownloadFileAsync(new Uri(episode.UrlVideo), filePath);
+                    }
+                }
+                else
+                {
+                    //new method download file
+                    Download(episode, filePath);
                 }
             }
             return Task.CompletedTask;
+        }
+
+        private async void Download(EpisodeDTO episode, string filePath)
+        {
+            InitiateSSLTrust();
+
+            //save to file
+            using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
+            {
+
+                List<byte[]> buffer = new List<byte[]>();
+                using (var client = new WebClient())
+                {
+                    logger.Info("start download " + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+
+                    int count = 0;
+                    foreach (var source in episode.Sources)
+                    {
+                        Uri uri = new Uri(episode.BaseUrl + "/" +episode.Resolution + "/" + source);
+                        buffer.Add(client.DownloadData(uri));
+                        count++;
+                        logger.Info("status download " + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent + "status download: "+(100*count)/episode.Sources.Length);
+                    }
+
+                    logger.Info("end download " + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+
+                }
+
+                foreach(var singleBuffer in buffer)
+                {
+                    fs.Write(singleBuffer);
+                    logger.Warn("download buffer");
+                }
+            }
         }
 
         private DownloadProgressChangedEventHandler client_DownloadProgressChanged(string filePath)
@@ -69,22 +126,32 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         }
         private AsyncCompletedEventHandler client_DownloadFileCompleted(string filePath)
         {
-            //recive response action
-            Action<object, AsyncCompletedEventArgs> action = (sender, e) =>
+            try
             {
-                if (e.Error != null)
+                //recive response action
+                Action<object, AsyncCompletedEventArgs> action = (sender, e) =>
                 {
-                    logger.Error($"Interrupt download file {filePath}");
-
-                    if (File.Exists(filePath))
+                    if (e.Error != null)
                     {
-                        File.Delete(filePath);
-                        logger.Warn($"The file was deleted {filePath}");
+                        logger.Error($"Interrupt download file {filePath}");
+                        logger.Error(e.Error);
+
+                        if (File.Exists(filePath))
+                        {
+                            File.Delete(filePath);
+                            logger.Warn($"The file is deleted {filePath}");
+                        }
                     }
-                }else
-                    logger.Info($"Download completed! {filePath}");
-            };
-            return new AsyncCompletedEventHandler(action);
+                    else
+                        logger.Info($"Download completed! {filePath}");
+                };
+                return new AsyncCompletedEventHandler(action);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+            }
+            return null;
         }
     }
 }

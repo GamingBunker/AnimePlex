@@ -1,11 +1,13 @@
 ﻿using Cesxhin.AnimeSaturn.Domain.DTO;
 using Cesxhin.AnimeSaturn.Domain.Models;
 using HtmlAgilityPack;
+using m3uParser;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
@@ -137,7 +139,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 Description = description,
                 Name = RemoveSpecialCharacters(nameAnime),
                 Image = imageBytes,
-                Author = author,
+                Studio = author,
                 UrlPage = urlPage
             };
         }
@@ -148,40 +150,136 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             HtmlDocument doc = new HtmlWeb().Load(urlPage);
 
             List<EpisodeDTO> episodes = new List<EpisodeDTO>();
-            var listEpisodes = doc.DocumentNode
-                .SelectNodes("//div/div/div[2]/div[5]/div/div/div/div")
-                .ToList();
+
 
             int numberEpisode = 1;
-            foreach (var episode in listEpisodes)
+            int numberSeason = 1; //default
+
+            string numberSeasonString = Regex.Match(name, @"\d+").Value;
+            if (numberSeasonString.Length > 0)
+                numberSeason = int.Parse(numberSeasonString);
+
+            int rangeAnime = 0;
+            while (true)
             {
-                string urlEpisode = episode.
-                    SelectNodes("a")
-                    .First()
-                    .Attributes["href"].Value;
-
-                HtmlDocument docEpisode = new HtmlWeb().Load(urlEpisode);
-
-                string urlVideo = docEpisode.DocumentNode
-                    .SelectNodes("//div[@class='container p-3 shadow rounded bg-dark-as-box']/div/div/a[1]")
-                    .First()
-                    .Attributes["href"].Value;
-
-                HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
-                string url = docVideo.DocumentNode
-                    .SelectNodes("//center/div[2]/div/div/div/div/video/source")
-                    .First()
-                    .Attributes["src"].Value;
-
-                episodes.Add(new EpisodeDTO
+                try
                 {
-                    IDAnime = name,
-                    UrlVideo = url,
-                    Referer = urlPage,
-                    NumberEpisodeCurrent = numberEpisode
+                    var listEpisodes = doc.DocumentNode
+                   .SelectNodes("//div/div/div[2]/div[5]/div/div/div[@id='range-anime-" + rangeAnime + "']/div")
+                   .ToList();
+                    foreach (var episode in listEpisodes)
+                    {
+                        string urlEpisode = episode.
+                            SelectNodes("a")
+                            .First()
+                            .Attributes["href"].Value;
 
-                });
-                numberEpisode++;
+                        HtmlDocument docEpisode = new HtmlWeb().Load(urlEpisode);
+
+                        string urlVideo = docEpisode.DocumentNode
+                            .SelectNodes("//div[@class='container p-3 shadow rounded bg-dark-as-box']/div/div/a[1]")
+                            .First()
+                            .Attributes["href"].Value;
+
+                        string url = null;
+                        PlayerUrl playerUrl = null;
+
+                        try
+                        {
+                            HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
+                            url = docVideo.DocumentNode
+                                .SelectNodes("//center/div[2]/div/div/div/div/video/source")
+                                .First()
+                                .Attributes["src"].Value;
+                        }
+                        catch (ArgumentNullException)
+                        {
+                            //try
+                            HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
+                            string urlLocal = docVideo.DocumentNode
+                                .SelectNodes("//center/div[2]/div/div/div/div/div/div/script[2]")
+                                .First().InnerText;
+
+                            //get url list source
+                            urlLocal = urlLocal.Replace("jwplayer('player_hls').setup(", " ");
+
+                            urlLocal = urlLocal.Replace(");", " ");
+
+                            urlLocal = urlLocal.Replace(".replace(\"playlist.m3u8\", \"thumbnails.vtt\")", " ");
+
+                            urlLocal = urlLocal.Replace(".replace(\"playlist.m3u8\", \"poster.jpg\")", " ");
+                            urlLocal = urlLocal.Replace("'", "\"");
+                            urlLocal = urlLocal.Replace("file", "\"Playlist\"");
+                            urlLocal = urlLocal.Replace("tracks", "\"tracks\"");
+                            urlLocal = urlLocal.Replace("kind", "\"kind\"");
+                            urlLocal = urlLocal.Replace("image", "\"image\"");
+                            urlLocal = urlLocal.Replace("preload", "\"preload\"");
+                            urlLocal = urlLocal.Replace("abouttext", "\"abouttext\"");
+                            urlLocal = urlLocal.Replace("aboutlink", "\"aboutlink\"");
+                            urlLocal = urlLocal.Replace("playbackRateControls", "\"playbackRateControls\"");
+                            urlLocal = urlLocal.Replace("sharing", "\"sharing\"");
+                            urlLocal = urlLocal.Replace("heading", "\"heading\"");
+
+                            playerUrl = JsonSerializer.Deserialize<PlayerUrl>(urlLocal);
+
+                            playerUrl.BaseUrl = playerUrl.Playlist.Replace("/playlist.m3u8", "");
+
+                            //download source files
+                            WebClient client = new WebClient();
+                            var bytes = client.DownloadData(playerUrl.Playlist);
+                            var sourceFiles = System.Text.Encoding.UTF8.GetString(bytes);
+
+                            var contentM3u = M3U.Parse(sourceFiles);
+                            string file = contentM3u.Warnings.First();
+                            string fileDownload = "";
+
+                            playerUrl.PlaylistSources = file.Substring(file.LastIndexOf("./") + 1);
+                            playerUrl.Resolution = playerUrl.PlaylistSources.Substring(1, playerUrl.PlaylistSources.IndexOf("p"));
+
+                            //get list bytes for file
+                            bytes = client.DownloadData(playerUrl.BaseUrl + playerUrl.PlaylistSources);
+                            sourceFiles = System.Text.Encoding.UTF8.GetString(bytes);
+                            contentM3u = M3U.Parse(sourceFiles);
+                            foreach (var media in contentM3u.Medias)
+                            {
+                                playerUrl.Sources.Add(media.MediaFile);
+                            }
+                        }
+
+                        if(playerUrl != null)
+                        {
+                            episodes.Add(new EpisodeDTO
+                            {
+                                IDAnime = name,
+                                Referer = urlPage,
+                                NumberEpisodeCurrent = numberEpisode,
+                                BaseUrl = playerUrl.BaseUrl,
+                                Playlist = playerUrl.Playlist,
+                                PlaylistSources = playerUrl.PlaylistSources,
+                                Resolution = playerUrl.Resolution,
+                                NumberSeasonCurrent = numberSeason,
+                                Sources = playerUrl.Sources.ToArray()
+                            });
+                        }
+                        else
+                        {
+                            episodes.Add(new EpisodeDTO
+                            {
+                                IDAnime = name,
+                                UrlVideo = url,
+                                Referer = urlPage,
+                                NumberEpisodeCurrent = numberEpisode,
+                                NumberSeasonCurrent = numberSeason
+
+                            });
+                        }
+                        numberEpisode++;
+                    }
+                    rangeAnime++;
+                }catch(ArgumentNullException)
+                {
+                    break;
+                }
             }
             return episodes;
         }

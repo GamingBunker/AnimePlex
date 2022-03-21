@@ -58,10 +58,8 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                     //foreach episodes
                     foreach (var episode in listNameEpisode)
                     {
-                        //split url
-                        string[] path = episode.UrlVideo.Split('/');
 
-                        string filePath = $"{_folder}/{anime.Name}/{path[path.Length - 1]}";
+                        string filePath = $"{_folder}/{anime.Name}/Season {episode.NumberSeasonCurrent}/{anime.Name}-s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}.mp4";
                         logger.Debug($"check {filePath}");
 
                         //check file exists

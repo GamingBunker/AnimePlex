@@ -1,7 +1,7 @@
 create table anime
 (
     name varchar(250) primary key,
-    author varchar(250),
+    studio varchar(250),
     description text,
     vote varchar(10),
     status boolean default true,
@@ -16,7 +16,19 @@ create table episode
 (
     id serial primary key,
     idAnime  varchar(250) REFERENCES anime(name),
-    urlVideo text not null,
     referer text not null,
-    numberEpisodeCurrent int not null
+    numberEpisodeCurrent int not null,
+    numberSeasonCurrent int default 1,
+    stateDownload varchar(100) default 'pending',
+    percentualDownload int default -0,
+    sizeFile int not null,
+
+    urlVideo text default null,
+
+    baseUrl varchar(250) default null,
+    playlist varchar(250),
+    resolution varchar(250),
+    playlistSources varchar(250),
+    sources varchar[]
+
 );
