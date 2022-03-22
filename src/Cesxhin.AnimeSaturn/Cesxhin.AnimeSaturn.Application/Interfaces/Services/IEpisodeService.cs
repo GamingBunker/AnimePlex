@@ -13,5 +13,8 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
         //insert
         Task<EpisodeDTO> InsertEpisodeAsync(EpisodeDTO episode);
         Task<List<EpisodeDTO>> InsertEpisodesAsync(List<EpisodeDTO> episode);
+
+        //update
+        Task<EpisodeDTO> UpdateStateDownloadAsync(EpisodeDTO episode);
     }
 }

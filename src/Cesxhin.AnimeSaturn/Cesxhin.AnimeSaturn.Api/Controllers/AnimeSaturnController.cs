@@ -118,5 +118,12 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
             return Created("none", episodeResult);
         }
+
+        [HttpPut("/statusDownload")]
+        public async void PutUpdateStateDownload(EpisodeDTO episode)
+        {
+            //update
+            await _episodeService.UpdateStateDownloadAsync(episode);
+        }
     }
 }

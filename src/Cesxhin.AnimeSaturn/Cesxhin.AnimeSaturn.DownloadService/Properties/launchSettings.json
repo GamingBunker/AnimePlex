@@ -7,7 +7,10 @@
         "BASE_PATH": "D:\\\\TestAnime",
         "DOTNET_ENVIRONMENT": "Development",
         "ADDRESS_RABBIT": "192.168.20.14",
-        "PASSWORD_RABBIT": "guest"
+        "PASSWORD_RABBIT": "guest",
+        "ADDRESS_API": "localhost",
+        "PORT_API": "44300",
+        "PROTOCOL_API": "https"
       },
       "dotnetRunMessages": "true"
     }

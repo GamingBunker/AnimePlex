@@ -59,5 +59,21 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 }
             }
         }
+
+        public async Task<Episode> UpdateStateDownloadAsync(Episode episode)
+        {
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    await connection.UpdateAsync(episode);
+                    return episode;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
     }
 }
