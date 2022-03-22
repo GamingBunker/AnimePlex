@@ -32,7 +32,10 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                                     credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT"));
                                 });
                             cfg.ReceiveEndpoint("download-anime", e => {
-                                e.Consumer<DownloadConsumer>();
+                                e.Consumer<DownloadConsumer>(cc =>
+                                {
+                                    cc.UseConcurrentMessageLimit(3);
+                                });
                             });
 
                         });

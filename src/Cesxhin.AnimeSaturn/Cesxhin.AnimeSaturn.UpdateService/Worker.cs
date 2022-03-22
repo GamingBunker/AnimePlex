@@ -59,11 +59,11 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                     foreach (var episode in listNameEpisode)
                     {
 
-                        string filePath = $"{_folder}/{anime.Name}/Season {episode.NumberSeasonCurrent}/{anime.Name}-s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}.mp4";
+                        string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4";
                         logger.Debug($"check {filePath}");
 
                         //check file exists
-                        if (!File.Exists(filePath))
+                        if (!File.Exists(filePath) || episode.StateDownload == null || episode.StateDownload == "failed" || episode.PercentualDownload != 100)
                         {
                             //if file not exitst, send message to rabbit
                             await _publishEndpoint.Publish(episode);

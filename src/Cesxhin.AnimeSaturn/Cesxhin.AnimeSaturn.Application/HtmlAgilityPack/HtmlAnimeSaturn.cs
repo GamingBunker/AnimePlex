@@ -104,8 +104,9 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 
             //get name
             nameAnime = doc.DocumentNode
-                .SelectNodes("//div/div/div[2]/div/b")
-                .First().InnerText;
+                .SelectNodes("//div/div/div[2]/div/div[@class='box-trasparente-alternativo rounded']")
+                .First()
+                .InnerText;
 
             //get image
             var webClient = new WebClient();

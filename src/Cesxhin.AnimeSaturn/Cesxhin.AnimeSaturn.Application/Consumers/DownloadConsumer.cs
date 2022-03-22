@@ -22,6 +22,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         private readonly string _address = Environment.GetEnvironmentVariable("ADDRESS_API");
         private readonly string _port = Environment.GetEnvironmentVariable("PORT_API");
         private readonly string _protocol = Environment.GetEnvironmentVariable("PROTOCOL_API");
+
         private static void InitiateSSLTrust()
         {
             try
@@ -44,22 +45,15 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             var episode = context.Message;
 
             //set path
-            string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent}/{episode.IDAnime}-s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}.mp4";
-            string directoryPath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent}";
+            string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4";
+            string directoryPath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}";
 
             //check
-            if (!File.Exists(filePath))
+            if (!File.Exists(filePath) || episode.StateDownload == null || episode.StateDownload == "failed" || episode.PercentualDownload != 100)
             {
                 //check directory
                 if (!Directory.Exists(directoryPath))
                     Directory.CreateDirectory(directoryPath);
-
-                //check file
-                if (File.Exists(filePath))
-                {
-                    logger.Info("it already exists");
-                    return Task.CompletedTask;
-                }
 
                 if (episode.UrlVideo != null)
                 {
@@ -83,6 +77,9 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     //new method download file
                     Download(episode, filePath);
                 }
+            }else
+            {
+                logger.Info("it already exists");
             }
             return Task.CompletedTask;
         }
@@ -138,7 +135,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                         } while (true);
                         count++;
                         percentual = (100 * count) / episode.Sources.Length;
-                        logger.Info("status download " + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent + "status download: "+ percentual);
+                        logger.Debug("status download " + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent + "status download: "+ percentual);
 
                         //send status download
                         episode.PercentualDownload = percentual;
