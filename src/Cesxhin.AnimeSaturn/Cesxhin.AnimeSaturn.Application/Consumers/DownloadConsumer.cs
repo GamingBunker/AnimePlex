@@ -48,38 +48,31 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4";
             string directoryPath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}";
 
-            //check
-            if (!File.Exists(filePath) || episode.StateDownload == null || episode.StateDownload == "failed" || episode.PercentualDownload != 100)
+            //check directory
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+
+            if (episode.UrlVideo != null)
             {
-                //check directory
-                if (!Directory.Exists(directoryPath))
-                    Directory.CreateDirectory(directoryPath);
-
-                if (episode.UrlVideo != null)
+                //url traditional
+                using (var client = new WebClient())
                 {
-                    //url traditional
-                    using (var client = new WebClient())
-                    {
-                        //task
-                        client.DownloadProgressChanged += client_DownloadProgressChanged(filePath, episode);
-                        client.DownloadFileCompleted += client_DownloadFileCompleted(filePath, episode);
+                    //task
+                    client.DownloadProgressChanged += client_DownloadProgressChanged(filePath, episode);
+                    client.DownloadFileCompleted += client_DownloadFileCompleted(filePath, episode);
 
-                        //add referer for download, also recive error 403 forbidden
-                        client.Headers.Add("Referer", episode.Referer);
-                        logger.Info("try download: " + episode.UrlVideo);
+                    //add referer for download, also recive error 403 forbidden
+                    client.Headers.Add("Referer", episode.Referer);
+                    logger.Info("try download: " + episode.UrlVideo);
 
-                        //start download
-                        client.DownloadFileAsync(new Uri(episode.UrlVideo), filePath);
-                    }
+                    //start download
+                    client.DownloadFileTaskAsync(new Uri(episode.UrlVideo), filePath).GetAwaiter().GetResult();
                 }
-                else
-                {
-                    //new method download file
-                    Download(episode, filePath);
-                }
-            }else
+            }
+            else
             {
-                logger.Info("it already exists");
+                //new method download file
+                Download(episode, filePath);
             }
             return Task.CompletedTask;
         }

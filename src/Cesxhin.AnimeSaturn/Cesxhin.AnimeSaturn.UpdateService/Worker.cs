@@ -58,13 +58,19 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                     //foreach episodes
                     foreach (var episode in listNameEpisode)
                     {
-
                         string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4";
                         logger.Debug($"check {filePath}");
-
-                        //check file exists
-                        if (!File.Exists(filePath) || episode.StateDownload == null || episode.StateDownload == "failed" || episode.PercentualDownload != 100)
+                        
+                        //check integry file
+                        if (episode.StateDownload == null || episode.StateDownload == "failed" || (!File.Exists(filePath) && episode.StateDownload != "pending"))
                         {
+                            //set pending to 
+                            episode.StateDownload = "pending";
+                            using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
+                            {
+                                client.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
+                            }
+
                             //if file not exitst, send message to rabbit
                             await _publishEndpoint.Publish(episode);
                             logger.Info($"this file not exists, send message to DownloadService");
