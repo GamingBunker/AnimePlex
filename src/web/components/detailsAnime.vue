@@ -5,7 +5,14 @@
             <div class="card-header">
                 <button @click="Close()" type="button" class="btn btn-primary"><i class="bi bi-arrow-left"></i></button>
                 <template v-if="urlPageDownload">
-                    <button @click="Download()" type="button" class="btn btn-danger"><i class="bi bi-cloud-download"></i></button>
+                    <template v-if="loading">
+                        <button @click="Download()" type="button" class="btn btn-danger">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </button>
+                    </template>
+                    <template v-else>
+                        <button @click="Download()" type="button" class="btn btn-danger"><i class="bi bi-cloud-download"></i></button>
+                    </template>
                 </template>
             </div>
             <div class="card-body">
@@ -34,6 +41,11 @@
                             <div class="progress-bar bg-warning" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">pending</div>
                         </div>
                     </template>
+                    <template v-else-if="episode.stateDownload == null">
+                        <div class="progress">
+                            <div class="progress-bar bg-info" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">not yet processed</div>
+                        </div>
+                    </template>
                 </div>
             </div>
         <template v-if="urlExternal == false">
@@ -52,7 +64,8 @@ export default {
         return{
             timer:1000,
             hide:"",
-            episodes:[]
+            episodes:[],
+            loading: false
         }
     },
     props:{
@@ -80,6 +93,7 @@ export default {
         },
         Download(){
             //get api external
+            this.loading = true;
             this.$axios.post("https://localhost:44300/animesaturn/download", JSON.stringify({Url: this.urlPageDownload}),
             {
                 headers: {
@@ -93,7 +107,10 @@ export default {
                 }else{
                     console.log('error download');
                 }
-            });
+            })
+            .then(() => {
+                this.loading = false;
+            })
         }
     },
 
