@@ -46,6 +46,10 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             List<AnimeDTO> animeDTO = new List<AnimeDTO>();
 
             var listAnime = await _animeRepository.GetMostAnimeByNameAsync(name);
+
+            if (listAnime == null)
+                return null;
+
             foreach (var anime in listAnime)
             {
                 animeDTO.Add(new AnimeDTO().AnimeToAnimeDTO(anime));

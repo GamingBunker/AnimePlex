@@ -1,4 +1,5 @@
-﻿using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
+﻿using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
+using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -69,8 +70,6 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         [HttpPost("/anime")]
         public async Task<IActionResult> PutAnime(AnimeDTO anime)
         {
-            //convert string json to class
-
             //insert
             var animeResult = await _animeService.InsertAnimeAsync(anime);
 
@@ -141,6 +140,58 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             //update
             await _episodeService.UpdateStateDownloadAsync(episode);
+        }
+
+        [HttpGet("/animesaturn/name/{name}")]
+        public async Task<IActionResult> GetListSearchByName(string name)
+        {
+            try
+            {
+                var animeUrls = HtmlAnimeSaturn.GetAnimeUrl(name);
+                if (animeUrls != null || animeUrls.Count >= 0)
+                {
+                    List<AnimeUrlDTO> list = new List<AnimeUrlDTO>();
+                    foreach (var animeUrl in animeUrls)
+                    {
+                        list.Add(new AnimeUrlDTO().AnimeToAnimeUrlDTO(animeUrl));
+                    }
+                    return Ok(list);
+                }
+                else
+                    return NotFound();
+            }
+            catch
+            {
+                return StatusCode(501);
+            }
+        }
+
+        [HttpPost("/animesaturn/download")]
+        public async Task<IActionResult> DownloadAnimeByUrlPage(DownloadDTO download)
+        {
+            try
+            {
+                var anime = HtmlAnimeSaturn.GetAnime(download.Url);
+                var episodes = HtmlAnimeSaturn.GetEpisodes(download.Url, anime.Name);
+
+                //insert
+                var animeResult = await _animeService.InsertAnimeAsync(anime);
+
+                if (animeResult == null)
+                    return Conflict();
+
+                //insert
+                var episodeResult = await _episodeService.InsertEpisodesAsync(episodes);
+
+                if (episodeResult == null)
+                    return Conflict();
+
+                return Created("none", animeResult);
+            }
+            catch
+            {
+                return StatusCode(501);
+            }
         }
     }
 }

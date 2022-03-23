@@ -32,6 +32,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             List<EpisodeDTO> episodes = new List<EpisodeDTO>();
             var listEpisode = await _episodeRepository.GetEpisodesByNameAsync(name);
 
+            if (listEpisode == null)
+                return null;
+
             foreach(var episode in listEpisode)
             {
                 episodes.Add(new EpisodeDTO().EpisodeToEpisodeDTO(episode));
