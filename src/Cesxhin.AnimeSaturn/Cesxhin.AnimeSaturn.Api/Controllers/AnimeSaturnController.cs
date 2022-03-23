@@ -49,6 +49,23 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        [HttpGet("/anime/names/{name}")]
+        public async Task<IActionResult> GetMostAnimeByName(string name)
+        {
+            try
+            {
+                var anime = await _animeService.GetMostAnimeByNameAsync(name);
+
+                if (anime == null)
+                    return NotFound();
+                return Ok(anime);
+            }
+            catch
+            {
+                return StatusCode(501);
+            }
+        }
+
         [HttpPost("/anime")]
         public async Task<IActionResult> PutAnime(AnimeDTO anime)
         {
