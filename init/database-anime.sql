@@ -29,6 +29,6 @@ create table episode
     playlist varchar(250),
     resolution varchar(250),
     playlistSources varchar(250),
-    sources varchar[]
+    sources text[]
 
 );
