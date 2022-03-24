@@ -125,7 +125,8 @@ export default {
 
       //close page detailsView
       this.$nuxt.$on("close", (urlExternal) => {
-        this.searchView = true;
+        if(!urlExternal)
+          this.searchView = true;
         this.urlExternal = urlExternal;
       })
       
