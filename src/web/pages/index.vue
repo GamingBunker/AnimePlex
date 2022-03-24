@@ -1,20 +1,22 @@
 <template>
   <div class="container">
     <h1>AnimePlex</h1>
-    <div class="col-sm-5 row">
+    <div class="col-sm-5">
       <SearchComponent />
     </div>
-    <div v-if="loading" class="row justify-content-center">
-      <div class="spinner-grow" style="width: 120px; height: 120px;" role="status"></div>
+    <div v-if="loading">
+      <div v-for="number in 5" :key="number" class="flex-row mb-3">
+        <PreviewAnimeLoading />
+      </div>
     </div>
     <template v-else-if="!(anime == null) && anime.length <= 0">
       <img src="../assets/img/not_found.png" class="img-fluid">
     </template>
-    <template v-else-if="searchView">
-      <div v-for="view in anime" :key="view.name" class="row justify-content-center">
+    <div v-else-if="searchView" class="d-flex flex-row flex-wrap">
+      <div v-for="view in anime" :key="view.name">
         <PreviewAnime :name="view.name" :image="view.image" :data="view" :urlExternal="urlExternal"/>
       </div>
-    </template>
+    </div>
     <div v-else class="row justify-content-center">
       <DetailsAnime
         :name="payload.name" 
@@ -38,10 +40,11 @@
 import PreviewAnime from "../components/previewAnime.vue"
 import DetailsAnime from "../components/detailsAnime.vue";
 import SearchComponent from "../components/searchComponent.vue";
+import PreviewAnimeLoading from "../components/previewAnimeLoading.vue";
 
 export default {
     name: "IndexPage",
-    components: { PreviewAnime, DetailsAnime, SearchComponent },
+    components: { PreviewAnime, DetailsAnime, SearchComponent, PreviewAnimeLoading },
     data() {
         return {
             anime: null,
