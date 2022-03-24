@@ -85,7 +85,11 @@ export default {
             episodes:[],
             loading: false,
             conflict: false,
-            success:false
+            success:false,
+
+            host:process.env.ipAPI,
+            port:process.env.portAPI,
+            protocol:process.env.protocolAPI
         }
     },
     props:{
@@ -114,7 +118,7 @@ export default {
         Download(){
             //get api external
             this.loading = true;
-            this.$axios.post("https://localhost:44300/animesaturn/download", JSON.stringify({Url: this.urlPageDownload}),
+            this.$axios.post(`${this.protocol}://${this.host}:${this.port}/animesaturn/download`, JSON.stringify({Url: this.urlPageDownload}),
             {
                 headers: {
                     'Content-Type': 'application/json'
@@ -150,7 +154,7 @@ export default {
                 if(this.urlPage != null)
                 {
                     //get api internal
-                    this.$axios.get("https://localhost:44300/episode/name/" + this.name)
+                    this.$axios.get(`${this.protocol}://${this.host}:${this.port}/episode/name/${this.name}`)
                         .then(rs => {
                         this.episodes = rs.data
                     });

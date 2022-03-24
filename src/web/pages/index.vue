@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-
     <!-- head -->
     <div>
       <!-- title -->
@@ -105,14 +104,18 @@ export default {
 
             pages:null,
             numberPageTotal:-1,
-            numberPageCurrent:0
+            numberPageCurrent:0,
+
+            host:process.env.ipAPI,
+            port:process.env.portAPI,
+            protocol:process.env.protocolAPI
         };
     },
     created() {
       //get api internal
       this.$nuxt.$on("search", (name) => {
           this.loading = true;
-          this.$axios.get("https://localhost:44300/anime/names/" + name)
+          this.$axios.get(`${this.protocol}://${this.host}:${this.port}/anime/names/${name}`)
             .then(rs => {
 
               //reset
@@ -139,7 +142,7 @@ export default {
       //get api external
       this.$nuxt.$on("searchExternal", (name) => {
           this.loading = true;
-          this.$axios.get("https://localhost:44300/animesaturn/name/" + name)
+          this.$axios.get(`${this.protocol}://${this.host}:${this.port}/animesaturn/name/${name}`)
               .then(rs => {
 
               //reset

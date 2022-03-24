@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'web',
+    title: 'Anime Plex',
     htmlAttrs: {
       lang: 'en'
     },
@@ -39,10 +39,6 @@ export default {
     '@nuxtjs/axios'
   ],
   
-  bootstrapVue: {
-    icons: true
-  },
-
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
@@ -51,5 +47,11 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  env: {
+    ipAPI: 'localhost',
+    portAPI: '44300',
+    protocolAPI: 'HTTPS'
   }
 }
