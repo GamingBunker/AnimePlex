@@ -11,11 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.Persist
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.Application", "Cesxhin.AnimeSaturn.Application\Cesxhin.AnimeSaturn.Application.csproj", "{4ADAB0E0-BCFA-4D89-9054-89AD4120907B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.WebApp", "Cesxhin.AnimeSaturn.WebApp\Cesxhin.AnimeSaturn.WebApp.csproj", "{E76FD62C-C26F-4F59-B70C-90BFD709761F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.UpdateService", "Cesxhin.AnimeSaturn.UpdateService\Cesxhin.AnimeSaturn.UpdateService.csproj", "{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cesxhin.AnimeSaturn.UpdateService", "Cesxhin.AnimeSaturn.UpdateService\Cesxhin.AnimeSaturn.UpdateService.csproj", "{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cesxhin.AnimeSaturn.DownloadService", "Cesxhin.AnimeSaturn.DownloadService\Cesxhin.AnimeSaturn.DownloadService.csproj", "{B8F48F77-5A92-4B8D-B56B-55AE64427652}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.DownloadService", "Cesxhin.AnimeSaturn.DownloadService\Cesxhin.AnimeSaturn.DownloadService.csproj", "{B8F48F77-5A92-4B8D-B56B-55AE64427652}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +37,6 @@ Global
 		{4ADAB0E0-BCFA-4D89-9054-89AD4120907B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4ADAB0E0-BCFA-4D89-9054-89AD4120907B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4ADAB0E0-BCFA-4D89-9054-89AD4120907B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E76FD62C-C26F-4F59-B70C-90BFD709761F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E76FD62C-C26F-4F59-B70C-90BFD709761F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E76FD62C-C26F-4F59-B70C-90BFD709761F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E76FD62C-C26F-4F59-B70C-90BFD709761F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EA7BAE2-B20B-4320-B33B-A6F5E496A9F5}.Release|Any CPU.ActiveCfg = Release|Any CPU

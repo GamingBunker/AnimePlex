@@ -55,7 +55,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             if (episode.UrlVideo != null)
             {
                 //url traditional
-                using (var client = new WebClient())
+                using (var client = new MyWebClient())
                 {
                     //task
                     client.DownloadProgressChanged += client_DownloadProgressChanged(filePath, episode);
@@ -66,6 +66,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     logger.Info("try download: " + episode.UrlVideo);
 
                     //start download
+                    client.Timeout = 60000;
                     client.DownloadFileTaskAsync(new Uri(episode.UrlVideo), filePath).GetAwaiter().GetResult();
                 }
             }
@@ -131,10 +132,13 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                         logger.Debug("status download " + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent + "status download: "+ percentual);
 
                         //send status download
-                        episode.PercentualDownload = percentual;
-                        using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
+                        if (DateTime.Now.Second % 3 == 0)
                         {
-                            clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content);
+                            episode.PercentualDownload = percentual;
+                            using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
+                            {
+                                clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
+                            }
                         }
                     }
 
@@ -150,6 +154,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                 //send end download
                 episode.StateDownload = "completed";
+                episode.PercentualDownload = 100;
                 using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
                 {
                     clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
@@ -169,10 +174,13 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 logger.Debug(e.ProgressPercentage + "% | " + e.BytesReceived + " bytes out of " + e.TotalBytesToReceive + " bytes retrieven of the file: "+filePath);
 
                 //send status download
-                episode.PercentualDownload = e.ProgressPercentage;
-                using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
+                if (DateTime.Now.Second % 3 == 0)
                 {
-                    clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content);
+                    episode.PercentualDownload = e.ProgressPercentage;
+                    using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
+                    {
+                        clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
+                    }
                 }
             };
             return new DownloadProgressChangedEventHandler(action);
@@ -210,6 +218,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                         //download finish download
                         episode.StateDownload = "completed";
+                        episode.PercentualDownload = 100;
                         using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
                         {
                             clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
@@ -223,6 +232,17 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 logger.Error(ex);
             }
             return null;
+        }
+    }
+    public class MyWebClient : WebClient
+    {
+        public int? Timeout { get; set; }
+
+        protected override WebRequest GetWebRequest(Uri uri)
+        {
+            WebRequest webRequest = base.GetWebRequest(uri);
+            webRequest.Timeout = (int)Timeout;
+            return webRequest;
         }
     }
 }

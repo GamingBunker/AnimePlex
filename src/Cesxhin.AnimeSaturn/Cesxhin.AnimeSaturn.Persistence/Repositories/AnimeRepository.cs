@@ -43,6 +43,22 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             }
         }
 
+        //get
+        public async Task<IEnumerable<Anime>> GetMostAnimeByNameAsync(string name)
+        {
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    return await connection.ExecuteQueryAsync<Anime>("SELECT * FROM anime WHERE lower(name) like '%" + name.ToLower() + "%'");
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
         //insert one anime
         public async Task<Anime> InsertAnimeAsync(Anime anime)
         {
