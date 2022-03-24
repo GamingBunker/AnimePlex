@@ -86,6 +86,8 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 var listEpisodes = await _episodeService.GetEpisodesByNameAsync(name);
+                if (listEpisodes == null)
+                    return NotFound();
                 return Ok(listEpisodes);
             }
             catch

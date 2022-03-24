@@ -40,6 +40,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
                 episodes.Add(new EpisodeDTO().EpisodeToEpisodeDTO(episode));
             }
 
+            if(episodes.Count <= 0)
+                return null;
+
             return episodes;
         }
 

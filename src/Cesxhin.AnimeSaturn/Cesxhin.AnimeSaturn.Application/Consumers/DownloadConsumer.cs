@@ -241,10 +241,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         protected override WebRequest GetWebRequest(Uri uri)
         {
             WebRequest webRequest = base.GetWebRequest(uri);
-            if (this.Timeout.HasValue)
-            {
-                webRequest.Timeout = (int)Timeout;
-            }
+            webRequest.Timeout = (int)Timeout;
             return webRequest;
         }
     }

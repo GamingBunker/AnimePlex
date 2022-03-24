@@ -66,7 +66,7 @@
                     </template>
                 </div>
             </div>
-        <template v-if="urlExternal == false">
+        <template v-if="urlExternal == false || urlExternal == null">
             <img :src="'data:image/jpg;base64,'+ConvertBase64(image)" class="card-img-top">
         </template>
         <template v-else>
