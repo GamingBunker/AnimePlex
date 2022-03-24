@@ -4,8 +4,8 @@
     <div class="col-sm-5">
       <SearchComponent />
     </div>
-    <div v-if="loading">
-      <div v-for="number in 5" :key="number" class="flex-row mb-3">
+    <div v-if="loading" class="d-flex flex-row flex-wrap">
+      <div v-for="number in 8" :key="number">
         <PreviewAnimeLoading />
       </div>
     </div>
@@ -51,7 +51,8 @@ export default {
             searchView: true,
             urlExternal: false,
             payload : {},
-            loading: false
+            loading: false,
+            success: false
         };
     },
     created() {
@@ -123,16 +124,23 @@ export default {
       })
 
       //close page detailsView
-      this.$nuxt.$on("close", (name) => {
+      this.$nuxt.$on("close", (urlExternal) => {
         this.searchView = true;
+        this.urlExternal = urlExternal;
       })
       
       //close page detailsView
       this.$nuxt.$on("reloadViewDetails", (data) => {
+        this.success = true;
         this.searchView = false;
         this.urlExternal = false;
         this.payload = data
       })
+    },
+    methods:{
+      closeAlert(){
+        this.success = false;
+      }
     }
 }
 </script>

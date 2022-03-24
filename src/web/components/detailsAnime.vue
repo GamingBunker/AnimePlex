@@ -1,6 +1,24 @@
 <template>
-    <div style="width: 50%;">
+    <div style="width: 40%;">
+        <!-- auto refresh api  -->
         <label hidden>{{hide}}</label>
+        
+        <!-- message error  -->
+        <template v-if="conflict">
+            <div class="alert alert-danger alert-dismissible">
+                <strong>This anime already exists!</strong> Try press button 'Search'
+                <button @click="closeAlert()" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </template>
+        <!-- message success download  -->
+        <template v-else-if="success">
+            <div class="alert alert-success alert-dismissible">
+                Success download information! Soon the downloads will start.
+                <button @click="closeAlert()" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </template>
+
+        <!-- card  -->
         <div class="card mb-3">
             <div class="card-header">
                 <button @click="Close()" type="button" class="btn btn-primary"><i class="bi bi-arrow-left"></i></button>
@@ -65,7 +83,9 @@ export default {
             timer:1000,
             hide:"",
             episodes:[],
-            loading: false
+            loading: false,
+            conflict: false,
+            success:false
         }
     },
     props:{
@@ -89,7 +109,7 @@ export default {
             return  buff.toString();
         },
         Close(){
-            $nuxt.$emit('close', this.name);
+            $nuxt.$emit('close', this.urlExternal);
         },
         Download(){
             //get api external
@@ -102,26 +122,39 @@ export default {
             })
             .then(rs => {
                 if(rs.status == 201){
+                    this.success = true;
                     this.Close()
                     $nuxt.$emit("reloadViewDetails", rs.data);
                 }else{
                     console.log('error download');
                 }
             })
+            .catch(error => {
+                if(error.message.includes('409')){
+                    this.conflict = true;
+                }
+            })
             .then(() => {
                 this.loading = false;
             })
+        },
+        closeAlert(){
+            this.conflict = false;
+            this.success = false;
         }
     },
 
     watch:{
         hide:{
             handler(){
-                //get api internal
-                this.$axios.get("https://localhost:44300/episode/name/" + this.name)
-                    .then(rs => {
-                    this.episodes = rs.data
-                });
+                if(this.urlPage != null)
+                {
+                    //get api internal
+                    this.$axios.get("https://localhost:44300/episode/name/" + this.name)
+                        .then(rs => {
+                        this.episodes = rs.data
+                    });
+                }
                 setTimeout(() => {
                     this.hide = new Date();
                 }, 3000);

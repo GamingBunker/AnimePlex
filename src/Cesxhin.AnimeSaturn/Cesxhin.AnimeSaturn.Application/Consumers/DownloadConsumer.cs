@@ -154,6 +154,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                 //send end download
                 episode.StateDownload = "completed";
+                episode.PercentualDownload = 100;
                 using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
                 {
                     clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
@@ -217,6 +218,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                         //download finish download
                         episode.StateDownload = "completed";
+                        episode.PercentualDownload = 100;
                         using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
                         {
                             clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();

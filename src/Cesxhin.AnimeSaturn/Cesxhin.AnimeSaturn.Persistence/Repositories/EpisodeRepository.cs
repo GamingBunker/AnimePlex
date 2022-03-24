@@ -34,7 +34,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             {
                 try
                 {
-                    return await connection.QueryAsync<Episode>(e => e.IDAnime == name);
+                    return await connection.ExecuteQueryAsync<Episode>($"SELECT * FROM episode WHERE idanime like '{name}' ORDER BY numberepisodecurrent ASC;");
                 }
                 catch
                 {
