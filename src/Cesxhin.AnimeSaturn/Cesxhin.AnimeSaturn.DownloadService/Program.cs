@@ -34,7 +34,9 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                             cfg.ReceiveEndpoint("download-anime", e => {
                                 e.Consumer<DownloadConsumer>(cc =>
                                 {
-                                    cc.UseConcurrentMessageLimit(3);
+                                    string limit = Environment.GetEnvironmentVariable("LIMIT_CONSUMER_RABBIT") ?? "3";
+
+                                    cc.UseConcurrentMessageLimit(int.Parse(limit));
                                 });
                             });
 

@@ -35,65 +35,112 @@ namespace Cesxhin.AnimeSaturn.UpdateService
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             HttpClient client = new HttpClient();
+            HttpResponseMessage resultHttp;
+
+            //set number view
+            string formatNumberView = "D2";
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                //download api
-                var resultAnime = await client.GetStringAsync($"{_protocol}://{_address}:{_port}/anime/");
+                List<AnimeDTO> listNameAnime = new List<AnimeDTO>();
+
+                //settings deserialize
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true,
                 };
 
-                //string to class object
-                var listNameAnime = JsonSerializer.Deserialize<List<AnimeDTO>>(resultAnime, options);
+                //download api
+                resultHttp = await client.GetAsync($"{_protocol}://{_address}:{_port}/anime");
+                if(resultHttp.IsSuccessStatusCode)
+                {
+
+                    //string to class object
+                    listNameAnime = JsonSerializer.Deserialize<List<AnimeDTO>>(await resultHttp.Content.ReadAsStringAsync(), options);
+
+                }
+                else if(resultHttp.StatusCode == HttpStatusCode.NotFound)
+                {
+                    logger.Warn("Not found any anime");
+                    
+                }else
+                {
+                    logger.Error("Can't get api anime, details: " + resultHttp.StatusCode);
+                }
+
                 //step one check file
                 foreach (var anime in listNameAnime)
                 {
                     //get list episodes by name
-                    var resultEpisode = await client.GetStringAsync($"{_protocol}://{_address}:{_port}/episode/name/{anime.Name}");
+                    List<EpisodeDTO> listNameEpisode = new List<EpisodeDTO>();
 
-                    //string to object class
-                    var listNameEpisode = JsonSerializer.Deserialize<List<EpisodeDTO>>(resultEpisode, options);
+                    resultHttp = await client.GetAsync($"{_protocol}://{_address}:{_port}/episode/name/{anime.Name}");
+                    if(resultHttp.IsSuccessStatusCode)
+                    {
+                        //string to object class
+                        listNameEpisode = JsonSerializer.Deserialize<List<EpisodeDTO>>(await resultHttp.Content.ReadAsStringAsync(), options);
+                    }
+                    else if(resultHttp.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        continue;
+                    }
 
                     //foreach episodes
                     foreach (var episode in listNameEpisode)
                     {
-                        string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4";
+                        if (episode.NumberEpisodeCurrent > 99)
+                            formatNumberView = "D3";
+                        else if (episode.NumberEpisodeCurrent > 999)
+                            formatNumberView = "D4";
+
+                        string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4";
                         logger.Debug($"check {filePath}");
                         
                         //check integry file
                         if (episode.StateDownload == null || episode.StateDownload == "failed" || (!File.Exists(filePath) && episode.StateDownload != "pending"))
                         {
-                            //set pending to 
-                            episode.StateDownload = "pending";
-                            using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
+                            if(await ConfirmStartDownloadAnime(episode))
                             {
-                                client.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
+                                logger.Info($"ok {episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}");
+                            }else
+                            {
+                                logger.Info($"Error publish {episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}");
                             }
-
-                            //if file not exitst, send message to rabbit
-                            await _publishEndpoint.Publish(episode);
-                            logger.Info($"this file not exists, send message to DownloadService");
                         }
                     }
                 }
+
                 //step two check on website if the anime is still active
                 foreach (var anime in listNameAnime)
                 {
                     //get list episodes by name
-                    var resultEpisode = await client.GetStringAsync($"{_protocol}://{_address}:{_port}/episode/name/{anime.Name}");
-
-                    //string to object class
-                    var listNameEpisode = JsonSerializer.Deserialize<List<EpisodeDTO>>(resultEpisode, options);
+                    List<EpisodeDTO> listNameEpisode = new List<EpisodeDTO>();
                     List<EpisodeDTO> checkEpisodes = null;
+                    List<EpisodeDTO> listEpisodesAdd = null;
+
+                    //get current number episodes
+                    resultHttp = await client.GetAsync($"{_protocol}://{_address}:{_port}/episode/name/{anime.Name}");
+                    if (resultHttp.IsSuccessStatusCode)
+                    {
+                        listNameEpisode = JsonSerializer.Deserialize<List<EpisodeDTO>>(await resultHttp.Content.ReadAsStringAsync(), options);
+                    }
 
                     if (listNameEpisode.Count == 0)
+                    {
+                        logger.Warn($"Anime of {anime.Name} not have any episodes, try re-download all episodes");
+
+                        //get all episodes
                         checkEpisodes = HtmlAnimeSaturn.GetEpisodes(anime.UrlPage, anime.Name);
+                    }
                     else
+                    {
+                        logger.Info("Check new episodes for Anime: " + anime.Name);
+
                         //check new episode
                         checkEpisodes = HtmlAnimeSaturn.GetEpisodes(listNameEpisode[listNameEpisode.Count - 1].Referer, anime.Name);
+                    }
 
-                    var listEpisodesAdd = new List<EpisodeDTO>(checkEpisodes);
+                    listEpisodesAdd = new List<EpisodeDTO>(checkEpisodes);
 
                     foreach (var checkEpisode in checkEpisodes)
                     {
@@ -112,19 +159,35 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                         //insert to db
                         using (var content = new StringContent(JsonSerializer.Serialize(listEpisodesAdd), System.Text.Encoding.UTF8, "application/json"))
                         {
-                            HttpResponseMessage result = client.PostAsync($"{_protocol}://{_address}:{_port}/episodes", content).Result;
-                            if (result.StatusCode == HttpStatusCode.Created)
+                            resultHttp = await client.PostAsync($"{_protocol}://{_address}:{_port}/episodes", content);
+                            if (resultHttp.StatusCode == HttpStatusCode.Created)
+                            {
                                 logger.Info($"Insert new item {await content.ReadAsStringAsync()}");
-                            else if (result.StatusCode == HttpStatusCode.Conflict)
-                                logger.Error($"Error insert new item for conflict");
+                                listEpisodesAdd = JsonSerializer.Deserialize<List<EpisodeDTO>>(await resultHttp.Content.ReadAsStringAsync(), options);
+                            }
+                            else if (resultHttp.StatusCode == HttpStatusCode.Conflict)
+                                logger.Error($"Error insert new item becouse there is one conflict, {resultHttp.Content.ReadAsStringAsync()}");
                             else
-                                logger.Error($"Error generic insert, message {await content.ReadAsStringAsync()}");
+                                logger.Error($"Error generic insert, payload: {resultHttp.Content.ReadAsStringAsync()}");
                         }
 
                         //send to rabbit
                         foreach (var episode in listEpisodesAdd)
                         {
-                            await _publishEndpoint.Publish(episode);
+                            formatNumberView = "D2";
+                            if (episode.NumberEpisodeCurrent > 99)
+                                formatNumberView = "D3";
+                            else if (episode.NumberEpisodeCurrent > 999)
+                                formatNumberView = "D4";
+
+                            if (await ConfirmStartDownloadAnime(episode))
+                            {
+                                logger.Info($"ok {episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}");
+                            }
+                            else
+                            {
+                                logger.Info($"Error publish {episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}");
+                            }
                         }
                     }
                     //clear resource
@@ -133,6 +196,30 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                 logger.Info("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(_timeRefresh, stoppingToken);
             }
+        }
+
+        private async Task<bool> ConfirmStartDownloadAnime(EpisodeDTO episode)
+        {
+            //set pending to 
+            episode.StateDownload = "pending";
+
+            using(var client = new HttpClient())
+            using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
+            {
+                var resultHttp = await client.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content);
+                if (resultHttp.IsSuccessStatusCode)
+                {
+                    //if file not exitst, send message to rabbit
+                    await _publishEndpoint.Publish(episode);
+                    logger.Info($"this file does not exists, sending message to DownloadService");
+                    return true;
+                }
+                else
+                {
+                    logger.Info($"Not can change state download of someone episode, details" + JsonSerializer.Serialize(episode));
+                }
+            }
+            return false;
         }
     }
 }

@@ -25,6 +25,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             {
                 animes.Add(new AnimeDTO().AnimeToAnimeDTO(anime));
             }
+            if (animes.Count <= 0)
+                return null;
+
             return animes;
         }
 

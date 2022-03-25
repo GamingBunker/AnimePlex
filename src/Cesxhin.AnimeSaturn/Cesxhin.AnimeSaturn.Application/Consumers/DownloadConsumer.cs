@@ -15,6 +15,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 {
     public class DownloadConsumer : IConsumer<EpisodeDTO>
     {
+        //nlog
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         //set variable
@@ -22,6 +23,9 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         private readonly string _address = Environment.GetEnvironmentVariable("ADDRESS_API");
         private readonly string _port = Environment.GetEnvironmentVariable("PORT_API");
         private readonly string _protocol = Environment.GetEnvironmentVariable("PROTOCOL_API");
+
+        //for api and service download file with fist method(url with file)
+        HttpClient clientHttp = new HttpClient();
 
         private static void InitiateSSLTrust()
         {
@@ -45,17 +49,25 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             //get body
             var episode = context.Message;
 
+            //set number view
+            string formatNumberView = "D2";
+            if (episode.NumberEpisodeCurrent > 99)
+                formatNumberView = "D3";
+            else if (episode.NumberEpisodeCurrent > 999)
+                formatNumberView = "D4";
+
             //set path
-            string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4";
+            string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4";
             string directoryPath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}";
 
             //check directory
             if (!Directory.Exists(directoryPath))
                 Directory.CreateDirectory(directoryPath);
 
+            //check type url
             if (episode.UrlVideo != null)
             {
-                //url traditional
+                //url with file
                 using (var client = new MyWebClient())
                 {
                     //task
@@ -67,55 +79,69 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     logger.Info("try download: " + episode.UrlVideo);
 
                     //start download
-                    client.Timeout = 60000;
+                    client.Timeout = 60000; //? check
                     client.DownloadFileTaskAsync(new Uri(episode.UrlVideo), filePath).GetAwaiter().GetResult();
                 }
             }
             else
             {
-                //new method download file
+                //url stream
                 Download(episode, filePath);
             }
             return Task.CompletedTask;
         }
 
-        private async void Download(EpisodeDTO episode, string filePath)
+        //download url with files stream
+        private void Download(EpisodeDTO episode, string filePath)
         {
+            //disable ssl
             InitiateSSLTrust();
-            HttpClient clientHttp = new HttpClient();
+
+            //timeout if not response one resource and close with status failed
             int timeout = 5;
 
-            //save to file
+            //create file and save to end operation
             using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
             {
-
                 List<byte[]> buffer = new List<byte[]>();
+
                 using (var client = new WebClient())
                 {
                     logger.Info("start download " + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
 
-                    //send api start download
+                    //change by pending to downloading
                     episode.StateDownload = "downloading";
-                    using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
-                    {
-                        clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
-                    }
+                    SendStatusDownloadAPIAsync(episode);
 
                     int count = 0;
                     int percentual;
-                    for(int numberFrame=episode.startNumberBuffer; numberFrame<= episode.endNumberBuffer; numberFrame++)
+                    int lastTriggerTime = 0;
+                    int intervalCheck;
+                    for (int numberFrame=episode.startNumberBuffer; numberFrame<= episode.endNumberBuffer; numberFrame++)
                     {
-                        Uri uri = new Uri($"{episode.BaseUrl}/{episode.Resolution}/{episode.Resolution}-{numberFrame.ToString("D3")}.ts");
+                        //url frame
+                        string url = $"{episode.BaseUrl}/{episode.Resolution}/{episode.Resolution}-{numberFrame.ToString("D3")}.ts";
+                        Uri uri = new Uri(url);
+
+                        //download frame
                         do
                         {
                             if(timeout == 0)
                             {
                                 //send api failed download
                                 episode.StateDownload = "failed";
-                                using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
+                                SendStatusDownloadAPIAsync(episode);
+
+                                logger.Error("Failed download, details: " + url);
+
+                                //delete file
+                                fs.Close();
+                                if (File.Exists(filePath))
                                 {
-                                    clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
+                                    File.Delete(filePath);
+                                    logger.Warn($"The file is deleted {filePath}");
                                 }
+                                return;
                             }
                             try
                             {
@@ -128,18 +154,23 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                                 timeout--;
                             }
                         } while (true);
+
                         count++;
                         percentual = (100 * count) / episode.endNumberBuffer;
                         logger.Debug("status download " + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent + "status download: "+ percentual);
 
-                        //send status download
-                        if (DateTime.Now.Second % 3 == 0)
+                        //send only one data every 3 seconds
+                        intervalCheck = DateTime.Now.Second;
+                        if (lastTriggerTime > intervalCheck)
+                            lastTriggerTime = 3;
+
+                        if (intervalCheck % 3 == 0 && (intervalCheck - lastTriggerTime) >= 3)
                         {
+                            lastTriggerTime = DateTime.Now.Second;
+
+                            //send status download
                             episode.PercentualDownload = percentual;
-                            using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
-                            {
-                                clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
-                            }
+                            SendStatusDownloadAPIAsync(episode);
                         }
                     }
 
@@ -147,41 +178,46 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                 }
 
-                foreach(var singleBuffer in buffer)
+                logger.Info("start join most buffer" + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+                foreach (var singleBuffer in buffer)
                 {
                     fs.Write(singleBuffer);
-                    logger.Warn("join singlebuffer to one big buffer");
                 }
+                logger.Info("end join most buffer" + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
 
                 //send end download
                 episode.StateDownload = "completed";
                 episode.PercentualDownload = 100;
-                using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
-                {
-                    clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
-                }
+                SendStatusDownloadAPIAsync(episode);
+
+                return;
             }
         }
 
         private DownloadProgressChangedEventHandler client_DownloadProgressChanged(string filePath, EpisodeDTO episode)
         {
-            HttpClient clientHttp = new HttpClient();
-
+            //change by pending to downloading
             episode.StateDownload = "downloading";
+            int lastTriggerTime = 0;
+            int intervalCheck;
 
             Action<object, DownloadProgressChangedEventArgs> action = (sender, e) =>
             {
                 //print progress
                 logger.Debug(e.ProgressPercentage + "% | " + e.BytesReceived + " bytes out of " + e.TotalBytesToReceive + " bytes retrieven of the file: "+filePath);
 
-                //send status download
-                if (DateTime.Now.Second % 3 == 0)
+                //send only one data every 3 seconds
+                intervalCheck = DateTime.Now.Second;
+                if (lastTriggerTime > intervalCheck)
+                    lastTriggerTime = 3; 
+
+                if (intervalCheck % 3 == 0 && (intervalCheck - lastTriggerTime) >= 3)
                 {
+                    lastTriggerTime = DateTime.Now.Second;
+
+                    //send status download
                     episode.PercentualDownload = e.ProgressPercentage;
-                    using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
-                    {
-                        clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
-                    }
+                    SendStatusDownloadAPIAsync(episode);
                 }
             };
             return new DownloadProgressChangedEventHandler(action);
@@ -189,7 +225,6 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         }
         private AsyncCompletedEventHandler client_DownloadFileCompleted(string filePath, EpisodeDTO episode)
         {
-            HttpClient clientHttp = new HttpClient();
             try
             {
                 //recive response action
@@ -208,10 +243,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                         //send failed download
                         episode.StateDownload = "failed";
-                        using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
-                        {
-                            clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
-                        }
+                        SendStatusDownloadAPIAsync(episode);
                     }
                     else
                     {
@@ -220,10 +252,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                         //download finish download
                         episode.StateDownload = "completed";
                         episode.PercentualDownload = 100;
-                        using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
-                        {
-                            clientHttp.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
-                        }
+                        SendStatusDownloadAPIAsync(episode);
                     }
                 };
                 return new AsyncCompletedEventHandler(action);
@@ -234,7 +263,27 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             }
             return null;
         }
+
+        private void SendStatusDownloadAPIAsync(EpisodeDTO episode)
+        {
+            using (var clientAPI = new HttpClient())
+            using (var content = new StringContent(JsonSerializer.Serialize(episode), System.Text.Encoding.UTF8, "application/json"))
+            {
+                var resultHttp = clientAPI.PutAsync($"{_protocol}://{_address}:{_port}/statusDownload", content).GetAwaiter().GetResult();
+                if(resultHttp.IsSuccessStatusCode)
+                {
+                    logger.Debug("Confirm send to API: " + episode.IDAnime);
+                }
+                else
+                {
+                    logger.Error("Error send to API: " + episode.IDAnime+ " Details error: "+resultHttp.Content.ReadAsStreamAsync().GetAwaiter().GetResult());
+                }
+            }
+
+        }
     }
+
+    //custom WebClient for set Timeout
     public class MyWebClient : WebClient
     {
         public int? Timeout { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Cesxhin.AnimeSaturn.Application.Interfaces.Repositories;
 using Cesxhin.AnimeSaturn.Domain.Models;
+using NLog;
 using Npgsql;
 using RepoDb;
 using System;
@@ -10,6 +11,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
 {
     public class AnimeRepository : IAnimeRepository
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
         //get all anime
@@ -21,8 +23,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 {
                     return await connection.QueryAllAsync<Anime>();
                 }
-                catch
+                catch(Exception e)
                 {
+                    logger.Error("Failed GetAnimeAllAsync, details error: " + e);
                     return null;
                 }
             }
@@ -36,8 +39,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 try
                 {
                     return await connection.QueryAsync<Anime>(e => e.Name == name);
-                }catch
+                }catch(Exception e)
                 {
+                    logger.Error("Failed GetAnimeByNameAsync, details error: " + e);
                     return null;
                 }
             }
@@ -52,8 +56,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 {
                     return await connection.ExecuteQueryAsync<Anime>("SELECT * FROM anime WHERE lower(name) like '%" + name.ToLower() + "%'");
                 }
-                catch
+                catch(Exception e)
                 {
+                    logger.Error("Failed GetMostAnimeByNameAsync, details error: " + e);
                     return null;
                 }
             }
@@ -68,8 +73,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 {
                     await connection.InsertAsync(anime);
                     return anime;
-                }catch
+                }catch(Exception e)
                 {
+                    logger.Error("Failed InsertAnimeAsync, details error: " + e);
                     return null;
                 }
             }

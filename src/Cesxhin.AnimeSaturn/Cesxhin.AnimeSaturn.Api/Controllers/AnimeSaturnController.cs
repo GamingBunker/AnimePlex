@@ -1,6 +1,7 @@
 ﻿using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Domain.DTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,21 +20,33 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             _episodeService = episodeService;
         }
 
-        //anime
+        //get list all anime without filter
         [HttpGet("/anime")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<AnimeDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAnimeAll()
         {
             try
             {
-                return Ok(await _animeService.GetAnimeAllAsync());
+                var listAnime = await _animeService.GetAnimeAllAsync();
+
+                if(listAnime == null)
+                    return NotFound();
+
+                return Ok(listAnime);
             }
             catch
             {
-                return StatusCode(501);
+                return StatusCode(500);
             }
         }
 
+        //get anime by name
         [HttpGet("/anime/name/{name}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AnimeDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAnimeByName (string name)
         {
             try
@@ -46,11 +59,15 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
             catch
             {
-                return StatusCode(501);
+                return StatusCode(500);
             }
         }
 
+        //get list anime by start name similar
         [HttpGet("/anime/names/{name}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<AnimeDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetMostAnimeByName(string name)
         {
             try
@@ -63,24 +80,38 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
             catch
             {
-                return StatusCode(501);
+                return StatusCode(500);
             }
         }
 
+        //insert anime
         [HttpPost("/anime")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AnimeDTO))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> PutAnime(AnimeDTO anime)
         {
-            //insert
-            var animeResult = await _animeService.InsertAnimeAsync(anime);
+            try
+            {
+                //insert
+                var animeResult = await _animeService.InsertAnimeAsync(anime);
 
-            if (animeResult == null)
-                return Conflict();
+                if (animeResult == null)
+                    return Conflict();
 
-            return Created("none", animeResult);
+                return Created("none", animeResult);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
 
-        //episode
+        //get list episode by name anime
         [HttpGet("/episode/name/{name}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<EpisodeDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetEpisodeByName(string name)
         {
             try
@@ -92,11 +123,15 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
             catch
             {
-                return StatusCode(501);
+                return StatusCode(500);
             }
         }
 
+        //get one episode by id
         [HttpGet("/episode/id/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetEpisodeById(int id)
         {
             try
@@ -109,42 +144,75 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
             catch
             {
-                return StatusCode(501);
+                return StatusCode(500);
             }
         }
 
+        //insert episode
         [HttpPost("/episode")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(EpisodeDTO))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> PutEpisode(EpisodeDTO episode)
         {
-            //insert
-            var episodeResult = await _episodeService.InsertEpisodeAsync(episode);
+            try
+            {
+                //insert
+                var episodeResult = await _episodeService.InsertEpisodeAsync(episode);
 
-            if (episodeResult == null)
-                return Conflict();
+                if (episodeResult == null)
+                    return Conflict();
 
-            return Created("none", episodeResult);
+                return Created("none", episodeResult);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
 
+        //insert list episode
         [HttpPost("/episodes")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(IEnumerable<EpisodeDTO>))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> PutEpisodes(List<EpisodeDTO> episodes)
         {
-            //insert
-            var episodeResult = await _episodeService.InsertEpisodesAsync(episodes);
+            try
+            {
+                //insert
+                var episodeResult = await _episodeService.InsertEpisodesAsync(episodes);
 
-            if (episodeResult == null)
-                return Conflict();
+                if (episodeResult == null)
+                    return Conflict();
 
-            return Created("none", episodeResult);
+                return Created("none", episodeResult);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
         }
 
+        //update status of someone episode
         [HttpPut("/statusDownload")]
-        public async void PutUpdateStateDownload(EpisodeDTO episode)
+        public async Task<IActionResult> PutUpdateStateDownload(EpisodeDTO episode)
         {
-            //update
-            await _episodeService.UpdateStateDownloadAsync(episode);
+            try
+            {
+                //update
+                return Ok(await _episodeService.UpdateStateDownloadAsync(episode));
+            }catch
+            {
+                return StatusCode(500);
+            }
         }
 
+        //get list name by external db
         [HttpGet("/animesaturn/name/{name}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<AnimeUrlDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetListSearchByName(string name)
         {
             try
@@ -164,11 +232,15 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
             catch
             {
-                return StatusCode(501);
+                return StatusCode(500);
             }
         }
 
+        //put metadata into db
         [HttpPost("/animesaturn/download")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AnimeUrlDTO))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DownloadAnimeByUrlPage(DownloadDTO download)
         {
             try
@@ -192,7 +264,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
             catch
             {
-                return StatusCode(501);
+                return StatusCode(500);
             }
         }
     }
