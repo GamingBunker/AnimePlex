@@ -39,6 +39,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 logger.Error(ex);
             }
         }
+
         public Task Consume(ConsumeContext<EpisodeDTO> context)
         {
             //get body
@@ -102,9 +103,9 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                     int count = 0;
                     int percentual;
-                    foreach (var source in episode.Sources)
+                    for(int numberFrame=episode.startNumberBuffer; numberFrame<= episode.endNumberBuffer; numberFrame++)
                     {
-                        Uri uri = new Uri(episode.BaseUrl + "/" +episode.Resolution + "/" + source);
+                        Uri uri = new Uri($"{episode.BaseUrl}/{episode.Resolution}/{episode.Resolution}-{numberFrame.ToString("D3")}.ts");
                         do
                         {
                             if(timeout == 0)
@@ -128,7 +129,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                             }
                         } while (true);
                         count++;
-                        percentual = (100 * count) / episode.Sources.Length;
+                        percentual = (100 * count) / episode.endNumberBuffer;
                         logger.Debug("status download " + episode.IDAnime + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent + "status download: "+ percentual);
 
                         //send status download

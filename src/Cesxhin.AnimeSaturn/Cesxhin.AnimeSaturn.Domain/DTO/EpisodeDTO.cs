@@ -25,7 +25,8 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string Playlist { get; set; }
         public string Resolution { get; set; }
         public string PlaylistSources { get; set; }
-        public string[] Sources { get; set; }
+        public int startNumberBuffer { get; set; } = 0;
+        public int endNumberBuffer { get; set; }
 
         public EpisodeDTO EpisodeToEpisodeDTO(Episode episode)
         {
@@ -44,7 +45,8 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
                 Playlist = episode.Playlist,
                 Resolution = episode.Resolution,
                 PlaylistSources = episode.PlaylistSources,
-                Sources = episode.Sources
+                startNumberBuffer = episode.startNumberBuffer,
+                endNumberBuffer = episode.endNumberBuffer
             };
         }
     }

@@ -18,6 +18,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         public string Playlist { get; set; }
         public string Resolution { get; set; }
         public string PlaylistSources { get; set; }
-        public List<string> Sources { get; set; } = new List<string>();
+        public int startNumberBuffer { get; set; } = 0;
+        public int endNumberBuffer { get; set; }
     }
 }

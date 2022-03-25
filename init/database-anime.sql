@@ -19,7 +19,7 @@ create table episode
     referer text not null,
     numberEpisodeCurrent int not null,
     numberSeasonCurrent int default 1,
-    stateDownload varchar(100) default 'pending',
+    stateDownload varchar(100),
     percentualDownload int default -0,
     sizeFile int not null,
 
@@ -29,6 +29,7 @@ create table episode
     playlist varchar(250),
     resolution varchar(250),
     playlistSources varchar(250),
-    sources text[]
+    startNumberFrame int,
+    endNumberFrame int,
 
 );

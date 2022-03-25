@@ -53,8 +53,11 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         [Map("playlistsources")]
         public string PlaylistSources { get; set; }
 
-        [Map("sources")]
-        public string[] Sources { get; set; }
+        [Map("startnumberframe")]
+        public int startNumberBuffer { get; set; } = 0;
+
+        [Map("endnumberframe")]
+        public int endNumberBuffer { get; set; }
 
         //convert EpisodeDTO to Episode
         public Episode EpisodeDTOToEpisode(EpisodeDTO episode)
@@ -70,7 +73,8 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
                 StateDownload = episode.StateDownload,
                 PercentualDownload = episode.PercentualDownload,
                 SizeFile = episode.SizeFile,
-                Sources = episode.Sources,
+                startNumberBuffer = episode.startNumberBuffer,
+                endNumberBuffer = episode.endNumberBuffer,
                 Resolution = episode.Resolution,
                 PlaylistSources = episode.PlaylistSources,
                 Playlist = episode.Playlist,

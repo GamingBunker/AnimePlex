@@ -34,7 +34,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             string[] words = infoAnime.Split(new char[] { ':', '\n' });
             for (int i = 0; i < words.Length; i++)
             {
-                if (words[i].Contains("Autore"))
+                if (words[i].Contains("Studio"))
                 {
                     author = words[i + 1];
 
@@ -241,10 +241,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                             bytes = client.DownloadData(playerUrl.BaseUrl + playerUrl.PlaylistSources);
                             sourceFiles = System.Text.Encoding.UTF8.GetString(bytes);
                             contentM3u = M3U.Parse(sourceFiles);
-                            foreach (var media in contentM3u.Medias)
-                            {
-                                playerUrl.Sources.Add(media.MediaFile);
-                            }
+                            playerUrl.endNumberBuffer = contentM3u.Medias.Count() - 1; //start 0 to xx
                         }
 
                         if(playerUrl != null)
@@ -259,7 +256,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                                 PlaylistSources = playerUrl.PlaylistSources,
                                 Resolution = playerUrl.Resolution,
                                 NumberSeasonCurrent = numberSeason,
-                                Sources = playerUrl.Sources.ToArray()
+                                endNumberBuffer = playerUrl.endNumberBuffer
                             });
                         }
                         else
