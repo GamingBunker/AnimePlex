@@ -4,14 +4,14 @@
     <div>
       <!-- title -->
       <div style="padding-bottom: 10px;">
-        <img src="../assets/img/bar-anime.jpg" style="object-fit: cover;" height="220" width="100%">
+        <img src="../assets/img/bar-anime.jpg" style="object-fit: contain;" height="220" width="100%">
       </div>
     </div>
     
     <!-- body -->
-    <div style="background-color: white;">
+    <div>
       <!-- bar search -->
-      <div class="col-sm-5">
+      <div>
         <SearchComponent />
       </div>
 
@@ -21,41 +21,48 @@
       </template>
       
       <!-- animation loading pages -->
-      <div v-if="loading" class="d-flex flex-row flex-wrap justify-content-center">
+      <div v-if="loading" class="d-flex flex-row flex-wrap justify-content-center"  style="padding-top: 60px;">
         <div v-for="number in 8" :key="number">
           <PreviewAnimeLoading />
         </div>
       </div>
       
       <!-- empty -->
-      <div v-else-if="pages != null && pages.length <= 0" class="row justify-content-center">
-        <img src="../assets/img/empty.png" class="img-fluid" style="width: 500px;">
+      <div v-else-if="pages != null && pages.length <= 0">
+        <div class="alert alert-danger" role="alert">
+          <i class="bi bi-emoji-dizzy-fill"></i>
+          <strong>Not found!</strong>
+        </div>
       </div>
 
       <!-- search -->
       <div v-else-if="searchView">
 
         <!-- bar pages -->
-        <nav aria-label="Page navigation example">
+        <nav style="margin: 10px 0px;">
           <template v-if="numberPageTotal != -1">
-            <ul class="pagination">
+            <ul class="pagination nav justify-content-end">
               <template v-if="numberPageCurrent > 0">
-                <li class="page-item"><a @click="Previous()" class="page-link" href="#">Previous</a></li>
+                <div>
+                  <li class="page-item"><a @click="Previous()" class="page-link" style="margin: 0px 2px;" href="#">Previous</a></li>
+                </div>
               </template>
               <div v-for="numberPage in (numberPageTotal + 1)" :key="numberPage">
                   <template v-if="(numberPage-1) == numberPageCurrent">
-                    <li class="page-item active">
+                    <li class="page-item active" style="margin: 0px 2px;">
                         <a @click="ToPage(numberPage)" class="page-link " href="#">{{numberPage}}</a>
                     </li>
                   </template>
                   <template v-else>  
-                    <li class="page-item">
+                    <li class="page-item" style="margin: 0px 2px;">
                       <a @click="ToPage(numberPage)" class="page-link" href="#">{{numberPage}}</a>
                     </li>
                   </template>
               </div>
               <template v-if="numberPageCurrent < numberPageTotal">
-                <li class="page-item"><a @click="Next()" class="page-link" href="#">Next</a></li>
+                <div>
+                  <li class="page-item"><a @click="Next()" class="page-link" style="margin: 0px 2px;" href="#">Next</a></li>
+                </div>
               </template>
             </ul>
           </template>
@@ -240,3 +247,13 @@ export default {
     }
 }
 </script>
+
+<style>
+
+body{
+  background-image: url("../assets/img/background.jpg");
+  background-size: contain;
+  background-attachment: fixed;
+}
+
+</style>

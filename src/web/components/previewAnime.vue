@@ -1,5 +1,5 @@
 <template>
-    <div class="card" style="width: 18rem; padding: 0px; margin-right: 10px; margin-bottom:10px">
+    <div class="card" style="width: 18rem; padding: 0px; margin-right: 7px; margin-left: 3px; margin-bottom:10px">
         <template v-if="urlExternal == false">
             <img :src="'data:image/jpg;base64,'+ConvertBase64(image)" class="card-img-top rounded-top" width="400" height="450" style="object-fit: cover;">
         </template>
@@ -31,7 +31,3 @@
         }
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

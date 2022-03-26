@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 40%;">
+    <div style="width: 40%; margin: 20px;">
         <!-- auto refresh api  -->
         <label hidden>{{hide}}</label>
         
@@ -168,7 +168,3 @@ export default {
     }
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
