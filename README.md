@@ -7,7 +7,6 @@ Il progetto si suddivide in 4 progetti:
 - 💾Update Service (C#)
 - 📩Download Server (C#)
 - 🌐Web Server([Nuxtjs](https://nuxtjs.org/))
-- 🧱︎Proxy Server (Nodejs)
 
 Servizi utilizzati:
 - 🐰[RabbitMQ](https://www.rabbitmq.com/)
@@ -57,13 +56,4 @@ example:
     PASSWORD_RABBIT: "guest"
     ADDRESS_RABBIT: "localhost"
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
-```
-
-## 🧱︎Proxy Server (Nodejs)
-Questo progetto verrà utilizzato per accedere al web per bypassare i protocolli di sicurezza
-```sh
-example:
-    URL_APP=http://localhost:3333
-    PATH_URL_PROXY_APP=/*
-    PATH_PORT_GATEWAY_PROXY=3333
 ```

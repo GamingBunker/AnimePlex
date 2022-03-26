@@ -9,7 +9,7 @@
         "ADDRESS_RABBIT": "192.168.20.14",
         "PASSWORD_RABBIT": "guest",
         "ADDRESS_API": "localhost",
-        "PORT_API": "44300",
+        "PORT_API": "5001",
         "PROTOCOL_API": "https"
       },
       "dotnetRunMessages": "true"

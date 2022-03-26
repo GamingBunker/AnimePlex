@@ -49,9 +49,13 @@ export default {
   build: {
   },
 
+  server:{
+    host: "0.0.0.0"
+  },
+
   env: {
-    ipAPI: 'localhost',
-    portAPI: '44300',
+    ipAPI: '192.168.20.15',
+    portAPI: '5001',
     protocolAPI: 'HTTPS'
   }
 }

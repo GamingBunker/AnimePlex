@@ -269,7 +269,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         }
 
         //check test
-        [HttpPost("/check")]
+        [HttpGet("/check")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Check()

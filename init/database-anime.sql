@@ -1,4 +1,6 @@
-create table anime
+CREATE DATABASE animePlex;
+
+CREATE TABLE anime
 (
     name varchar(250) primary key,
     studio varchar(250),
@@ -12,7 +14,7 @@ create table anime
     urlpage text not null
 );
 
-create table episode
+CREATE TABLE episode
 (
     id serial primary key,
     idAnime  varchar(250) REFERENCES anime(name),
