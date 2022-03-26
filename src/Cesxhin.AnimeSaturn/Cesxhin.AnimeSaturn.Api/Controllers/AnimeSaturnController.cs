@@ -267,5 +267,21 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 return StatusCode(500);
             }
         }
+
+        //check test
+        [HttpPost("/check")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Check()
+        {
+            try
+            {
+                return Ok("Ok");
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
     }
 }

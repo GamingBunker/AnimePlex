@@ -15,6 +15,11 @@
         <SearchComponent />
       </div>
 
+      <!-- validate cert -->
+      <template v-if="validateCertificate">
+        <a class="btn btn-danger" :href="protocol+'://'+host+':'+port+'/check'" role="button">Validate API</a>
+      </template>
+      
       <!-- animation loading pages -->
       <div v-if="loading" class="d-flex flex-row flex-wrap justify-content-center">
         <div v-for="number in 8" :key="number">
@@ -108,7 +113,9 @@ export default {
 
             host:process.env.ipAPI,
             port:process.env.portAPI,
-            protocol:process.env.protocolAPI
+            protocol:process.env.protocolAPI,
+
+            validateCertificate:false
         };
     },
     created() {
@@ -133,6 +140,8 @@ export default {
           .catch(error => {
             if(error.message.includes('404'))
               this.pages = [];
+            else
+              this.validateCertificate = true
           })
           .then(() => {
             this.loading = false;
@@ -160,6 +169,8 @@ export default {
           .catch(error => {
             if(error.message.includes('404'))
               this.pages = [];
+            else
+              this.validateCertificate = true
           })
           .then(() => {
             this.loading = false;

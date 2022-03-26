@@ -26,7 +26,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DATABASE_CONNECTION": "User ID=mattia;Password=mattia!ceschin@postgres;Host=192.168.20.14;Port=5432;Database=animeSaturn;"
       },
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "applicationUrl": "https://0.0.0.0:5001;http://0.0.0.0:5000",
       "dotnetRunMessages": "true"
     }
   }
