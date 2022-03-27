@@ -53,8 +53,8 @@ export default {
   },
 
   env: {
-    ipAPI: '192.168.20.15',
-    portAPI: '5001',
-    protocolAPI: 'HTTPS'
+    ipAPI: '',
+    portAPI: '',
+    protocolAPI: ''
   }
 }

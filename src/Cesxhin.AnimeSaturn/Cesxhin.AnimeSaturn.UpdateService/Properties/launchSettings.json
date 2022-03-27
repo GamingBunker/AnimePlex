@@ -3,15 +3,15 @@
     "Cesxhin.AnimeSaturn.UpdateService": {
       "commandName": "Project",
       "environmentVariables": {
-        "USERNAME_RABBIT": "guest",
-        "TIME_REFRESH": "60000",
-        "BASE_PATH": "D:\\\\TestAnime",
+        "USERNAME_RABBIT": "",
+        "TIME_REFRESH": "",
+        "BASE_PATH": "",
         "DOTNET_ENVIRONMENT": "Development",
-        "ADDRESS_RABBIT": "192.168.20.14",
-        "PORT_API": "5001",
-        "ADDRESS_API": "localhost",
-        "PROTOCOL_API": "https",
-        "PASSWORD_RABBIT": "guest"
+        "ADDRESS_RABBIT": "",
+        "PORT_API": "",
+        "ADDRESS_API": "",
+        "PROTOCOL_API": "",
+        "PASSWORD_RABBIT": ""
       },
       "dotnetRunMessages": "true"
     }

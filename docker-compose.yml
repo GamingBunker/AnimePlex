@@ -58,9 +58,9 @@ services:
     container_name: WebAnimeSaturn
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ADDRESS_API: "api"
-      PORT_API: "80"
-      PROTOCOL_API: "http"
+      ADDRESS_API: ""
+      PORT_API: ""
+      PROTOCOL_API: ""
     ports:
       - 6001:80
     depends_on:
@@ -75,14 +75,14 @@ services:
     container_name: updateService
     environment:
       DOTNET_ENVIRONMENT: Development
-      USERNAME_RABBIT: "guest"
-      PASSWORD_RABBIT: "guest"
-      ADDRESS_RABBIT: "rabbit"
-      BASE_PATH: "/home"
-      ADDRESS_API: "api"
-      PORT_API: "80"
-      PROTOCOL_API: "http"
-      TIME_REFRESH: "60000"
+      USERNAME_RABBIT: ""
+      PASSWORD_RABBIT: ""
+      ADDRESS_RABBIT: ""
+      BASE_PATH: "/"
+      ADDRESS_API: ""
+      PORT_API: ""
+      PROTOCOL_API: ""
+      TIME_REFRESH: ""
     volumes_from:
       - downloadservice:rw
     depends_on:
@@ -98,12 +98,13 @@ services:
     container_name: downloadService
     environment:
       DOTNET_ENVIRONMENT: Development
-      USERNAME_RABBIT: "guest"
-      PASSWORD_RABBIT: "guest"
-      ADDRESS_RABBIT: "rabbit"
-      BASE_PATH: "/home"
+      USERNAME_RABBIT: ""
+      PASSWORD_RABBIT: ""
+      ADDRESS_RABBIT: ""
+      LIMIT_CONSUMER_RABBIT: ""
+      BASE_PATH: "/"
     volumes:
-      - episodes:/home
+      - episodes:/
     depends_on:
       - rabbit
     hostname: downloadservice
