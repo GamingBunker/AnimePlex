@@ -11,7 +11,7 @@ COPY ["Cesxhin.AnimeSaturn.Api/Cesxhin.AnimeSaturn.Api.csproj", "Cesxhin.AnimeSa
 COPY ["Cesxhin.AnimeSaturn.Domain/Cesxhin.AnimeSaturn.Domain.csproj", "Cesxhin.AnimeSaturn.Domain/"]
 COPY ["Cesxhin.AnimeSaturn.Persistence/Cesxhin.AnimeSaturn.Persistence.csproj", "Cesxhin.AnimeSaturn.Persistence/"]
 COPY ["Cesxhin.AnimeSaturn.Application/Cesxhin.AnimeSaturn.Application.csproj", "Cesxhin.AnimeSaturn.Application/"]
-RUN dotnet restore "Cesxhin.AnimeSaturn.Api/Cesxhin.AnimeSaturn.Api.csproj"
+RUN dotnet restore "Cesxhin.AnimeSaturn.Api/Cesxhin.AnimeSaturn.Api.csproj" -r linux-amd64
 COPY . .
 WORKDIR "/src/Cesxhin.AnimeSaturn.Api"
 RUN dotnet build "Cesxhin.AnimeSaturn.Api.csproj" -c Release -o /app/build
