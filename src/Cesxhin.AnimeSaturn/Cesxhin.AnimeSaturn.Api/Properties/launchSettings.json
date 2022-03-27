@@ -3,7 +3,6 @@
   "profiles": {
     "Cesxhin.AnimeSaturn.Api": {
       "commandName": "Project",
-      "launchBrowser": false,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
@@ -11,6 +10,12 @@
       },
       "applicationUrl": "https://0.0.0.0:5001;http://0.0.0.0:5000",
       "dotnetRunMessages": "true"
+    },
+    "Docker (1)": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "publishAllPorts": true,
+      "useSSL": true
     }
   }
 }

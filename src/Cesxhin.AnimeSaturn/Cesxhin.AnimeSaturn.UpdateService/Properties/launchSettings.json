@@ -7,13 +7,16 @@
         "TIME_REFRESH": "",
         "BASE_PATH": "",
         "DOTNET_ENVIRONMENT": "Development",
-        "ADDRESS_RABBIT": "",
         "PORT_API": "",
+        "ADDRESS_RABBIT": "",
         "ADDRESS_API": "",
-        "PROTOCOL_API": "",
-        "PASSWORD_RABBIT": ""
+        "PASSWORD_RABBIT": "",
+        "PROTOCOL_API": ""
       },
       "dotnetRunMessages": "true"
+    },
+    "Docker (1)": {
+      "commandName": "Docker"
     }
   }
 }

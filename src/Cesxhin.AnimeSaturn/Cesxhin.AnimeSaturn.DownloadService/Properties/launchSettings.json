@@ -6,14 +6,17 @@
         "USERNAME_RABBIT": "",
         "BASE_PATH": "",
         "DOTNET_ENVIRONMENT": "Development",
-        "ADDRESS_RABBIT": "",
-        "PASSWORD_RABBIT": "",
-        "LIMIT_CONSUMER_RABBIT": "",
-        "ADDRESS_API": "",
         "PORT_API": "",
-        "PROTOCOL_API": ""
+        "ADDRESS_RABBIT": "",
+        "ADDRESS_API": "",
+        "PASSWORD_RABBIT": "",
+        "PROTOCOL_API": "",
+        "LIMIT_CONSUMER_RABBIT": ""
       },
       "dotnetRunMessages": "true"
+    },
+    "Docker (1)": {
+      "commandName": "Docker"
     }
   }
 }
