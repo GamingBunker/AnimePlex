@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "Cesxhin.AnimeSaturn.UpdateService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "USERNAME_RABBIT": "",
+        "TIME_REFRESH": "",
+        "BASE_PATH": "",
+        "DOTNET_ENVIRONMENT": "Development",
+        "ADDRESS_RABBIT": "",
+        "PORT_API": "",
+        "ADDRESS_API": "",
+        "PROTOCOL_API": "",
+        "PASSWORD_RABBIT": ""
+      },
+      "dotnetRunMessages": "true"
+    }
+  }
+}

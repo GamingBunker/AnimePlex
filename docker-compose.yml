@@ -1,0 +1,135 @@
+version: '2'
+services:
+  rabbit:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    container_name: rabbit
+    ports:
+      - 15672:15672
+      - 5672:5672
+    hostname: rabbit
+    networks:
+      - default    
+
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    container_name: postgres
+    environment:
+        POSTGRES_USER: mattia
+        POSTGRES_PASSWORD: mattia!ceschin@postgres
+    ports:
+      - 5432:5432
+    hostname: postgres
+    networks:
+      - default   
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    container_name: pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: mattia@admin.com
+      PGADMIN_DEFAULT_PASSWORD: mattia!ceschin@pgadmin
+    ports:
+      - 5050:80
+    hostname: pgadmin4
+    networks:
+      - default
+
+  api:
+    image: cesxhinanimesaturnapi
+    restart: unless-stopped
+    container_name: apiAnimeSaturn
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DATABASE_CONNECTION: User ID=mattia;Password=mattia!ceschin@postgres;Host=postgres;Port=5432;Database=animeSaturn;
+    ports:
+      - 5001:80
+    depends_on:
+      - postgres
+    hostname: api
+    networks:
+      - default
+
+  web:
+    image: cesxhinanimesaturnwebapp
+    restart: unless-stopped
+    container_name: WebAnimeSaturn
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ADDRESS_API: ""
+      PORT_API: ""
+      PROTOCOL_API: ""
+    ports:
+      - 6001:80
+    depends_on:
+      - api
+    hostname: web
+    networks:
+      - default
+  
+  updateservice:
+    image: cesxhinanimesaturnupdateservice
+    restart: unless-stopped
+    container_name: updateService
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      USERNAME_RABBIT: ""
+      PASSWORD_RABBIT: ""
+      ADDRESS_RABBIT: ""
+      BASE_PATH: "/"
+      ADDRESS_API: ""
+      PORT_API: ""
+      PROTOCOL_API: ""
+      TIME_REFRESH: ""
+    volumes_from:
+      - downloadservice:rw
+    depends_on:
+      - api
+      - rabbit
+    hostname: updateservice
+    networks:
+      - default
+
+  downloadservice:
+    image: cesxhinanimesaturndownloadservice
+    restart: unless-stopped
+    container_name: downloadService
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      USERNAME_RABBIT: ""
+      PASSWORD_RABBIT: ""
+      ADDRESS_RABBIT: ""
+      LIMIT_CONSUMER_RABBIT: ""
+      BASE_PATH: "/"
+    volumes:
+      - episodes:/
+    depends_on:
+      - rabbit
+    hostname: downloadservice
+    networks:
+      - default
+  
+  plex:
+    image: lscr.io/linuxserver/plex
+    restart: unless-stopped
+    container_name: plex
+    ports:
+      - 32400:32400
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
+    volumes_from:
+      - downloadservice:rw    
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  episodes:
+    external: true
