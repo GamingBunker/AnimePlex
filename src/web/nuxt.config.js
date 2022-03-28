@@ -52,9 +52,10 @@ export default {
     host: "0.0.0.0"
   },
 
-  env: {
-    ipAPI: '',
-    portAPI: '',
-    protocolAPI: ''
+  publicRuntimeConfig: {
+    ipAPI: process.env.HOST_API || "localhost",
+    portAPI: process.env.PORT_API || "5000",
+    protocolAPI: process.env.PROTOCOL_API || "http"
+
   }
 }

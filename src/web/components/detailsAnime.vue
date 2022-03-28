@@ -86,10 +86,10 @@ export default {
             loading: false,
             conflict: false,
             success:false,
-
-            host:process.env.ipAPI,
-            port:process.env.portAPI,
-            protocol:process.env.protocolAPI
+            
+            host:this.$config.ipAPI,
+            port:this.$config.portAPI,
+            protocol:this.$config.protocolAPI,
         }
     },
     props:{

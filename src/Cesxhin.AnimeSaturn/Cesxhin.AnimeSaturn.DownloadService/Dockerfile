@@ -5,12 +5,14 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Cesxhin.AnimeSaturn.DownloadService/Cesxhin.AnimeSaturn.DownloadService.csproj", "Cesxhin.AnimeSaturn.DownloadService/"]
-COPY ["Cesxhin.AnimeSaturn.Application/Cesxhin.AnimeSaturn.Application.csproj", "Cesxhin.AnimeSaturn.Application/"]
-COPY ["Cesxhin.AnimeSaturn.Domain/Cesxhin.AnimeSaturn.Domain.csproj", "Cesxhin.AnimeSaturn.Domain/"]
-RUN dotnet restore "Cesxhin.AnimeSaturn.DownloadService/Cesxhin.AnimeSaturn.DownloadService.csproj"
+COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.DownloadService/", "./Cesxhin.AnimeSaturn.DownloadService/"]
+COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Application/", "./Cesxhin.AnimeSaturn.Application/"]
+COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Domain/", "./Cesxhin.AnimeSaturn.Domain/"]
+
+RUN dotnet restore "./Cesxhin.AnimeSaturn.DownloadService/Cesxhin.AnimeSaturn.DownloadService.csproj"
 COPY . .
-WORKDIR "/src/Cesxhin.AnimeSaturn.DownloadService"
+WORKDIR "./Cesxhin.AnimeSaturn.DownloadService"
+
 RUN dotnet build "Cesxhin.AnimeSaturn.DownloadService.csproj" -c Release -o /app/build
 
 FROM build AS publish

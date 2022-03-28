@@ -17,9 +17,9 @@ Questo progetto verrà utilizzato per gli utenti che vorranno visualizzare e sca
 ### Variabili globali:
 ```sh
 example:
-    ipAPI: "localhost",
-    portAPI: "33333",
-    protocolAPI: "https" or "http"
+    HOST_API: "localhost",
+    PORT_API : "33333",
+    PROTOCOL_API: "https" or "http"
 ```
 
 ## 🧮Api Server
