@@ -117,10 +117,10 @@ export default {
             pages:null,
             numberPageTotal:-1,
             numberPageCurrent:0,
-
-            host:process.env.ipAPI,
-            port:process.env.portAPI,
-            protocol:process.env.protocolAPI,
+            
+            host:this.$config.ipAPI,
+            port:this.$config.portAPI,
+            protocol:this.$config.protocolAPI,
 
             validateCertificate:false
         };

@@ -7,13 +7,15 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Cesxhin.AnimeSaturn.Api/Cesxhin.AnimeSaturn.Api.csproj", "Cesxhin.AnimeSaturn.Api/"]
-COPY ["Cesxhin.AnimeSaturn.Domain/Cesxhin.AnimeSaturn.Domain.csproj", "Cesxhin.AnimeSaturn.Domain/"]
-COPY ["Cesxhin.AnimeSaturn.Persistence/Cesxhin.AnimeSaturn.Persistence.csproj", "Cesxhin.AnimeSaturn.Persistence/"]
-COPY ["Cesxhin.AnimeSaturn.Application/Cesxhin.AnimeSaturn.Application.csproj", "Cesxhin.AnimeSaturn.Application/"]
-RUN dotnet restore "Cesxhin.AnimeSaturn.Api/Cesxhin.AnimeSaturn.Api.csproj"
+COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Api/", "./Cesxhin.AnimeSaturn.Api/"]
+COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Domain/", "./Cesxhin.AnimeSaturn.Domain/"]
+COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Persistence/", "./Cesxhin.AnimeSaturn.Persistence/"]
+COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Application/", "./Cesxhin.AnimeSaturn.Application/"]
+
+RUN dotnet restore "./Cesxhin.AnimeSaturn.Api/Cesxhin.AnimeSaturn.Api.csproj"
 COPY . .
-WORKDIR "/src/Cesxhin.AnimeSaturn.Api"
+WORKDIR "./Cesxhin.AnimeSaturn.Api"
+
 RUN dotnet build "Cesxhin.AnimeSaturn.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
