@@ -2,17 +2,19 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 5000
+EXPOSE 5001
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
+
 COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Api/", "./Cesxhin.AnimeSaturn.Api/"]
 COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Domain/", "./Cesxhin.AnimeSaturn.Domain/"]
 COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Persistence/", "./Cesxhin.AnimeSaturn.Persistence/"]
 COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Application/", "./Cesxhin.AnimeSaturn.Application/"]
 
 RUN dotnet restore "./Cesxhin.AnimeSaturn.Api/Cesxhin.AnimeSaturn.Api.csproj"
+
 COPY . .
 WORKDIR "./Cesxhin.AnimeSaturn.Api"
 

@@ -5,11 +5,13 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
+
 COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.UpdateService/", "./Cesxhin.AnimeSaturn.UpdateService/"]
 COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Domain/", "./Cesxhin.AnimeSaturn.Domain/"]
 COPY ["src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Application/", "./Cesxhin.AnimeSaturn.Application/"]
 
 RUN dotnet restore "./Cesxhin.AnimeSaturn.UpdateService/Cesxhin.AnimeSaturn.UpdateService.csproj"
+
 COPY . .
 WORKDIR "./Cesxhin.AnimeSaturn.UpdateService"
 

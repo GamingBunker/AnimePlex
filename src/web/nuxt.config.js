@@ -56,5 +56,6 @@ export default {
     ipAPI: process.env.HOST_API || "localhost",
     portAPI: process.env.PORT_API || "5000",
     protocolAPI: process.env.PROTOCOL_API || "http"
+
   }
 }
