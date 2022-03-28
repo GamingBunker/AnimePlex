@@ -2,10 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ main ]
-    paths:
-      - 'changelog'
-
+    branches: [ main, dev ]
 
 jobs:
 
