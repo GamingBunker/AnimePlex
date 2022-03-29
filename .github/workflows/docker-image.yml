@@ -1,0 +1,73 @@
+name: Docker Image CI
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Docker Login
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Extract metadata (tags, labes) for Docker Web
+      id: meta
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ secrets.DOCKER_USER }}/animeplex-web
+        
+    - name: Build the Docker image Web
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: src/web/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        
+    - name: Extract metadata (tags, labes) for Docker Api
+      id: meta1
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ secrets.DOCKER_USER }}/animeplex-api
+        
+    - name: Build the Docker image Api
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.Api/Dockerfile
+        push: true
+        tags: ${{ steps.meta1.outputs.tags }}
+
+    - name: Extract metadata (tags, labes) for Docker DownloadService
+      id: meta2
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ secrets.DOCKER_USER }}/animeplex-downloadservice
+        
+    - name: Build the Docker image DownloadService
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.DownloadService/Dockerfile
+        push: true
+        tags: ${{ steps.meta2.outputs.tags }}
+
+    - name: Extract metadata (tags, labes) for Docker UpdateService
+      id: meta3
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ secrets.DOCKER_USER }}/animeplex-updateservice
+        
+    - name: Build the Docker image UpdateService
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.UpdateService/Dockerfile
+        push: true
+        tags: ${{ steps.meta3.outputs.tags }}
