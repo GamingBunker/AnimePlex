@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Released]
+## [0.1.2] - 29-03-2022
+### Add
+- Add button re-download anime if download are stop
+
+### Fixed
+- when download is filed, bar progress is red with write 'filed' instead of percentual with value 100%
+- when download is completed, bar progress is green with write 'completed' instead of percentual
+- Resolve problem open file
+
+### Changed
+- DownloadService start timeout 0 to max limit defined and print log if error download with attempts remains, if download is success reset timeout
+
 ## [0.1.1] - 29-03-2022
 ### Added
 - new button into bar search for get all anime

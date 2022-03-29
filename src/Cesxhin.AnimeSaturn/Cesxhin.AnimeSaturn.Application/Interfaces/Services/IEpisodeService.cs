@@ -16,5 +16,8 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
 
         //update
         Task<EpisodeDTO> UpdateStateDownloadAsync(EpisodeDTO episode);
+
+        //reset
+        Task<EpisodeDTO> ResetStatusDownloadEpisodesByIdAsync(EpisodeDTO episode);
     }
 }
