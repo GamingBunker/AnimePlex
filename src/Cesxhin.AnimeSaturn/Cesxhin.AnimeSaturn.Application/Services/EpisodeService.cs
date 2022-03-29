@@ -69,6 +69,12 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return resultEpisodes;
         }
 
+        public async Task<EpisodeDTO> ResetStatusDownloadEpisodesByIdAsync(EpisodeDTO episode)
+        {
+            var episodeResult = await _episodeRepository.ResetStatusDownloadEpisodesByIdAsync(new Episode().EpisodeDTOToEpisode(episode));
+            return new EpisodeDTO().EpisodeToEpisodeDTO(episodeResult);
+        }
+
         public async Task<EpisodeDTO> UpdateStateDownloadAsync(EpisodeDTO episode)
         {
             var episodeResult = await _episodeRepository.UpdateStateDownloadAsync(new Episode().EpisodeDTOToEpisode(episode));

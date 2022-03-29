@@ -268,6 +268,27 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //put metadata into db
+        [HttpPut("/animesaturn/redownload")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DownloadAnimeByUrlPage(List<EpisodeDTO> episodes)
+        {
+            try
+            {
+                foreach(var episode in episodes)
+                {
+                    episode.StateDownload = null;
+                    await _episodeService.ResetStatusDownloadEpisodesByIdAsync(episode);
+                }
+                return Ok();
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
         //check test
         [HttpGet("/check")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]

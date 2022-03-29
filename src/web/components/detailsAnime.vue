@@ -32,6 +32,21 @@
                         <button @click="Download()" type="button" class="btn btn-danger"><i class="bi bi-cloud-download"></i></button>
                     </template>
                 </template>
+                <template v-else>
+                    <template v-if="loading">
+                        <button @click="ReDownload()" type="button" class="btn btn-warning">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </button>
+                    </template>
+                    <template v-else>
+                        <template v-if="sure == false">
+                            <button @click="ReDownload()" type="button" class="btn btn-warning">Re-Download</button>
+                        </template>
+                        <template v-else>
+                            <button @click="ReDownload()" type="button" class="btn btn-warning"><i class="bi bi-wrench-adjustable-circle"></i> Are you sure?</button>
+                        </template>
+                    </template>
+                </template>
             </div>
             <div class="card-body">
                 <h5 class="card-title">{{name}}</h5>
@@ -46,12 +61,12 @@
                     </template>
                     <template v-else-if="episode.stateDownload == 'completed'">
                         <div class="progress">
-                            <div class="progress-bar bg-success" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100">{{episode.percentualDownload}}%</div>
+                            <div class="progress-bar bg-success" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100">completed</div>
                         </div>
                     </template>
                     <template v-else-if="episode.stateDownload == 'failed'">
                         <div class="progress">
-                            <div class="progress-bar bg-danger" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100">{{episode.percentualDownload}}%</div>
+                            <div class="progress-bar bg-danger" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">failed</div>
                         </div>
                     </template>
                     <template v-else-if="episode.stateDownload == 'pending'">
@@ -83,6 +98,7 @@ export default {
             timer:1000,
             hide:"",
             episodes:[],
+
             loading: false,
             conflict: false,
             success:false,
@@ -90,6 +106,8 @@ export default {
             host:this.$config.ipAPI,
             port:this.$config.portAPI,
             protocol:this.$config.protocolAPI,
+
+            sure:false
         }
     },
     props:{
@@ -114,6 +132,34 @@ export default {
         },
         Close(){
             $nuxt.$emit('close', this.urlExternal);
+        },
+        ReDownload(){
+            if(this.sure == false)
+            {
+                this.sure = true;
+                return
+            }
+            this.loading = true;
+            this.$axios.put(`${this.protocol}://${this.host}:${this.port}/animesaturn/redownload`, JSON.stringify(this.episodes),
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(rs => {
+                    if(rs.status != 200){
+                        console.log('error reset');
+                    }
+                })
+                .catch(error => {
+                    if(error.message.includes('500')){
+                        console.log('error internal server api');
+                    }
+                })
+                .then(() => {
+                    this.loading = false;
+                    this.sure = false;
+                })
         },
         Download(){
             //get api external
@@ -164,6 +210,14 @@ export default {
                 }, 3000);
             },
             immediate: true
+        },
+        sure:{
+            handler(){
+                setTimeout(() => {
+                    if(this.sure == true)
+                        this.sure = false
+                }, 5000);
+            }
         }
     }
 }
