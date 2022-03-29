@@ -416,4 +416,5 @@ yarn-error.log
 
 ### Custom ###
 src/web/.env
+launchSettings.json
 # End

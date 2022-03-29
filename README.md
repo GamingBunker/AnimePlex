@@ -1,3 +1,7 @@
+#### MAIN: [![Docker Image CI Main](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml) 
+
+#### DEV: [![Docker Image CI Dev](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml/badge.svg?branch=dev)](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml)
+
 # Anime Plex 🎬
 Scarica le serie tv/film dal sito [AnimeSaturn](https://www.animesaturn.it/) e mette nella cartella Plex.
 
@@ -17,8 +21,8 @@ Questo progetto verrà utilizzato per gli utenti che vorranno visualizzare e sca
 ### Variabili globali:
 ```sh
 example:
-    HOST_API: "localhost",
-    PORT_API : "33333",
+    HOST_API: "localhost"
+    PORT_API : "33333"
     PROTOCOL_API: "https" or "http"
 ```
 
@@ -56,4 +60,7 @@ example:
     PASSWORD_RABBIT: "guest"
     ADDRESS_RABBIT: "localhost"
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
+    ADDRESS_API: "localhost"
+    PORT_API: "33333"
+    PROTOCOL_API: "http" or "https"
 ```
