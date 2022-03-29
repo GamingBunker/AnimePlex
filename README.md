@@ -21,8 +21,8 @@ Questo progetto verrà utilizzato per gli utenti che vorranno visualizzare e sca
 ### Variabili globali:
 ```sh
 example:
-    HOST_API: "localhost",
-    PORT_API : "33333",
+    HOST_API: "localhost"
+    PORT_API : "33333"
     PROTOCOL_API: "https" or "http"
 ```
 
@@ -60,4 +60,7 @@ example:
     PASSWORD_RABBIT: "guest"
     ADDRESS_RABBIT: "localhost"
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
+    ADDRESS_API: "localhost"
+    PORT_API: "33333"
+    PROTOCOL_API: "http" or "https"
 ```

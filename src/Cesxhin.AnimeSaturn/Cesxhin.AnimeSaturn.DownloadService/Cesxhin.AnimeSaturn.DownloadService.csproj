@@ -11,6 +11,12 @@
     <None Remove="C:\Users\matti\.nuget\packages\nlog.config\4.7.14\contentFiles\any\any\NLog.config" />
   </ItemGroup>
   <ItemGroup>
+    <_WebToolingArtifacts Remove="Properties\launchSettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Properties\launchSettings.json" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

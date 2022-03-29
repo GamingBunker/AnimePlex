@@ -126,6 +126,35 @@ export default {
         };
     },
     created() {
+      //get all api internal
+      this.$nuxt.$on("searchall", (name) => {
+          this.loading = true;
+          this.$axios.get(`${this.protocol}://${this.host}:${this.port}/anime`)
+            .then(rs => {
+
+              //reset
+              this.pages = [];
+              this.numberPageTotal = -1;
+              this.numberPageCurrent = 0;
+
+              //array to pages
+              this.SetPages(rs.data);
+
+              //init
+              this.urlExternal = false;
+              this.searchView = true;
+          })
+          .catch(error => {
+            if(error.message.includes('404'))
+              this.pages = [];
+            else
+              this.validateCertificate = true
+          })
+          .then(() => {
+            this.loading = false;
+          })
+      });
+
       //get api internal
       this.$nuxt.$on("search", (name) => {
           this.loading = true;

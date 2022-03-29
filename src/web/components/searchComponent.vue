@@ -2,10 +2,9 @@
     <div class="row center">
         <div class="input-group" style="margin: 5px 0px;">
             <input v-model="value" type="text" class="form-control" placeholder="name...">
-            <button @click="submit()" class="btn btn-outline-light" type="button" id="button-addon2">Search my database</button>
-            <template v-if="help">
-                <button @click="submitExternal()" class="btn btn-danger" type="button" id="button-addon2">Search on AnimeSaturn</button>
-            </template>
+            <button @click="searchInternalAll()" class="btn btn-warning" type="button" id="button-addon2">Search all my database</button>
+            <button @click="searchInternal()" class="btn btn-light" type="button" id="button-addon2">Search my database</button>
+            <button @click="submitExternal()" class="btn btn-danger" type="button" id="button-addon2">Search on AnimeSaturn</button>
         </div>
     </div>
 </template>
@@ -14,17 +13,18 @@
     export default {
         data(){
             return{
-                value:"",
-                help:false
+                value:""
             }
         },
         methods:{
-            submit(){
+            searchInternal(){
                 $nuxt.$emit('search', this.value)
-                this.help = true
             },
             submitExternal(){
                 $nuxt.$emit('searchExternal', this.value)
+            },
+            searchInternalAll(){
+                $nuxt.$emit('searchall', this.value)
             }
         }
     }

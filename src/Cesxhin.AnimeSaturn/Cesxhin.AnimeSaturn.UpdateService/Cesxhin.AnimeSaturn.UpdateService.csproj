@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker;Microsoft.NET.Sdk.Publish">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker;Microsoft.NET.Sdk.Publish">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>dotnet-Cesxhin.AnimeSaturn.UpdateService-E50840E9-7245-42A1-8435-6E9F962A6B72</UserSecretsId>
@@ -9,6 +9,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="C:\Users\matti\.nuget\packages\nlog.config\4.7.12\contentFiles\any\any\NLog.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <_WebToolingArtifacts Remove="Properties\launchSettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Properties\launchSettings.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NLog.config">
