@@ -52,18 +52,18 @@ namespace Cesxhin.AnimeSaturn.UpdateService
 
                 //download api
                 resultHttp = await client.GetAsync($"{_protocol}://{_address}:{_port}/anime");
-                if(resultHttp.IsSuccessStatusCode)
+                if (resultHttp.IsSuccessStatusCode)
                 {
 
                     //string to class object
                     listNameAnime = JsonSerializer.Deserialize<List<AnimeDTO>>(await resultHttp.Content.ReadAsStringAsync(), options);
 
                 }
-                else if(resultHttp.StatusCode == HttpStatusCode.NotFound)
+                else if (resultHttp.StatusCode == HttpStatusCode.NotFound)
                 {
                     logger.Warn("Not found any anime");
-                    
-                }else
+
+                } else
                 {
                     logger.Error("Can't get api anime, details: " + resultHttp.StatusCode);
                 }
@@ -75,12 +75,12 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                     List<EpisodeDTO> listNameEpisode = new List<EpisodeDTO>();
 
                     resultHttp = await client.GetAsync($"{_protocol}://{_address}:{_port}/episode/name/{anime.Name}");
-                    if(resultHttp.IsSuccessStatusCode)
+                    if (resultHttp.IsSuccessStatusCode)
                     {
                         //string to object class
                         listNameEpisode = JsonSerializer.Deserialize<List<EpisodeDTO>>(await resultHttp.Content.ReadAsStringAsync(), options);
                     }
-                    else if(resultHttp.StatusCode == HttpStatusCode.NotFound)
+                    else if (resultHttp.StatusCode == HttpStatusCode.NotFound)
                     {
                         continue;
                     }
@@ -95,14 +95,14 @@ namespace Cesxhin.AnimeSaturn.UpdateService
 
                         string filePath = $"{_folder}/{episode.IDAnime}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4";
                         logger.Debug($"check {filePath}");
-                        
+
                         //check integry file
                         if (episode.StateDownload == null || episode.StateDownload == "failed" || (!File.Exists(filePath) && episode.StateDownload != "pending"))
                         {
-                            if(await ConfirmStartDownloadAnime(episode))
+                            if (await ConfirmStartDownloadAnime(episode))
                             {
                                 logger.Info($"ok {episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}");
-                            }else
+                            } else
                             {
                                 logger.Info($"Error publish {episode.IDAnime} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}");
                             }
@@ -131,6 +131,13 @@ namespace Cesxhin.AnimeSaturn.UpdateService
 
                         //get all episodes
                         checkEpisodes = HtmlAnimeSaturn.GetEpisodes(anime.UrlPage, anime.Name);
+
+                        //check if null
+                        if (checkEpisodes == null)
+                        {
+                            logger.Error($"Can't download with this url, {anime.UrlPage}");
+                            continue;
+                        }
                     }
                     else
                     {
@@ -138,6 +145,13 @@ namespace Cesxhin.AnimeSaturn.UpdateService
 
                         //check new episode
                         checkEpisodes = HtmlAnimeSaturn.GetEpisodes(listNameEpisode[listNameEpisode.Count - 1].Referer, anime.Name);
+
+                        //check if null
+                        if (checkEpisodes == null)
+                        {
+                            logger.Error($"Can't download with this url, {listNameEpisode[listNameEpisode.Count - 1].Referer}");
+                            continue;
+                        }
                     }
 
                     listEpisodesAdd = new List<EpisodeDTO>(checkEpisodes);
@@ -154,7 +168,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                         }
                     }
 
-                    if(listEpisodesAdd.Count > 0)
+                    if (listEpisodesAdd.Count > 0)
                     {
                         //insert to db
                         using (var content = new StringContent(JsonSerializer.Serialize(listEpisodesAdd), System.Text.Encoding.UTF8, "application/json"))
