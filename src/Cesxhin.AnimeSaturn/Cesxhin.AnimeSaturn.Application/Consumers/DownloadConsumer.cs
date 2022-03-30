@@ -17,7 +17,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
     public class DownloadConsumer : IConsumer<EpisodeDTO>
     {
         //const
-        const int LIMIT_TIMEOUT = 5;
+        const int LIMIT_TIMEOUT = 10;
         //nlog
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -95,7 +95,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         private void Download(EpisodeDTO episode, string filePath)
         {
             //disable ssl
-            InitiateSSLTrust();
+            //InitiateSSLTrust(); disabeled temponary
 
             //timeout if not response one resource and close with status failed
             int timeout = 0;

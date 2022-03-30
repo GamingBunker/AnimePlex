@@ -38,7 +38,7 @@ services:
       - default
 
   api:
-    image: cesxhinanimesaturnapi
+    image: kju7pwd2/animeplex-api:dev
     restart: unless-stopped
     container_name: apiAnimeSaturn
     environment:
@@ -53,7 +53,7 @@ services:
       - default
 
   web:
-    image: cesxhinanimesaturnwebapp
+    image: kju7pwd2/animeplex-web:dev
     restart: unless-stopped
     container_name: WebAnimeSaturn
     environment:
@@ -70,7 +70,7 @@ services:
       - default
   
   updateservice:
-    image: cesxhinanimesaturnupdateservice
+    image: kju7pwd2/animeplex-updateservice:dev
     restart: unless-stopped
     container_name: updateService
     environment:
@@ -93,7 +93,7 @@ services:
       - default
 
   downloadservice:
-    image: cesxhinanimesaturndownloadservice
+    image: kju7pwd2/animeplex-downloadservice:dev
     restart: unless-stopped
     container_name: downloadService
     environment:
@@ -103,6 +103,9 @@ services:
       ADDRESS_RABBIT: ""
       LIMIT_CONSUMER_RABBIT: ""
       BASE_PATH: "/"
+      ADDRESS_API: ""
+      PORT_API: ""
+      PROTOCOL_API: ""
     volumes:
       - episodes:/
     depends_on:
@@ -111,20 +114,20 @@ services:
     networks:
       - default
   
-  plex:
-    image: lscr.io/linuxserver/plex
-    restart: unless-stopped
-    container_name: plex
-    ports:
-      - 32400:32400
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - VERSION=docker
-    volumes_from:
-      - downloadservice:rw    
-    networks:
-      - default
+#  plex:
+#    image: lscr.io/linuxserver/plex
+#    restart: unless-stopped
+#    container_name: plex
+#    ports:
+#      - 32400:32400
+#    environment:
+#      - PUID=1000
+#      - PGID=1000
+#      - VERSION=docker
+#    volumes_from:
+#      - downloadservice:rw    
+#    networks:
+#      - default
 
 networks:
   default:
