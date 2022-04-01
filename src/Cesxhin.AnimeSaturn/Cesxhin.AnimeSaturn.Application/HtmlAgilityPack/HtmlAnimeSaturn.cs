@@ -242,7 +242,6 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 
                         var contentM3u = M3U.Parse(sourceFiles);
                         string file = contentM3u.Warnings.First();
-                        string fileDownload = "";
 
                         playerUrl.PlaylistSources = file.Substring(file.LastIndexOf("./") + 1);
                         playerUrl.Resolution = playerUrl.PlaylistSources.Substring(1, playerUrl.PlaylistSources.IndexOf("p"));
@@ -259,8 +258,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     {
                         episodes.Add(new EpisodeDTO
                         {
-                            IDAnime = name,
-                            Referer = urlPage,
+                            AnimeId = name,
                             NumberEpisodeCurrent = numberEpisode,
                             BaseUrl = playerUrl.BaseUrl,
                             Playlist = playerUrl.Playlist,
@@ -274,9 +272,8 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     {
                         episodes.Add(new EpisodeDTO
                         {
-                            IDAnime = name,
+                            AnimeId = name,
                             UrlVideo = url,
-                            Referer = urlPage,
                             NumberEpisodeCurrent = numberEpisode,
                             NumberSeasonCurrent = numberSeason
 

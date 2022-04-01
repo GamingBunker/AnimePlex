@@ -1,4 +1,5 @@
-﻿using Cesxhin.AnimeSaturn.Application.Interfaces.Repositories;
+﻿using Cesxhin.AnimeSaturn.Application.Generic;
+using Cesxhin.AnimeSaturn.Application.Interfaces.Repositories;
 using Cesxhin.AnimeSaturn.Domain.Models;
 using NLog;
 using Npgsql;
@@ -11,7 +12,10 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
 {
     public class EpisodeRepository : IEpisodeRepository
     {
+        //log
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
         //get episode by id
@@ -21,8 +25,10 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             {
                 try
                 {
-                    return await connection.QueryAsync<Episode>(e => e.ID == id);
-                }catch(Exception e)
+                    var rs = await connection.QueryAsync<Episode>(e => e.ID == id);
+                    return ConvertGeneric<Episode>.ConvertIEnurableToListCollection(rs);
+                }
+                catch(Exception e)
                 {
                     logger.Error("Failed GetEpisodeByIDAsync, details error: " + e);
                     return null;
@@ -37,7 +43,8 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             {
                 try
                 {
-                    return await connection.ExecuteQueryAsync<Episode>($"SELECT * FROM episode WHERE idanime like '{name}' ORDER BY numberepisodecurrent ASC;");
+                    var rs = await connection.ExecuteQueryAsync<Episode>($"SELECT * FROM episode WHERE animeid like '{name}' ORDER BY numberepisodecurrent ASC;");
+                    return ConvertGeneric<Episode>.ConvertIEnurableToListCollection(rs);
                 }
                 catch(Exception e)
                 {
@@ -65,6 +72,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             }
         }
 
+        //reset StatusDownlod to null
         public async Task<Episode> ResetStatusDownloadEpisodesByIdAsync(Episode episode)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
@@ -82,6 +90,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             }
         }
 
+        //update percentualDownload
         public async Task<Episode> UpdateStateDownloadAsync(Episode episode)
         {
             using (var connection = new NpgsqlConnection(_connectionString))

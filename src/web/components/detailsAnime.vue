@@ -216,7 +216,7 @@ export default {
                 setTimeout(() => {
                     if(this.sure == true)
                         this.sure = false
-                }, 5000);
+                }, 1000);
             }
         }
     }

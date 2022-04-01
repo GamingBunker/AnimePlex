@@ -9,7 +9,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
 {
     public class EpisodeService : IEpisodeService
     {
+        //interfaces
         private readonly IEpisodeRepository _episodeRepository;
+
         public EpisodeService(IEpisodeRepository episodeRepository)
         {
             _episodeRepository = episodeRepository;
@@ -21,7 +23,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             var listEpisode = await _episodeRepository.GetEpisodeByIDAsync(id);
             foreach(var episode in listEpisode)
             {
-                return new EpisodeDTO().EpisodeToEpisodeDTO(episode);
+                return EpisodeDTO.EpisodeToEpisodeDTO(episode);
             }
             return null;
         }
@@ -37,7 +39,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
 
             foreach(var episode in listEpisode)
             {
-                episodes.Add(new EpisodeDTO().EpisodeToEpisodeDTO(episode));
+                episodes.Add(EpisodeDTO.EpisodeToEpisodeDTO(episode));
             }
 
             if(episodes.Count <= 0)
@@ -54,7 +56,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             if (episodeResult == null)
                 return null;
 
-            return new EpisodeDTO().EpisodeToEpisodeDTO(episodeResult);
+            return EpisodeDTO.EpisodeToEpisodeDTO(episodeResult);
         }
 
         //insert episodes
@@ -64,17 +66,19 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             foreach(var episode in episodes)
             {
                 var episodeResult = await _episodeRepository.InsertEpisodeAsync(new Episode().EpisodeDTOToEpisode(episode));
-                resultEpisodes.Add(new EpisodeDTO().EpisodeToEpisodeDTO(episodeResult));
+                resultEpisodes.Add(EpisodeDTO.EpisodeToEpisodeDTO(episodeResult));
             }
             return resultEpisodes;
         }
 
+        //reset StatusDownload to null
         public async Task<EpisodeDTO> ResetStatusDownloadEpisodesByIdAsync(EpisodeDTO episode)
         {
             var episodeResult = await _episodeRepository.ResetStatusDownloadEpisodesByIdAsync(new Episode().EpisodeDTOToEpisode(episode));
-            return new EpisodeDTO().EpisodeToEpisodeDTO(episodeResult);
+            return EpisodeDTO.EpisodeToEpisodeDTO(episodeResult);
         }
 
+        //update PercentualState
         public async Task<EpisodeDTO> UpdateStateDownloadAsync(EpisodeDTO episode)
         {
             var episodeResult = await _episodeRepository.UpdateStateDownloadAsync(new Episode().EpisodeDTOToEpisode(episode));
@@ -82,7 +86,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             if (episodeResult == null)
                 return null;
 
-            return new EpisodeDTO().EpisodeToEpisodeDTO(episodeResult);
+            return EpisodeDTO.EpisodeToEpisodeDTO(episodeResult);
         }
     }
 }

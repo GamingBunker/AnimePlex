@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.UpdateS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.DownloadService", "Cesxhin.AnimeSaturn.DownloadService\Cesxhin.AnimeSaturn.DownloadService.csproj", "{B8F48F77-5A92-4B8D-B56B-55AE64427652}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cesxhin.AnimeSaturn.UpgradeService", "Cesxhin.AnimeSaturn.UpgradeService\Cesxhin.AnimeSaturn.UpgradeService.csproj", "{B3AB1F94-7D06-4927-9CDE-8F6CDB9A725A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{B8F48F77-5A92-4B8D-B56B-55AE64427652}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8F48F77-5A92-4B8D-B56B-55AE64427652}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8F48F77-5A92-4B8D-B56B-55AE64427652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3AB1F94-7D06-4927-9CDE-8F6CDB9A725A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3AB1F94-7D06-4927-9CDE-8F6CDB9A725A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3AB1F94-7D06-4927-9CDE-8F6CDB9A725A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3AB1F94-7D06-4927-9CDE-8F6CDB9A725A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

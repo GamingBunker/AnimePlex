@@ -10,14 +10,11 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         [Map("id")]
         public int ID { get; set; }
 
-        [Map("idanime")]
-        public string IDAnime { get; set; }
+        [Map("animeid")]
+        public string AnimeId { get; set; }
 
         [Map("urlvideo")]
         public string UrlVideo { get; set; }
-
-        [Map("referer")]
-        public string Referer { get; set; }
 
         [Map("numberepisodecurrent")]
         public int NumberEpisodeCurrent { get; set; }
@@ -30,9 +27,6 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
 
         [Map("percentualdownload")]
         public int PercentualDownload { get; set; }
-
-        [Map("sizefile")]
-        public int SizeFile { get; set; }
 
         /*
          Download playlist: https://www.saturnspeed49.org/DDL/ANIME/HatarakuSaibou2/01/playlist.m3u8
@@ -65,14 +59,12 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
             return new Episode
             {
                 ID = episode.ID,
-                IDAnime = episode.IDAnime,
+                AnimeId = episode.AnimeId,
                 UrlVideo = episode.UrlVideo,
                 NumberEpisodeCurrent = episode.NumberEpisodeCurrent,
-                Referer = episode.Referer,
                 NumberSeasonCurrent = episode.NumberSeasonCurrent,
                 StateDownload = episode.StateDownload,
                 PercentualDownload = episode.PercentualDownload,
-                SizeFile = episode.SizeFile,
                 startNumberBuffer = episode.startNumberBuffer,
                 endNumberBuffer = episode.endNumberBuffer,
                 Resolution = episode.Resolution,
