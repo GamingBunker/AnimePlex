@@ -34,7 +34,7 @@ Questo progetto verrà utilizzato per esporre i dati in maniera facile e veloce 
 example:
     ASPNETCORE_ENVIRONMENT: Development
     DATABASE_CONNECTION: User ID=guest;Password=guest;Host=localhost;Port=33333;Database=db;
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
 ```
 ## 💾Update Service
 Questo progetto verrà utilizzato per controllare se sono presenti nel file locale se non ci sono, invia un messaggio a DownloadService che scarica l'episodio mancante.
@@ -45,7 +45,7 @@ example:
     USERNAME_RABBIT: "guest"
     PASSWORD_RABBIT: "guest"
     ADDRESS_RABBIT: "localhost"
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" require volume mounted
     ADDRESS_API: "localhost"
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
@@ -57,7 +57,7 @@ Questo progetto verrà utilizzato per scaricare i nuovi episodi
 ```sh
 example:
     DOTNET_ENVIRONMENT: Development
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
     ADDRESS_API: "localhost"
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
@@ -76,4 +76,5 @@ example:
     ADDRESS_API: "localhost"
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
+    require volume mounted
 ```
