@@ -5,17 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Released]
-## [0.2.0] - 29-03-2022
+## [0.2.0] - 01-04-2022
 ### Add
 - Tracking files and movements (modified class models and added new table)
 - Check Hash256
+- Browser support now Mobile
+- Add all description of an anime into card, if anime not already downloaded show a link for redirect original page with information
 
 ### Fixed
 - Improve call API
 - Improve conversion class model to class dto or reverse
+- If Anime already downloaded not show button for download episodes
 
 ### Changed
 - Split two part of UpdateService, UpdateService check integry files on local and UpgradeService check new or missing episodes into db
+- Buttons Search
+- Size paginations
 
 
 ## [0.1.2] - 29-03-2022

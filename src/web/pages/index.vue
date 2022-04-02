@@ -38,15 +38,13 @@
       <!-- search -->
       <div v-else-if="searchView">
 
-        <!-- bar pages -->
+        <!-- pagination -->
         <nav style="margin: 10px 0px;">
           <template v-if="numberPageTotal != -1">
-            <ul class="pagination nav justify-content-end">
-              <template v-if="numberPageCurrent > 0">
-                <div>
-                  <li class="page-item"><a @click="Previous()" class="page-link" style="margin: 0px 2px;" href="#">Previous</a></li>
-                </div>
-              </template>
+            <ul class="pagination nav justify-content-center pagination-sm">
+              <div>
+                <li class="page-item"><a @click="Previous()" class="page-link" style="margin: 0px 2px;" href="#">Previous</a></li>
+              </div>
               <div v-for="numberPage in (numberPageTotal + 1)" :key="numberPage">
                   <template v-if="(numberPage-1) == numberPageCurrent">
                     <li class="page-item active" style="margin: 0px 2px;">
@@ -59,11 +57,9 @@
                     </li>
                   </template>
               </div>
-              <template v-if="numberPageCurrent < numberPageTotal">
-                <div>
-                  <li class="page-item"><a @click="Next()" class="page-link" style="margin: 0px 2px;" href="#">Next</a></li>
-                </div>
-              </template>
+              <div>
+                <li class="page-item"><a @click="Next()" class="page-link" style="margin: 0px 2px;" href="#">Next</a></li>
+              </div>
             </ul>
           </template>
         </nav>
@@ -80,17 +76,18 @@
       <div v-else class="row justify-content-center">
         <DetailsAnime
           :name="payload.name" 
-          :date="payload.daterelease" 
+          :date="new Date(Date.parse(payload.dateRelease)).getDay()+'-'+new Date(Date.parse(payload.dateRelease)).getMonth()+'-'+new Date(Date.parse(payload.dateRelease)).getFullYear()" 
           :description="payload.description" 
           :image="payload.image" 
-          :status="payload.status" 
+          :status="payload.finish" 
           :studio="payload.studio" 
           :urlPage="payload.urlPage"
-          :duration="payload.durationepisode"
-          :totalEpisode="payload.episodetotal"
+          :duration="payload.durationEpisode"
+          :totalEpisode="payload.episodeTotal"
           :vote="payload.vote"
           :urlPageDownload="payload.urlPageDownload"
           :urlExternal="urlExternal"
+          :exists="payload.exists"
         />
       </div>
     </div>

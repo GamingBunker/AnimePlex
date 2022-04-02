@@ -1,14 +1,26 @@
 <template>
-    <div class="card" style="width: 18rem; padding: 0px; margin-right: 7px; margin-left: 3px; margin-bottom:10px">
-        <template v-if="urlExternal == false">
-            <img :src="'data:image/jpg;base64,'+ConvertBase64(image)" class="card-img-top rounded-top" width="400" height="450" style="object-fit: cover;">
-        </template>
-        <template v-else>
-            <img :src="image" class="card-img-top rounded-top" width="400" height="450" style="object-fit: cover;">
-        </template>
+    <div class="card" style="width: 18rem; padding: 0px; margin-right: 7px; margin-left: 3px; margin-bottom:10px;">
+        <div class="row">
+            <div class="col">
+                <template v-if="urlExternal == false">
+                    <img :src="'data:image/jpg;base64,'+ConvertBase64(image)" class="card-img-top rounded-top" width="400" height="450" style="object-fit: cover;">
+                </template>
+                <template v-else>
+                    <img :src="image" class="card-img-top rounded-top" width="400" height="450" style="object-fit: cover;">
+                </template>
+            </div>
+        </div>
         <div class="card-body">
-            <h5 class="card-title">{{name}}</h5>
-            <a @click="viewDetails()" class="btn btn-primary">Details</a>
+            <div class="row">
+                <div class="col">
+                    <h5 class="card-title">{{name}}</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a @click="viewDetails()" class="btn btn-primary">Details</a>
+                </div>
+            </div>
         </div>
     </div>
 </template>

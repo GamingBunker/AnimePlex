@@ -1,10 +1,12 @@
 <template>
     <div class="row center">
         <div class="input-group" style="margin: 5px 0px;">
-            <input v-model="value" type="text" class="form-control" placeholder="name...">
-            <button @click="searchInternalAll()" class="btn btn-warning" type="button" id="button-addon2">Search all my database</button>
-            <button @click="searchInternal()" class="btn btn-light" type="button" id="button-addon2">Search my database</button>
-            <button @click="submitExternal()" class="btn btn-danger" type="button" id="button-addon2">Search on AnimeSaturn</button>
+            <input v-model="value" type="text" class="form-control" placeholder="name..." style="width: 200px;">
+        </div>
+        <div class="btn-group" role="group" style="height: 40px">
+            <button @click="searchInternalAll()" class="btn btn-warning" type="button" style="width: 33%;"><i class="bi bi-card-list"></i></button>
+            <button @click="searchInternal()" class="btn btn-light" type="button" style="width: 33%;"><i class="bi bi-search"></i></button>
+            <button @click="submitExternal()" class="btn btn-danger" type="button" style="background-color: blueviolet; border-color: blueviolet; width: 33%;"><img src="../assets/img/logo_animesaturn.png" width="50px" style="object-fit: cover; margin-top: -2px;"></button>
         </div>
     </div>
 </template>

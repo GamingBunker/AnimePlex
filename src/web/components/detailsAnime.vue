@@ -1,7 +1,7 @@
 <template>
-    <div style="width: 40%; margin: 20px;">
+    <div style="width: 500px; margin: 20px;">
         <!-- auto refresh api  -->
-        <label hidden>{{hide}}</label>
+        <input type="hidden" hidden :value="hide">
         
         <!-- message error  -->
         <template v-if="conflict">
@@ -22,7 +22,7 @@
         <div class="card mb-3">
             <div class="card-header">
                 <button @click="Close()" type="button" class="btn btn-primary"><i class="bi bi-arrow-left"></i></button>
-                <template v-if="urlPageDownload">
+                <template v-if="urlPageDownload && exists == false">
                     <template v-if="loading">
                         <button @click="Download()" type="button" class="btn btn-danger">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -32,7 +32,7 @@
                         <button @click="Download()" type="button" class="btn btn-danger"><i class="bi bi-cloud-download"></i></button>
                     </template>
                 </template>
-                <template v-else>
+                <template v-else-if="exists == null">
                     <template v-if="loading">
                         <button @click="ReDownload()" type="button" class="btn btn-warning">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -47,11 +47,61 @@
                         </template>
                     </template>
                 </template>
+                <template v-else>
+                    <button type="button" class="btn btn-success"><i class="bi bi-bookmark-check"></i></button>
+                </template>
             </div>
             <div class="card-body">
-                <h5 class="card-title">{{name}}</h5>
-                <p class="card-text">{{description}}</p>
-                <p class="card-text"><small class="text-muted"></small></p>
+                <h3 class="card-title">{{name}}</h3>
+
+                <template v-if="urlExternal">
+                    <div class="d-grid gap-1">
+                        <a class="btn btn-secondary" :href="urlPageDownload" target="_blank" role="button"><i class="bi bi-link"></i></a>
+                    </div>
+                </template>
+
+                <template v-if="date != 'NaN-NaN-NaN'">
+                    <div>
+                        <h6>Date release:</h6>
+                        <p class="card-text">{{date}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="vote">
+                    <div>
+                        <h6>Vote:</h6>
+                        <p class="card-text">{{vote}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="studio">
+                    <div>
+                        <h6>Studio:</h6>
+                        <p class="card-text">{{studio}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="duration">
+                    <div>
+                        <h6>Duration:</h6>
+                        <p class="card-text">{{duration}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="totalEpisode">
+                    <div>
+                        <h6>Total number episodes:</h6>
+                        <p class="card-text">{{totalEpisode}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="description">
+                    <div>
+                        <h6>Description:</h6>
+                        <p class="card-text">{{description}}</p>
+                    </div>
+                <hr>
+                </template>
                 <div v-for="episode in episodes" :key="episode.id">
                     {{episode.idAnime}} episode: {{episode.numberEpisodeCurrent}}
                     <template v-if="episode.stateDownload == 'downloading'">
@@ -113,16 +163,17 @@ export default {
     props:{
         name:String,
         description:String,
-        date:Date,
+        date:String,
         vote:String,
         studio:String,
         image:String,
-        status:Boolean,
+        finish:Boolean,
         urlPage:String,
         duration:String,
-        totalEpisode:String,
+        totalEpisode:Number,
         urlPageDownload:String,
-        urlExternal:Boolean
+        urlExternal:Boolean,
+        exists:Boolean
     },
 
     methods: {

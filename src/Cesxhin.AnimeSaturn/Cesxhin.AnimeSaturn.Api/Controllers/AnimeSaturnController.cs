@@ -1,4 +1,5 @@
-﻿using Cesxhin.AnimeSaturn.Application.Generic;
+﻿using Cesxhin.AnimeSaturn.Application.Exceptions;
+using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Domain.DTO;
@@ -299,7 +300,14 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                     List<AnimeUrlDTO> list = new List<AnimeUrlDTO>();
                     foreach (var animeUrl in animeUrls)
                     {
-                        list.Add(new AnimeUrlDTO().AnimeToAnimeUrlDTO(animeUrl));
+                        var animeUrlDTO = new AnimeUrlDTO().AnimeToAnimeUrlDTO(animeUrl);
+
+                        //check if already exists
+                        var anime = await _episodeService.GetEpisodesByNameAsync(animeUrlDTO.Name);
+                        if(anime != null)
+                            animeUrlDTO.Exists = true;
+
+                        list.Add(animeUrlDTO);
                     }
                     return Ok(list);
                 }
