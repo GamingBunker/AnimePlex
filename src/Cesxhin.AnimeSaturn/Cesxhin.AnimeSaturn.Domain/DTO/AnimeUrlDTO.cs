@@ -8,6 +8,8 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string UrlPageDownload { get; set; }
         public string Image { get; set; }
 
+        public bool Exists { get; set; } = false;
+
         public AnimeUrlDTO AnimeToAnimeUrlDTO(AnimeUrl anime)
         {
             return new AnimeUrlDTO

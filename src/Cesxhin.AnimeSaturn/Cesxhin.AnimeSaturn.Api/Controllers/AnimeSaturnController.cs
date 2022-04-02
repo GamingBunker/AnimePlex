@@ -1,8 +1,10 @@
-﻿using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
+﻿using Cesxhin.AnimeSaturn.Application.Generic;
+using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,12 +14,19 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
     [ApiController]
     public class AnimeSaturnController : ControllerBase
     {
+        //interfaces
         private readonly IAnimeService _animeService;
         private readonly IEpisodeService _episodeService;
-        public AnimeSaturnController(IAnimeService animeService, IEpisodeService episodeService)
+        private readonly IEpisodeRegisterService _episodeRegisterService;
+
+        //env
+        private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH");
+
+        public AnimeSaturnController(IAnimeService animeService, IEpisodeService episodeService, IEpisodeRegisterService episodeRegisterService)
         {
             _animeService = animeService;
             _episodeService = episodeService;
+            _episodeRegisterService = episodeRegisterService;
         }
 
         //get list all anime without filter
@@ -117,8 +126,10 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 var listEpisodes = await _episodeService.GetEpisodesByNameAsync(name);
+
                 if (listEpisodes == null)
                     return NotFound();
+
                 return Ok(listEpisodes);
             }
             catch
@@ -140,6 +151,29 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
                 if (episode == null)
                     return NotFound();
+
+                return Ok(episode);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        //get one episode by id
+        [HttpGet("/episode/register/episodeid/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeRegisterDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetEpisodeRegisterByEpisodeId(int id)
+        {
+            try
+            {
+                var episode = await _episodeRegisterService.GetEpisodeRegisterByEpisodeId(id);
+
+                if (episode == null)
+                    return NotFound();
+
                 return Ok(episode);
             }
             catch
@@ -171,7 +205,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //insert list episode
+        //insert list episodes
         [HttpPost("/episodes")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(IEnumerable<EpisodeDTO>))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -194,8 +228,50 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //insert list episodesRegisters
+        [HttpPost("/episodes/registers")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(IEnumerable<EpisodeRegisterDTO>))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PutEpisodesRegisters(List<EpisodeRegisterDTO> episodesRegisters)
+        {
+            try
+            {
+                //insert
+                var episodeResult = await _episodeRegisterService.InsertEpisodesRegistersAsync(episodesRegisters);
+
+                if (episodeResult == null)
+                    return Conflict();
+
+                return Created("none", episodeResult);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        //put metadata into db
+        [HttpPut("/episode/register")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeRegisterDTO))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UpdateEpisodeRegister(EpisodeRegisterDTO episodeRegister)
+        {
+            try
+            {
+                var rs = await _episodeRegisterService.UpdateEpisodeRegisterAsync(episodeRegister);
+                return Ok(rs);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
         //update status of someone episode
         [HttpPut("/statusDownload")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeDTO))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> PutUpdateStateDownload(EpisodeDTO episode)
         {
             try
@@ -223,7 +299,14 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                     List<AnimeUrlDTO> list = new List<AnimeUrlDTO>();
                     foreach (var animeUrl in animeUrls)
                     {
-                        list.Add(new AnimeUrlDTO().AnimeToAnimeUrlDTO(animeUrl));
+                        var animeUrlDTO = new AnimeUrlDTO().AnimeToAnimeUrlDTO(animeUrl);
+
+                        //check if already exists
+                        var anime = await _episodeService.GetEpisodesByNameAsync(animeUrlDTO.Name);
+                        if(anime != null)
+                            animeUrlDTO.Exists = true;
+
+                        list.Add(animeUrlDTO);
                     }
                     return Ok(list);
                 }
@@ -238,7 +321,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
         //put metadata into db
         [HttpPost("/animesaturn/download")]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AnimeUrlDTO))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type=typeof(AnimeDTO))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DownloadAnimeByUrlPage(DownloadDTO download)
@@ -248,14 +331,41 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 var anime = HtmlAnimeSaturn.GetAnime(download.Url);
                 var episodes = HtmlAnimeSaturn.GetEpisodes(download.Url, anime.Name);
 
-                //insert
+                //insert anime
                 var animeResult = await _animeService.InsertAnimeAsync(anime);
 
                 if (animeResult == null)
                     return Conflict();
 
-                //insert
+                //insert episodes
                 var episodeResult = await _episodeService.InsertEpisodesAsync(episodes);
+
+                if (episodeResult == null)
+                    return Conflict();
+
+                episodes = ConvertGeneric<EpisodeDTO>.ConvertIEnurableToListCollection(episodeResult);
+
+              
+                var listEpisodeRegister = new List<EpisodeRegisterDTO>();
+                string formatNumberView;
+
+                foreach (var episode in episodes)
+                {
+                    //check max space numbers
+                    formatNumberView = "D2"; //default
+                    if (episode.NumberEpisodeCurrent > 99)
+                        formatNumberView = "D3";
+                    else if (episode.NumberEpisodeCurrent > 999)
+                        formatNumberView = "D4";
+
+                    listEpisodeRegister.Add(new EpisodeRegisterDTO{
+                        EpisodeId = episode.ID,
+                        EpisodePath = $"{_folder}/{episode.AnimeId}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4"
+                    });
+                }
+
+                //insert episodesRegisters
+                var episodeRegisterResult = await _episodeRegisterService.InsertEpisodesRegistersAsync(listEpisodeRegister);
 
                 if (episodeResult == null)
                     return Conflict();
@@ -298,6 +408,28 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 return Ok("Ok");
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        //put metadata into db
+        [HttpGet("/all")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<GenericDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var list = await _animeService.GetAnimeAllWithAllAsync();
+
+                if(list == null)
+                    return NotFound();
+
+                return Ok(list);
             }
             catch
             {

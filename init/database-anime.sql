@@ -2,7 +2,7 @@ CREATE DATABASE animePlex;
 
 CREATE TABLE anime
 (
-    name varchar(250) primary key,
+    name varchar(250) primary key not null,
     studio varchar(250),
     description text,
     vote varchar(10),
@@ -16,14 +16,12 @@ CREATE TABLE anime
 
 CREATE TABLE episode
 (
-    id serial primary key,
-    idAnime  varchar(250) REFERENCES anime(name),
-    referer text not null,
+    id serial primary key not null,
+    animeId  varchar(250) REFERENCES anime(name),
     numberEpisodeCurrent int not null,
     numberSeasonCurrent int default 1,
     stateDownload varchar(100),
-    percentualDownload int default -0,
-    sizeFile int not null,
+    percentualDownload int default 0,
 
     urlVideo text default null,
 
@@ -32,6 +30,13 @@ CREATE TABLE episode
     resolution varchar(250),
     playlistSources varchar(250),
     startNumberFrame int,
-    endNumberFrame int,
+    endNumberFrame int
+);
 
+CREATE TABLE episodeRegister
+(
+    id serial primary key not null,
+    episodeId integer REFERENCES episode(id) not null,
+    episodePath varchar(500),
+    episodeHash varchar(64)
 );

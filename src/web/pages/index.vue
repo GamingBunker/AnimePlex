@@ -16,9 +16,9 @@
       </div>
 
       <!-- validate cert -->
-      <template v-if="validateCertificate">
+      <!-- <template v-if="validateCertificate">
         <a class="btn btn-danger" :href="protocol+'://'+host+':'+port+'/check'" role="button">Validate API</a>
-      </template>
+      </template> -->
       
       <!-- animation loading pages -->
       <div v-if="loading" class="d-flex flex-row flex-wrap justify-content-center"  style="padding-top: 60px;">
@@ -38,15 +38,13 @@
       <!-- search -->
       <div v-else-if="searchView">
 
-        <!-- bar pages -->
+        <!-- pagination -->
         <nav style="margin: 10px 0px;">
           <template v-if="numberPageTotal != -1">
-            <ul class="pagination nav justify-content-end">
-              <template v-if="numberPageCurrent > 0">
-                <div>
-                  <li class="page-item"><a @click="Previous()" class="page-link" style="margin: 0px 2px;" href="#">Previous</a></li>
-                </div>
-              </template>
+            <ul class="pagination nav justify-content-center pagination-sm">
+              <div>
+                <li class="page-item"><a @click="Previous()" class="page-link" style="margin: 0px 2px;" href="#"><i class="bi bi-arrow-left"></i></a></li>
+              </div>
               <div v-for="numberPage in (numberPageTotal + 1)" :key="numberPage">
                   <template v-if="(numberPage-1) == numberPageCurrent">
                     <li class="page-item active" style="margin: 0px 2px;">
@@ -59,11 +57,9 @@
                     </li>
                   </template>
               </div>
-              <template v-if="numberPageCurrent < numberPageTotal">
-                <div>
-                  <li class="page-item"><a @click="Next()" class="page-link" style="margin: 0px 2px;" href="#">Next</a></li>
-                </div>
-              </template>
+              <div>
+                <li class="page-item"><a @click="Next()" class="page-link" style="margin: 0px 2px;" href="#"><i class="bi bi-arrow-right"></i></a></li>
+              </div>
             </ul>
           </template>
         </nav>
@@ -80,17 +76,18 @@
       <div v-else class="row justify-content-center">
         <DetailsAnime
           :name="payload.name" 
-          :date="payload.daterelease" 
+          :date="new Date(Date.parse(payload.dateRelease)).getDay()+'-'+new Date(Date.parse(payload.dateRelease)).getMonth()+'-'+new Date(Date.parse(payload.dateRelease)).getFullYear()" 
           :description="payload.description" 
           :image="payload.image" 
-          :status="payload.status" 
+          :status="payload.finish" 
           :studio="payload.studio" 
           :urlPage="payload.urlPage"
-          :duration="payload.durationepisode"
-          :totalEpisode="payload.episodetotal"
+          :duration="payload.durationEpisode"
+          :totalEpisode="payload.episodeTotal"
           :vote="payload.vote"
           :urlPageDownload="payload.urlPageDownload"
           :urlExternal="urlExternal"
+          :exists="payload.exists"
         />
       </div>
     </div>
@@ -122,7 +119,7 @@ export default {
             port:this.$config.portAPI,
             protocol:this.$config.protocolAPI,
 
-            validateCertificate:false
+            //validateCertificate:false
         };
     },
     created() {
@@ -147,8 +144,8 @@ export default {
           .catch(error => {
             if(error.message.includes('404'))
               this.pages = [];
-            else
-              this.validateCertificate = true
+            //else
+              //this.validateCertificate = true
           })
           .then(() => {
             this.loading = false;
@@ -176,8 +173,8 @@ export default {
           .catch(error => {
             if(error.message.includes('404'))
               this.pages = [];
-            else
-              this.validateCertificate = true
+            //else
+              //this.validateCertificate = true
           })
           .then(() => {
             this.loading = false;
@@ -205,8 +202,8 @@ export default {
           .catch(error => {
             if(error.message.includes('404'))
               this.pages = [];
-            else
-              this.validateCertificate = true
+            //else
+              //this.validateCertificate = true
           })
           .then(() => {
             this.loading = false;

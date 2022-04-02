@@ -71,3 +71,25 @@ jobs:
         file: src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.UpdateService/Dockerfile
         push: true
         tags: ${{ steps.meta3.outputs.tags }}
+
+    - name: Build the Docker image DownloadService
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.DownloadService/Dockerfile
+        push: true
+        tags: ${{ steps.meta2.outputs.tags }}
+
+    - name: Extract metadata (tags, labes) for Docker UpgradeService
+      id: meta4
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ secrets.DOCKER_USER }}/animeplex-upgradeservice
+        
+    - name: Build the Docker image UpgradeService
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: src/Cesxhin.AnimeSaturn/Cesxhin.AnimeSaturn.UpgradeService/Dockerfile
+        push: true
+        tags: ${{ steps.meta4.outputs.tags }}

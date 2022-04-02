@@ -9,6 +9,7 @@ Scarica le serie tv/film dal sito [AnimeSaturn](https://www.animesaturn.it/) e m
 Il progetto si suddivide in 4 progetti:
 - 🧮Api Server (C#)
 - 💾Update Service (C#)
+- 💽Upgrade Service (C#)
 - 📩Download Server (C#)
 - 🌐Web Server([Nuxtjs](https://nuxtjs.org/))
 
@@ -18,7 +19,7 @@ Servizi utilizzati:
 
 ## 🌐Web Client
 Questo progetto verrà utilizzato per gli utenti che vorranno visualizzare e scaricare gli episodi.
-### Variabili globali:
+### Variabili globali richiesti:
 ```sh
 example:
     HOST_API: "localhost"
@@ -28,30 +29,43 @@ example:
 
 ## 🧮Api Server
 Questo progetto verrà utilizzato per esporre i dati in maniera facile e veloce con il database postgresql.
-### Variabili globali:
+### Variabili globali richiesti:
 ```sh
 example:
     ASPNETCORE_ENVIRONMENT: Development
     DATABASE_CONNECTION: User ID=guest;Password=guest;Host=localhost;Port=33333;Database=db;
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
 ```
 ## 💾Update Service
-Questo progetto verrà utilizzato per dare il via a scaricare gli episodi desiderati dagli utenti, nel frattempo può anche scaricare nuovi episodi appena usciranno.
-### Variabili globali:
+Questo progetto verrà utilizzato per controllare se sono presenti nel file locale se non ci sono, invia un messaggio a DownloadService che scarica l'episodio mancante.
+### Variabili globali richiesti:
 ```sh
 example:
     DOTNET_ENVIRONMENT: Development
     USERNAME_RABBIT: "guest"
     PASSWORD_RABBIT: "guest"
     ADDRESS_RABBIT: "localhost"
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" require volume mounted
     ADDRESS_API: "localhost"
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
     TIME_REFRESH: "60000" <-- milliseconds
 ```
-
+## 💽Upgrade Service (C#)
+Questo progetto verrà utilizzato per scaricare i nuovi episodi
+### Variabili globali richiesti:
+```sh
+example:
+    DOTNET_ENVIRONMENT: Development
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
+    ADDRESS_API: "localhost"
+    PORT_API: "33333"
+    PROTOCOL_API: "http" or "https"
+    TIME_REFRESH: "60000" <-- milliseconds
+```
 ## 📩Download Server
 Questo progetto verrà utilizzato per scaricare i video e mettere nella cartella.
+### Variabili globali richiesti:
 ```sh
 example:
     DOTNET_ENVIRONMENT: Development
@@ -59,8 +73,8 @@ example:
     USERNAME_RABBIT: "guest"
     PASSWORD_RABBIT: "guest"
     ADDRESS_RABBIT: "localhost"
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
     ADDRESS_API: "localhost"
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
+    require volume mounted
 ```

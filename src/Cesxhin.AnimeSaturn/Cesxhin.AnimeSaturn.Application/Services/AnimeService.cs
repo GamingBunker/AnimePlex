@@ -9,26 +9,76 @@ namespace Cesxhin.AnimeSaturn.Application.Services
 {
     public class AnimeService : IAnimeService
     {
+        //interfaces
         private readonly IAnimeRepository _animeRepository;
-        public AnimeService(IAnimeRepository animeRepository)
+        private readonly IEpisodeRepository _episodeRepository;
+        private readonly IEpisodeRegisterRepository _episodeRegisterRepository;
+
+        public AnimeService(IAnimeRepository animeRepository, IEpisodeRepository episodeRepository, IEpisodeRegisterRepository episodeRegisterRepository)
         {
             _animeRepository = animeRepository;
+            _episodeRepository = episodeRepository;
+            _episodeRegisterRepository = episodeRegisterRepository;
         }
 
         //get all anime
         public async Task<IEnumerable<AnimeDTO>> GetAnimeAllAsync()
         {
             List<AnimeDTO> animes = new List<AnimeDTO>();
-
             var listAnime = await _animeRepository.GetAnimeAllAsync();
-            foreach (var anime in listAnime)
-            {
-                animes.Add(new AnimeDTO().AnimeToAnimeDTO(anime));
-            }
-            if (animes.Count <= 0)
+
+            if (listAnime == null || listAnime.Count <= 0)
                 return null;
 
+            foreach (var anime in listAnime)
+            {
+                animes.Add(AnimeDTO.AnimeToAnimeDTO(anime));
+            }
+
             return animes;
+        }
+
+        //get all tables
+        public async Task<IEnumerable<GenericDTO>> GetAnimeAllWithAllAsync()
+        {
+            List<GenericDTO> listGenericDTO = new List<GenericDTO>();
+            List<EpisodeDTO> listEpisodeDTO = new List<EpisodeDTO>();
+            List<EpisodeRegisterDTO> listEpisodeRegisterDTO = new List<EpisodeRegisterDTO>();
+
+            var listAnime = await _animeRepository.GetAnimeAllAsync();
+            if (listAnime == null)
+                return null;
+
+            //anime
+            foreach (var anime in listAnime)
+            {
+                var episodes = await _episodeRepository.GetEpisodesByNameAsync(anime.Name);
+
+                //episodes
+                foreach (var episode in episodes)
+                {
+                    var episodesRegisters = await _episodeRegisterRepository.GetEpisodeRegisterByEpisodeId(episode.ID);
+
+                    //get first episodeRegister
+                    foreach(var episodeRegister in episodesRegisters)
+                        listEpisodeRegisterDTO.Add(EpisodeRegisterDTO.EpisodeRegisterToEpisodeRegisterDTO(episodeRegister));
+
+                    listEpisodeDTO.Add(EpisodeDTO.EpisodeToEpisodeDTO(episode));
+                }
+
+                listGenericDTO.Add(new GenericDTO
+                {
+                    Anime = AnimeDTO.AnimeToAnimeDTO(anime),
+                    Episodes = listEpisodeDTO,
+                    EpisodeRegister = listEpisodeRegisterDTO
+                });
+
+                //reset
+                listEpisodeDTO = new List<EpisodeDTO>();
+                listEpisodeRegisterDTO = new List<EpisodeRegisterDTO>();
+            }
+
+            return listGenericDTO;
         }
 
         //get anime by name
@@ -37,31 +87,29 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             var listAnime = await _animeRepository.GetAnimeByNameAsync(name);
             foreach(var anime in listAnime)
             {
-                return new AnimeDTO().AnimeToAnimeDTO(anime);
+                return AnimeDTO.AnimeToAnimeDTO(anime);
             }
 
             //not found
             return null;
         }
 
+        //get list anime
         public async Task<IEnumerable<AnimeDTO>> GetMostAnimeByNameAsync(string name)
         {
             List<AnimeDTO> animeDTO = new List<AnimeDTO>();
 
             var listAnime = await _animeRepository.GetMostAnimeByNameAsync(name);
 
-            if (listAnime == null)
+            if (listAnime == null || listAnime.Count <= 0)
                 return null;
 
             foreach (var anime in listAnime)
             {
-                animeDTO.Add(new AnimeDTO().AnimeToAnimeDTO(anime));
+                animeDTO.Add(AnimeDTO.AnimeToAnimeDTO(anime));
             }
 
-            if (animeDTO.Count > 0)
-                return animeDTO;
-            else
-                return null;
+            return animeDTO;
         }
 
         //insert one anime
@@ -73,7 +121,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             if (animeResult == null)
                 return null;
 
-            return new AnimeDTO().AnimeToAnimeDTO(animeResult);
+            return AnimeDTO.AnimeToAnimeDTO(animeResult);
         }
     }
 }

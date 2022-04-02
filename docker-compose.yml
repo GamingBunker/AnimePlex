@@ -44,6 +44,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       DATABASE_CONNECTION: User ID=mattia;Password=mattia!ceschin@postgres;Host=postgres;Port=5432;Database=animeSaturn;
+      BASE_PATH: "/"
     ports:
       - 5001:80
     depends_on:
@@ -92,6 +93,23 @@ services:
     networks:
       - default
 
+  upgradeservice:
+      image: kju7pwd2/animeplex-upgradeservice:dev
+      restart: unless-stopped
+      container_name: upgradeService
+      environment:
+        DOTNET_ENVIRONMENT: Development
+        BASE_PATH: "/"
+        ADDRESS_API: ""
+        PORT_API: ""
+        PROTOCOL_API: ""
+        TIME_REFRESH: ""
+      depends_on:
+        - api
+      hostname: updateservice
+      networks:
+        - default
+
   downloadservice:
     image: kju7pwd2/animeplex-downloadservice:dev
     restart: unless-stopped
@@ -102,7 +120,6 @@ services:
       PASSWORD_RABBIT: ""
       ADDRESS_RABBIT: ""
       LIMIT_CONSUMER_RABBIT: ""
-      BASE_PATH: "/"
       ADDRESS_API: ""
       PORT_API: ""
       PROTOCOL_API: ""
@@ -110,6 +127,7 @@ services:
       - episodes:/
     depends_on:
       - rabbit
+      - api
     hostname: downloadservice
     networks:
       - default

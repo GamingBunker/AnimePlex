@@ -10,6 +10,7 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
         Task<IEnumerable<AnimeDTO>> GetAnimeAllAsync();
         Task<AnimeDTO> GetAnimeByNameAsync(string name);
         Task<IEnumerable<AnimeDTO>> GetMostAnimeByNameAsync(string name);
+        Task<IEnumerable<GenericDTO>> GetAnimeAllWithAllAsync();
 
         //insert
         Task<AnimeDTO> InsertAnimeAsync(AnimeDTO anime);

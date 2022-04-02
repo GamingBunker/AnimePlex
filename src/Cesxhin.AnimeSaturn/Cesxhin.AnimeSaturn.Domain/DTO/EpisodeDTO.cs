@@ -5,14 +5,12 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
     public class EpisodeDTO
     {
         public int ID { get; set; }
-        public string IDAnime { get; set; }
+        public string AnimeId { get; set; }
         public string UrlVideo { get; set; }
-        public string Referer { get; set; }
         public int NumberEpisodeCurrent { get; set; }
         public int NumberSeasonCurrent { get; set; }
         public string StateDownload { get; set; }
         public int PercentualDownload { get; set; }
-        public int SizeFile { get; set; }
 
         /*
          Download playlist: https://www.saturnspeed49.org/DDL/ANIME/HatarakuSaibou2/01/playlist.m3u8
@@ -28,19 +26,17 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public int startNumberBuffer { get; set; } = 0;
         public int endNumberBuffer { get; set; }
 
-        public EpisodeDTO EpisodeToEpisodeDTO(Episode episode)
+        public static EpisodeDTO EpisodeToEpisodeDTO(Episode episode)
         {
             return new EpisodeDTO
             {
                 ID = episode.ID,
-                IDAnime = episode.IDAnime,
+                AnimeId = episode.AnimeId,
                 UrlVideo = episode.UrlVideo,
                 NumberEpisodeCurrent = episode.NumberEpisodeCurrent,
-                Referer = episode.Referer,
                 NumberSeasonCurrent = episode.NumberSeasonCurrent,
                 StateDownload = episode.StateDownload,
                 PercentualDownload = episode.PercentualDownload,
-                SizeFile = episode.SizeFile,
                 BaseUrl = episode.BaseUrl,
                 Playlist = episode.Playlist,
                 Resolution = episode.Resolution,
