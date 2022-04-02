@@ -91,9 +91,10 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                         listEpisodeRegister = new List<EpisodeRegisterDTO>();
 
                         string formatNumberView;
-                        string pathDefault = null;
+                        string pathDefault = null; 
+                        string path = null;
 
-                        if(blacklist.Count > 0)
+                        if (blacklist.Count > 0)
                             pathDefault = Path.GetDirectoryName(blacklist.FirstOrDefault().EpisodePath);
 
                         foreach (var episode in listEpisodesAdd)
@@ -105,20 +106,21 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                             else if (episode.NumberEpisodeCurrent > 999)
                                 formatNumberView = "D4";
 
+                            path = "";
                             //use path how others episodesRegisters
                             if (pathDefault != null)
                             {
-                                pathDefault += $"/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4";
+                                path = $"{pathDefault}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4";
                             }
                             else //default
                             {
-                                pathDefault = $"{_folder}/{episode.AnimeId}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4";
+                                path = $"{_folder}/{episode.AnimeId}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4";
                             }
 
                             listEpisodeRegister.Add(new EpisodeRegisterDTO
                             {
                                 EpisodeId = episode.ID,
-                                EpisodePath = pathDefault
+                                EpisodePath = path
                             });
                         }
 
