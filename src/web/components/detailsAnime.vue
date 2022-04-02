@@ -115,14 +115,16 @@
                 <!-- end information -->
 
                 <!-- show episodes and status download -->
-                <div class="d-md-flex justify-content-md-end">
-                    <template v-if="showStatus">
-                        <button @click="hideStatusDownload()" class="btn btn-secondary" type="button">hide status download</button>
-                    </template>
-                    <template v-else>
-                        <button @click="showStatusDownload()" class="btn btn-primary" type="button">Show status download</button>
-                    </template>
-                </div>
+                <template v-if="!urlPageDownload">
+                    <div class="d-md-flex justify-content-md-end">
+                        <template v-if="showStatus">
+                            <button @click="hideStatusDownload()" class="btn btn-secondary" type="button">hide status download</button>
+                        </template>
+                        <template v-else>
+                            <button @click="showStatusDownload()" class="btn btn-primary" type="button">Show status download</button>
+                        </template>
+                    </div>
+                </template>
                 <template v-if="showStatus">
                     <div v-for="episode in episodes" :key="episode.id">
                         <div class="row">
