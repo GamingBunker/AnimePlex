@@ -59,7 +59,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                         //start download
                         client.Headers.Add("Referer", anime.UrlPage);
                         client.Timeout = 60000; //? check
-                        client.DownloadFileTaskAsync(new Uri(episode.UrlVideo), filePath).GetAwaiter().GetResult();
+                        client.DownloadFileTaskAsync(new Uri(episode.UrlVideo), filePath).ConfigureAwait(false).GetAwaiter().GetResult();
                     }
                     catch (ApiNotFoundException ex)
                     {

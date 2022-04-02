@@ -20,7 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Split two part of UpdateService, UpdateService check integry files on local and UpgradeService check new or missing episodes into db
 - Buttons Search
-- Size paginations
+- Size pagination
+- replace 'previous' and 'next' with arrows in pagination
+- Show status of downloads after press a button
 
 
 ## [0.1.2] - 29-03-2022

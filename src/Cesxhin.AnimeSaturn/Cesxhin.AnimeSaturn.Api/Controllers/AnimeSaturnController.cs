@@ -1,5 +1,4 @@
-﻿using Cesxhin.AnimeSaturn.Application.Exceptions;
-using Cesxhin.AnimeSaturn.Application.Generic;
+﻿using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Domain.DTO;
