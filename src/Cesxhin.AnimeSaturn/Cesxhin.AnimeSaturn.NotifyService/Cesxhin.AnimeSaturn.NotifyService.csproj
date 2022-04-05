@@ -2,29 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>dotnet-Cesxhin.AnimeSaturn.NotifyService-70F84C34-409B-44EA-847F-ABD4C4CE4108</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <UserSecretsId>dotnet-Cesxhin.AnimeSaturn.NotifyService-1CBD6290-0231-43F8-BB7D-540E3E765962</UserSecretsId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Remove="NLog.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="C:\Users\matti\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MassTransit.AspNetCore" Version="7.2.4" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
   </ItemGroup>
 
   <ItemGroup>

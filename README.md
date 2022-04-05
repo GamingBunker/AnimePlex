@@ -110,7 +110,7 @@ example:
 ## 📩Download Service
 Questo progetto verrà utilizzato per scaricare i video e mettere nella cartella.
 ### Information general:
-- `not` require volume mounted on Docker
+- `require` volume mounted on Docker
 ### Variabili globali richiesti:
 ```sh
 example:
