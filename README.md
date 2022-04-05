@@ -8,16 +8,27 @@ Scarica le serie tv/film dal sito [AnimeSaturn](https://www.animesaturn.it/) e m
 ## La struttura del progetto
 Il progetto si suddivide in 4 progetti:
 - 🧮Api Server (C#)
+- 📩Download Service (C#)
+- 📨Notify Service (C#)
 - 💾Update Service (C#)
 - 💽Upgrade Service (C#)
-- 📩Download Server (C#)
 - 🌐Web Server([Nuxtjs](https://nuxtjs.org/))
 
 Servizi utilizzati:
 - 🐰[RabbitMQ](https://www.rabbitmq.com/)
 - 🗄[Postgresql](https://www.postgresql.org/)
 
-## 🌐Web Client
+### Lista di immagini disponibili su DockerHub
+| Nome Immagine | Link |
+| ------ | ------ |
+| 🧮Api Server | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-api) |
+| 📩Download Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-downloadservice) |
+| 📨Notify Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-notifyservice) |
+| 💾Update Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-updateservice) |
+| 💽Upgrade Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-upgradeservice) |
+| 🌐Web Client | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-web) |
+
+## 🌐Web Server
 Questo progetto verrà utilizzato per gli utenti che vorranno visualizzare e scaricare gli episodi.
 ### Variabili globali richiesti:
 ```sh
