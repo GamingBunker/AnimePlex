@@ -1,6 +1,4 @@
-#### MAIN: [![Docker Image CI Main](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml) 
-
-#### DEV: [![Docker Image CI Dev](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml/badge.svg?branch=dev)](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml)
+[![Docker Image CI Main](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/GamingBunker/AnimePlex/actions/workflows/docker-image.yml) 
 
 # Anime Plex 🎬
 Scarica le serie tv/film dal sito [AnimeSaturn](https://www.animesaturn.it/) e mette nella cartella Plex.
@@ -33,6 +31,7 @@ Questo progetto verrà utilizzato per gli utenti che vorranno visualizzare e sca
 ### Variabili globali richiesti:
 ```sh
 example:
+    #--- API ---
     HOST_API: "localhost"
     PORT_API : "33333"
     PROTOCOL_API: "https" or "http"
@@ -40,56 +39,115 @@ example:
 
 ## 🧮Api Server
 Questo progetto verrà utilizzato per esporre i dati in maniera facile e veloce con il database postgresql.
+### Information general:
+- `not` require volume mounted on Docker
 ### Variabili globali richiesti:
 ```sh
 example:
-    ASPNETCORE_ENVIRONMENT: Development
+    #--- DB ---
     DATABASE_CONNECTION: User ID=guest;Password=guest;Host=localhost;Port=33333;Database=db;
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
+    
+    #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error"
+    
+    #--- General ---
+    ASPNETCORE_ENVIRONMENT: Development
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
 ```
+
 ## 💾Update Service
 Questo progetto verrà utilizzato per controllare se sono presenti nel file locale se non ci sono, invia un messaggio a DownloadService che scarica l'episodio mancante.
+### Information general:
+- `require` volume mounted on Docker
 ### Variabili globali richiesti:
 ```sh
 example:
-    DOTNET_ENVIRONMENT: Development
+    #--- Rabbit ---
     USERNAME_RABBIT: "guest"
     PASSWORD_RABBIT: "guest"
     ADDRESS_RABBIT: "localhost"
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" require volume mounted
+    
+    #--- API ---
     ADDRESS_API: "localhost"
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
-    TIME_REFRESH: "60000" <-- milliseconds
+    
+    #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error"
+    
+    #--- General ---
+    DOTNET_ENVIRONMENT: Development
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
+    TIME_REFRESH: "60000" <-- milliseconds
 ```
-## 💽Upgrade Service (C#)
+
+## 💽Upgrade Service
 Questo progetto verrà utilizzato per scaricare i nuovi episodi
+### Information general:
+- `not` require volume mounted on Docker
 ### Variabili globali richiesti:
 ```sh
 example:
+    #--- rabbit ---
+    USERNAME_RABBIT: "guest"
+    PASSWORD_RABBIT: "guest"
+    ADDRESS_RABBIT: "localhost"
+    
+    #--- API ---
+    ADDRESS_API: "localhost"
+    PORT_API: "33333"
+    PROTOCOL_API: "http" or "https"
+    
+    #--- Logger ---
+    LOG_LEVEL: "Debug|Info|Error"
+    
+    #--- General ---
     DOTNET_ENVIRONMENT: Development
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
-    ADDRESS_API: "localhost"
-    PORT_API: "33333"
-    PROTOCOL_API: "http" or "https"
     TIME_REFRESH: "60000" <-- milliseconds
-    LOG_LEVEL: "Debug|Info|Error"
 ```
-## 📩Download Server
+
+## 📩Download Service
 Questo progetto verrà utilizzato per scaricare i video e mettere nella cartella.
+### Information general:
+- `not` require volume mounted on Docker
 ### Variabili globali richiesti:
 ```sh
 example:
-    DOTNET_ENVIRONMENT: Development
-    LIMIT_CONSUMER_RABBIT: "5"
+    #--- rabbit ---
     USERNAME_RABBIT: "guest"
     PASSWORD_RABBIT: "guest"
     ADDRESS_RABBIT: "localhost"
+    LIMIT_CONSUMER_RABBIT: "5"
+    
+    #--- API ---
     ADDRESS_API: "localhost"
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
-    require volume mounted
+    
+    #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error"
+    
+    #--- General ---
+    DOTNET_ENVIRONMENT: Development
+```
+
+## 📨Notify Service
+### Information general:
+- `not` require volume mounted on Docker
+```sh
+example:
+    #--- rabbit ---
+    USERNAME_RABBIT: "guest"
+    PASSWORD_RABBIT: "guest"
+    ADDRESS_RABBIT: "localhost"
+    
+    #---Webhook---
+    WEBHOOK_DISCORD: "url"
+    
+    #---logger---
+    LOG_LEVEL: "Debug|Info|Error"
+    
+    #---general---
+    DOTNET_ENVIRONMENT: Development
 ```

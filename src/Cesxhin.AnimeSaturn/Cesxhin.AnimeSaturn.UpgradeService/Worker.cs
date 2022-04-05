@@ -1,7 +1,8 @@
-using Cesxhin.AnimeSaturn.Application.Exceptions;
+﻿using Cesxhin.AnimeSaturn.Application.Exceptions;
 using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
 using Cesxhin.AnimeSaturn.Domain.DTO;
+using MassTransit;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using System;
@@ -21,6 +22,13 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
         //variables
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH");
         private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH"));
+
+        //rabbit
+        private readonly IBus _rabbit;
+        public Worker(IBus rabbit)
+        {
+            _rabbit = rabbit;
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -125,6 +133,22 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                         }
 
                         await episodeRegisterApi.PostMore("/episodes/registers", listEpisodeRegister);
+
+                        //create message for notify
+                        string message = $"💽UpgradeService say: \nAdd new episode of {anime.Name}\n";
+                        foreach(var episodeNotify in listEpisodesAdd)
+                        {
+                            message += $"- {episodeNotify.AnimeId} Episode: {episodeNotify.NumberEpisodeCurrent}\n";
+                        }
+
+                        try
+                        {
+                            await _rabbit.Publish(new NotifyDTO { Message = message });
+                        }catch (Exception ex)
+                        {
+                            logger.Error("Cannot send message rabbit, details: " + ex.Message);
+                        }
+
 
                         logger.Info($"Done upgrade! of {anime.Name}");
                     }
