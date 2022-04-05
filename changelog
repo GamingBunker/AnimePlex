@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Released]
+## [0.2.1] - 05-04-2022
+### Add
+- Notify service that send messages to Discord with Webhook
+
+### Fixed
+- Add environment logger for reduced lines of log
+
 ## [0.2.0] - 01-04-2022
 ### Add
 - Tracking files and movements (modified class models and added new table)
