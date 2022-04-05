@@ -1,9 +1,10 @@
+using Cesxhin.AnimeSaturn.Application.Consumers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 
-namespace Cesxhin.AnimeSaturn.UpgradeService
+namespace Cesxhin.AnimeSaturn.NotifyService
 {
     public class Program
     {
@@ -30,6 +31,10 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                                     credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT"));
                                     credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT"));
                                 });
+                            cfg.ReceiveEndpoint("notify-anime", e => {
+                                e.Consumer<NotifyConsumer>();
+                            });
+
                         });
                     });
                     services.AddMassTransitHostedService();
