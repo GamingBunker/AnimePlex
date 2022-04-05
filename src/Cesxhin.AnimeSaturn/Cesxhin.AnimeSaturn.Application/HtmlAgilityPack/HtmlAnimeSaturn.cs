@@ -252,7 +252,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                         contentM3u = M3U.Parse(sourceFiles);
                         playerUrl.endNumberBuffer = contentM3u.Medias.Count() - 1; //start 0 to xx
 
-                        logger.Info("Done download url with buffer: " + urlPage);
+                        logger.Debug("Done download url with buffer: " + urlPage);
                     }
                     if (playerUrl != null)
                     {

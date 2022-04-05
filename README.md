@@ -35,6 +35,7 @@ example:
     ASPNETCORE_ENVIRONMENT: Development
     DATABASE_CONNECTION: User ID=guest;Password=guest;Host=localhost;Port=33333;Database=db;
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
+    LOG_LEVEL: "Debug|Info|Error"
 ```
 ## 💾Update Service
 Questo progetto verrà utilizzato per controllare se sono presenti nel file locale se non ci sono, invia un messaggio a DownloadService che scarica l'episodio mancante.
@@ -50,6 +51,7 @@ example:
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
     TIME_REFRESH: "60000" <-- milliseconds
+    LOG_LEVEL: "Debug|Info|Error"
 ```
 ## 💽Upgrade Service (C#)
 Questo progetto verrà utilizzato per scaricare i nuovi episodi
@@ -62,6 +64,7 @@ example:
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
     TIME_REFRESH: "60000" <-- milliseconds
+    LOG_LEVEL: "Debug|Info|Error"
 ```
 ## 📩Download Server
 Questo progetto verrà utilizzato per scaricare i video e mettere nella cartella.
@@ -77,4 +80,5 @@ example:
     PORT_API: "33333"
     PROTOCOL_API: "http" or "https"
     require volume mounted
+    LOG_LEVEL: "Debug|Info|Error"
 ```
