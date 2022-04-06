@@ -21,6 +21,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         //nlog
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
+
         public Task Consume(ConsumeContext<EpisodeDTO> context)
         {
             //get body
@@ -278,8 +279,15 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                         if (File.Exists(filePath))
                         {
-                            File.Delete(filePath);
-                            logger.Warn($"The file is deleted {filePath}");
+                            try
+                            {
+                                File.Delete(filePath);
+                                logger.Warn($"The file is deleted {filePath}");
+                            }
+                            catch (IOException ex)
+                            {
+                                logger.Error($"cannot delete file {filePath}, details error:{ex.Message}");
+                            }
                         }
 
                         //send failed download

@@ -32,9 +32,9 @@ Questo progetto verrà utilizzato per gli utenti che vorranno visualizzare e sca
 ```sh
 example:
     #--- API ---
-    HOST_API: "localhost"
-    PORT_API : "33333"
-    PROTOCOL_API: "https" or "http"
+    HOST_API: "localhost" #localhost [default]
+    PORT_API : "33333" #5000 [default]
+    PROTOCOL_API: "https" or "http" #http [default]
 ```
 
 ## 🧮Api Server
@@ -45,14 +45,14 @@ Questo progetto verrà utilizzato per esporre i dati in maniera facile e veloce 
 ```sh
 example:
     #--- DB ---
-    DATABASE_CONNECTION: User ID=guest;Password=guest;Host=localhost;Port=33333;Database=db;
+    DATABASE_CONNECTION: User ID=guest;Password=guest;Host=localhost;Port=33333;Database=db; [require]
     
     #--- Logger ---
-    LOG_LEVEL: "Debug|Info|Error"
+    LOG_LEVEL: "Debug|Info|Error" #Info [default]
     
     #--- General ---
-    ASPNETCORE_ENVIRONMENT: Development
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
+    ASPNETCORE_ENVIRONMENT: Development [require]
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #/ [default]
 ```
 
 ## 💾Update Service
@@ -63,22 +63,22 @@ Questo progetto verrà utilizzato per controllare se sono presenti nel file loca
 ```sh
 example:
     #--- Rabbit ---
-    USERNAME_RABBIT: "guest"
-    PASSWORD_RABBIT: "guest"
-    ADDRESS_RABBIT: "localhost"
+    USERNAME_RABBIT: "guest" #guest [default]
+    PASSWORD_RABBIT: "guest" #guest [default]
+    ADDRESS_RABBIT: "localhost" #localhost [default]
     
     #--- API ---
-    ADDRESS_API: "localhost"
-    PORT_API: "33333"
-    PROTOCOL_API: "http" or "https"
+    ADDRESS_API: "localhost" #localhost [default]
+    PORT_API: "33333" #5000 [default]
+    PROTOCOL_API: "http" or "https" #http [default]
     
     #--- Logger ---
-    LOG_LEVEL: "Debug|Info|Error"
+    LOG_LEVEL: "Debug|Info|Error" #Info [default]
     
     #--- General ---
-    DOTNET_ENVIRONMENT: Development
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime"
-    TIME_REFRESH: "60000" <-- milliseconds
+    DOTNET_ENVIRONMENT: Development [require]
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #/ [default]
+    TIME_REFRESH: "60000" <-- milliseconds #120000 [default] 2 minutes
 ```
 
 ## 💽Upgrade Service
@@ -89,47 +89,47 @@ Questo progetto verrà utilizzato per scaricare i nuovi episodi
 ```sh
 example:
     #--- rabbit ---
-    USERNAME_RABBIT: "guest"
-    PASSWORD_RABBIT: "guest"
-    ADDRESS_RABBIT: "localhost"
+    USERNAME_RABBIT: "guest" #guest [default]
+    PASSWORD_RABBIT: "guest" #guest [default]
+    ADDRESS_RABBIT: "localhost" #localhost [default]
     
     #--- API ---
-    ADDRESS_API: "localhost"
-    PORT_API: "33333"
-    PROTOCOL_API: "http" or "https"
+    ADDRESS_API: "localhost" #localhost [default]
+    PORT_API: "33333" #5000 [default]
+    PROTOCOL_API: "http" or "https" #http [default]
     
     #--- Logger ---
-    LOG_LEVEL: "Debug|Info|Error"
+    LOG_LEVEL: "Debug|Info|Error" #Info [default]
     
     #--- General ---
-    DOTNET_ENVIRONMENT: Development
-    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" not require volume mounted
-    TIME_REFRESH: "60000" <-- milliseconds
+    DOTNET_ENVIRONMENT: Development [require]
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #http [default]
+    TIME_REFRESH: "60000" <-- milliseconds #1200000 [default] 20 minutes
 ```
 
 ## 📩Download Service
 Questo progetto verrà utilizzato per scaricare i video e mettere nella cartella.
 ### Information general:
-- `not` require volume mounted on Docker
+- `require` volume mounted on Docker
 ### Variabili globali richiesti:
 ```sh
 example:
     #--- rabbit ---
-    USERNAME_RABBIT: "guest"
-    PASSWORD_RABBIT: "guest"
-    ADDRESS_RABBIT: "localhost"
-    LIMIT_CONSUMER_RABBIT: "5"
+    USERNAME_RABBIT: "guest" #guest [default]
+    PASSWORD_RABBIT: "guest" #guest [default]
+    ADDRESS_RABBIT: "localhost" #localhost [default]
+    LIMIT_CONSUMER_RABBIT: "5" #3 [default]
     
     #--- API ---
-    ADDRESS_API: "localhost"
-    PORT_API: "33333"
-    PROTOCOL_API: "http" or "https"
+    ADDRESS_API: "localhost" #localhost [default]
+    PORT_API: "33333" #3000 [default]
+    PROTOCOL_API: "http" or "https" #http [default]
     
     #--- Logger ---
-    LOG_LEVEL: "Debug|Info|Error"
+    LOG_LEVEL: "Debug|Info|Error" #Info [default]
     
     #--- General ---
-    DOTNET_ENVIRONMENT: Development
+    DOTNET_ENVIRONMENT: Development [require]
 ```
 
 ## 📨Notify Service
@@ -138,16 +138,16 @@ example:
 ```sh
 example:
     #--- rabbit ---
-    USERNAME_RABBIT: "guest"
-    PASSWORD_RABBIT: "guest"
-    ADDRESS_RABBIT: "localhost"
+    USERNAME_RABBIT: "guest" #guest [default]
+    PASSWORD_RABBIT: "guest" #guest [default]
+    ADDRESS_RABBIT: "localhost" #localhost [default]
     
     #---Webhook---
-    WEBHOOK_DISCORD: "url"
+    WEBHOOK_DISCORD: "url" [require]
     
     #---logger---
-    LOG_LEVEL: "Debug|Info|Error"
+    LOG_LEVEL: "Debug|Info|Error" #Info [default]
     
     #---general---
-    DOTNET_ENVIRONMENT: Development
+    DOTNET_ENVIRONMENT: Development [require]
 ```

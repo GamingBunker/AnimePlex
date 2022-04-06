@@ -3,6 +3,8 @@ using Microsoft.Extensions.Hosting;
 using MassTransit;
 using Cesxhin.AnimeSaturn.Application.Consumers;
 using System;
+using NLog;
+using Cesxhin.AnimeSaturn.Application.Generic;
 
 namespace Cesxhin.AnimeSaturn.DownloadService
 {
@@ -24,12 +26,12 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                         x.UsingRabbitMq((context, cfg) =>
                         {
                             cfg.Host(
-                                Environment.GetEnvironmentVariable("ADDRESS_RABBIT"),
+                                Environment.GetEnvironmentVariable("ADDRESS_RABBIT") ?? "localhost",
                                 "/",
                                 credentials =>
                                 {
-                                    credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT"));
-                                    credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT"));
+                                    credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT") ?? "guest");
+                                    credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT") ?? "guest");
                                 });
                             cfg.ReceiveEndpoint("download-anime", e => {
                                 e.Consumer<DownloadConsumer>(cc =>
@@ -43,6 +45,12 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                         });
                     });
                     services.AddMassTransitHostedService();
+
+                    //setup nlog
+                    var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";
+                    LogLevel logLevel = NLogManager.GetLevel(level);
+                    NLogManager.Configure(logLevel);
+
                     services.AddHostedService<Worker>();
                 });
     }

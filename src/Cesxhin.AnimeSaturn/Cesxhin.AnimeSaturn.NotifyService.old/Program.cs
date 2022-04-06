@@ -1,9 +1,7 @@
 using Cesxhin.AnimeSaturn.Application.Consumers;
-using Cesxhin.AnimeSaturn.Application.Generic;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NLog;
 using System;
 
 namespace Cesxhin.AnimeSaturn.NotifyService
@@ -40,12 +38,6 @@ namespace Cesxhin.AnimeSaturn.NotifyService
                         });
                     });
                     services.AddMassTransitHostedService();
-
-                    //setup nlog
-                    var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";
-                    LogLevel logLevel = NLogManager.GetLevel(level);
-                    NLogManager.Configure(logLevel);
-
                     services.AddHostedService<Worker>();
                 });
     }

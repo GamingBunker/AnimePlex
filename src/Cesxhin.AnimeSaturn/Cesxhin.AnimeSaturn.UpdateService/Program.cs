@@ -2,6 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MassTransit;
 using System;
+using Cesxhin.AnimeSaturn.Application.Generic;
+using NLog;
 
 namespace Cesxhin.AnimeSaturn.UpdateService
 {
@@ -23,16 +25,22 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                         x.UsingRabbitMq((context, cfg) =>
                         {
                             cfg.Host(
-                                Environment.GetEnvironmentVariable("ADDRESS_RABBIT"),
+                                Environment.GetEnvironmentVariable("ADDRESS_RABBIT") ?? "localhost",
                                 "/",
                                 credentials =>
                                 {
-                                    credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT"));
-                                    credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT"));
+                                    credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT") ?? "guest");
+                                    credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT") ?? "guest");
                                 });
                         });
                     });
                     services.AddMassTransitHostedService();
+
+                    //setup nlog
+                    var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";
+                    LogLevel logLevel = NLogManager.GetLevel(level);
+                    NLogManager.Configure(logLevel);
+
                     services.AddHostedService<Worker>();
                 });
     }
