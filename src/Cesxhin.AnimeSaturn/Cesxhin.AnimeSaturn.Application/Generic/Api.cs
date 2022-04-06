@@ -11,9 +11,9 @@ namespace Cesxhin.AnimeSaturn.Application.Generic
     public class Api<T> where T : class
     {
         //init
-        readonly string _address = Environment.GetEnvironmentVariable("ADDRESS_API");
-        readonly string _port = Environment.GetEnvironmentVariable("PORT_API");
-        readonly string _protocol = Environment.GetEnvironmentVariable("PROTOCOL_API");
+        readonly string _address = Environment.GetEnvironmentVariable("ADDRESS_API") ?? "localhost";
+        readonly string _port = Environment.GetEnvironmentVariable("PORT_API") ?? "5000";
+        readonly string _protocol = Environment.GetEnvironmentVariable("PROTOCOL_API") ?? "http";
 
         //settings deserialize
         readonly JsonSerializerOptions options = new JsonSerializerOptions

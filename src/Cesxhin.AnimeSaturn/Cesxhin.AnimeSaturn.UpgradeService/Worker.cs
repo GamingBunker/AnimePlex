@@ -20,14 +20,14 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         //variables
-        private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH");
-        private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH"));
+        private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
+        private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH") ?? "1200000");
 
         //rabbit
-        private readonly IBus _rabbit;
-        public Worker(IBus rabbit)
+        private readonly IBus _publishEndpoint;
+        public Worker(IBus publishEndpoint)
         {
-            _rabbit = rabbit;
+            _publishEndpoint = publishEndpoint;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -143,7 +143,10 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
 
                         try
                         {
-                            await _rabbit.Publish(new NotifyDTO { Message = message });
+                            var messageNotify = new NotifyDTO { 
+                                Message = message 
+                            };
+                            await _publishEndpoint.Publish(messageNotify);
                         }catch (Exception ex)
                         {
                             logger.Error("Cannot send message rabbit, details: " + ex.Message);

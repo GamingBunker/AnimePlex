@@ -21,8 +21,8 @@ namespace Cesxhin.AnimeSaturn.UpdateService
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         //env
-        private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH");
-        private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH"));
+        private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
+        private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH") ?? "120000");
 
         public Worker(IBus publishEndpoint)
         {
@@ -120,7 +120,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                 await episodeApi.PutOne("/statusDownload", episode);
 
                 await _publishEndpoint.Publish(episode);
-                logger.Info($"this file does not exists, sending message to DownloadService");
+                logger.Info($"this file ({episode.AnimeId} episode: {episode.NumberEpisodeCurrent}) does not exists, sending message to DownloadService");
             }
             catch (ApiNotFoundException ex)
             {

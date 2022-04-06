@@ -6,13 +6,14 @@
 
   <ItemGroup>
     <None Remove="C:\Users\matti\.nuget\packages\nlog.config\4.7.12\contentFiles\any\any\NLog.config" />
+    <None Remove="C:\Users\matti\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
     <PackageReference Include="m3uParser.NET" Version="1.0.17" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.4" />
-    <PackageReference Include="NLog.Config" Version="4.7.12" />
+    <PackageReference Include="NLog.Config" Version="4.7.15" />
   </ItemGroup>
 
   <ItemGroup>

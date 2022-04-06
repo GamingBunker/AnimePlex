@@ -1,5 +1,8 @@
+using Cesxhin.AnimeSaturn.Application.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using NLog;
+using System;
 
 namespace Cesxhin.AnimeSaturn.Api
 {
@@ -14,6 +17,11 @@ namespace Cesxhin.AnimeSaturn.Api
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    //setup nlog
+                    var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";
+                    LogLevel logLevel = NLogManager.GetLevel(level);
+                    NLogManager.Configure(logLevel);
+
                     webBuilder.UseStartup<Startup>();
                 });
     }
