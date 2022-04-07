@@ -54,6 +54,7 @@ example:
     #--- General ---
     ASPNETCORE_ENVIRONMENT: Development [require]
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #/ [default]
+    LIMIT_THREAD_PARALLEL: "8" #5 [default]
 ```
 
 ## 💾Update Service
@@ -108,6 +109,7 @@ example:
     DOTNET_ENVIRONMENT: Development [require]
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #http [default]
     TIME_REFRESH: "60000" <-- milliseconds #1200000 [default] 20 minutes
+    LIMIT_THREAD_PARALLEL: "8" #5 [default]
 ```
 
 ## 📩Download Service

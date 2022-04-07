@@ -219,6 +219,10 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     logger.Error($"{filePath} can't open, details: {ex.Message}");
                     timeoutFile++;
                 }
+                catch (Exception ex)
+                {
+                    logger.Fatal($"{filePath} can't open, details: {ex.Message}");
+                }
             }
         }
 
