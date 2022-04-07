@@ -1,5 +1,6 @@
 ﻿using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Repositories;
+using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Domain.Models;
 using NLog;
 using Npgsql;
@@ -13,7 +14,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
     public class EpisodeRepository : IEpisodeRepository
     {
         //log
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
 
         //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");

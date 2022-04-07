@@ -14,7 +14,7 @@ namespace Cesxhin.AnimeSaturn.DownloadService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                logger.Info("Worker running at: {time}", DateTimeOffset.Now);
+                //logger.Info("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(60000, stoppingToken);
             }
         }

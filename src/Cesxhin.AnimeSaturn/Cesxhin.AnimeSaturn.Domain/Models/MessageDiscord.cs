@@ -1,4 +1,6 @@
-﻿namespace Cesxhin.AnimeSaturn.Domain.Models
+﻿using System.Collections.Generic;
+
+namespace Cesxhin.AnimeSaturn.Domain.Models
 {
     public class MessageDiscord
     {

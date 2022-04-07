@@ -49,6 +49,7 @@ example:
     
     #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
     ASPNETCORE_ENVIRONMENT: Development [require]
@@ -74,6 +75,7 @@ example:
     
     #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
     DOTNET_ENVIRONMENT: Development [require]
@@ -100,6 +102,7 @@ example:
     
     #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
     DOTNET_ENVIRONMENT: Development [require]
@@ -127,6 +130,7 @@ example:
     
     #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
     DOTNET_ENVIRONMENT: Development [require]
@@ -147,6 +151,7 @@ example:
     
     #---logger---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #---general---
     DOTNET_ENVIRONMENT: Development [require]

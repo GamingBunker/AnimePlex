@@ -1,4 +1,5 @@
-﻿using Cesxhin.AnimeSaturn.Domain.DTO;
+﻿using Cesxhin.AnimeSaturn.Application.NlogManager;
+using Cesxhin.AnimeSaturn.Domain.DTO;
 using Cesxhin.AnimeSaturn.Domain.Models;
 using HtmlAgilityPack;
 using m3uParser;
@@ -14,7 +15,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 {
     public static class HtmlAnimeSaturn
     {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
         public static AnimeDTO GetAnime(string urlPage)
         {
             //set variable
@@ -168,120 +169,131 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             int rangeAnime = 0;
             try
             {
-                var listEpisodes = doc.DocumentNode
-               .SelectNodes("//div/div/div[2]/div[5]/div/div/div[@id='range-anime-" + rangeAnime + "']/div")
-               .ToList();
-                foreach (var episode in listEpisodes)
+                List<HtmlNode> listEpisodes;
+                do
                 {
-                    string urlEpisode = episode.
-                        SelectNodes("a")
-                        .First()
-                        .Attributes["href"].Value;
-
-                    HtmlDocument docEpisode = new HtmlWeb().Load(urlEpisode);
-
-                    string urlVideo = docEpisode.DocumentNode
-                        .SelectNodes("//div[@class='container p-3 shadow rounded bg-dark-as-box']/div/div/a[1]")
-                        .First()
-                        .Attributes["href"].Value;
-
-                    string url = null;
-                    PlayerUrl playerUrl = null;
-
                     try
                     {
-                        logger.Debug("Try download url with file: " + urlPage);
-
-                        HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
-
-                        url = docVideo.DocumentNode
-                            .SelectNodes("//center/div[2]/div/div/div/div/video/source")
+                        listEpisodes = doc.DocumentNode
+                       .SelectNodes("//div/div/div[2]/div[5]/div/div/div[@id='range-anime-" + rangeAnime + "']/div")
+                       .ToList();
+                    }
+                    catch
+                    {
+                        break;
+                    }
+                    foreach (var episode in listEpisodes)
+                    {
+                        string urlEpisode = episode.
+                            SelectNodes("a")
                             .First()
-                            .Attributes["src"].Value;
-                        logger.Debug("Done download url with file: " + urlPage);
-                    }
-                    catch (ArgumentNullException)
-                    {
-                        logger.Debug("Failed download url with file: " + urlPage);
-                        logger.Debug("Try download url with buffer: " + urlPage);
+                            .Attributes["href"].Value;
 
-                        HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
+                        HtmlDocument docEpisode = new HtmlWeb().Load(urlEpisode);
 
-                        string urlLocal = docVideo.DocumentNode
-                            .SelectNodes("//center/div[2]/div/div/div/div/div/div/script[2]")
-                            .First().InnerText;
+                        string urlVideo = docEpisode.DocumentNode
+                            .SelectNodes("//div[@class='container p-3 shadow rounded bg-dark-as-box']/div/div/a[1]")
+                            .First()
+                            .Attributes["href"].Value;
 
-                        //get url list source
-                        urlLocal = urlLocal.Replace("jwplayer('player_hls').setup(", " ");
+                        string url = null;
+                        PlayerUrl playerUrl = null;
 
-                        urlLocal = urlLocal.Replace(");", " ");
-
-                        urlLocal = urlLocal.Replace(".replace(\"playlist.m3u8\", \"thumbnails.vtt\")", " ");
-
-                        urlLocal = urlLocal.Replace(".replace(\"playlist.m3u8\", \"poster.jpg\")", " ");
-                        urlLocal = urlLocal.Replace("'", "\"");
-                        urlLocal = urlLocal.Replace("file", "\"Playlist\"");
-                        urlLocal = urlLocal.Replace("tracks", "\"tracks\"");
-                        urlLocal = urlLocal.Replace("kind", "\"kind\"");
-                        urlLocal = urlLocal.Replace("image", "\"image\"");
-                        urlLocal = urlLocal.Replace("preload", "\"preload\"");
-                        urlLocal = urlLocal.Replace("abouttext", "\"abouttext\"");
-                        urlLocal = urlLocal.Replace("aboutlink", "\"aboutlink\"");
-                        urlLocal = urlLocal.Replace("playbackRateControls", "\"playbackRateControls\"");
-                        urlLocal = urlLocal.Replace("sharing", "\"sharing\"");
-                        urlLocal = urlLocal.Replace("heading", "\"heading\"");
-
-                        playerUrl = JsonSerializer.Deserialize<PlayerUrl>(urlLocal);
-
-                        playerUrl.BaseUrl = playerUrl.Playlist.Replace("/playlist.m3u8", "");
-
-                        //download source files
-                        WebClient client = new WebClient();
-                        var bytes = client.DownloadData(playerUrl.Playlist);
-                        var sourceFiles = System.Text.Encoding.UTF8.GetString(bytes);
-
-                        var contentM3u = M3U.Parse(sourceFiles);
-                        string file = contentM3u.Warnings.First();
-
-                        playerUrl.PlaylistSources = file.Substring(file.LastIndexOf("./") + 1);
-                        playerUrl.Resolution = playerUrl.PlaylistSources.Substring(1, playerUrl.PlaylistSources.IndexOf("p"));
-
-                        //get list bytes for file
-                        bytes = client.DownloadData(playerUrl.BaseUrl + playerUrl.PlaylistSources);
-                        sourceFiles = System.Text.Encoding.UTF8.GetString(bytes);
-                        contentM3u = M3U.Parse(sourceFiles);
-                        playerUrl.endNumberBuffer = contentM3u.Medias.Count() - 1; //start 0 to xx
-
-                        logger.Debug("Done download url with buffer: " + urlPage);
-                    }
-                    if (playerUrl != null)
-                    {
-                        episodes.Add(new EpisodeDTO
+                        try
                         {
-                            AnimeId = name,
-                            NumberEpisodeCurrent = numberEpisode,
-                            BaseUrl = playerUrl.BaseUrl,
-                            Playlist = playerUrl.Playlist,
-                            PlaylistSources = playerUrl.PlaylistSources,
-                            Resolution = playerUrl.Resolution,
-                            NumberSeasonCurrent = numberSeason,
-                            endNumberBuffer = playerUrl.endNumberBuffer
-                        });
-                    }
-                    else
-                    {
-                        episodes.Add(new EpisodeDTO
-                        {
-                            AnimeId = name,
-                            UrlVideo = url,
-                            NumberEpisodeCurrent = numberEpisode,
-                            NumberSeasonCurrent = numberSeason
+                            logger.Debug("Try download url with file: " + urlPage);
 
-                        });
+                            HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
+
+                            url = docVideo.DocumentNode
+                                .SelectNodes("//center/div[2]/div/div/div/div/video/source")
+                                .First()
+                                .Attributes["src"].Value;
+                            logger.Debug("Done download url with file: " + urlPage);
+                        }
+                        catch (ArgumentNullException)
+                        {
+                            logger.Debug("Failed download url with file: " + urlPage);
+                            logger.Debug("Try download url with buffer: " + urlPage);
+
+                            HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
+
+                            string urlLocal = docVideo.DocumentNode
+                                .SelectNodes("//center/div[2]/div/div/div/div/div/div/script[2]")
+                                .First().InnerText;
+
+                            //get url list source
+                            urlLocal = urlLocal.Replace("jwplayer('player_hls').setup(", " ");
+
+                            urlLocal = urlLocal.Replace(");", " ");
+
+                            urlLocal = urlLocal.Replace(".replace(\"playlist.m3u8\", \"thumbnails.vtt\")", " ");
+
+                            urlLocal = urlLocal.Replace(".replace(\"playlist.m3u8\", \"poster.jpg\")", " ");
+                            urlLocal = urlLocal.Replace("'", "\"");
+                            urlLocal = urlLocal.Replace("file", "\"Playlist\"");
+                            urlLocal = urlLocal.Replace("tracks", "\"tracks\"");
+                            urlLocal = urlLocal.Replace("kind", "\"kind\"");
+                            urlLocal = urlLocal.Replace("image", "\"image\"");
+                            urlLocal = urlLocal.Replace("preload", "\"preload\"");
+                            urlLocal = urlLocal.Replace("abouttext", "\"abouttext\"");
+                            urlLocal = urlLocal.Replace("aboutlink", "\"aboutlink\"");
+                            urlLocal = urlLocal.Replace("playbackRateControls", "\"playbackRateControls\"");
+                            urlLocal = urlLocal.Replace("sharing", "\"sharing\"");
+                            urlLocal = urlLocal.Replace("heading", "\"heading\"");
+
+                            playerUrl = JsonSerializer.Deserialize<PlayerUrl>(urlLocal);
+
+                            playerUrl.BaseUrl = playerUrl.Playlist.Replace("/playlist.m3u8", "");
+
+                            //download source files
+                            WebClient client = new WebClient();
+                            var bytes = client.DownloadData(playerUrl.Playlist);
+                            var sourceFiles = System.Text.Encoding.UTF8.GetString(bytes);
+
+                            var contentM3u = M3U.Parse(sourceFiles);
+                            string file = contentM3u.Warnings.First();
+
+                            playerUrl.PlaylistSources = file.Substring(file.LastIndexOf("./") + 1);
+                            playerUrl.Resolution = playerUrl.PlaylistSources.Substring(1, playerUrl.PlaylistSources.IndexOf("p"));
+
+                            //get list bytes for file
+                            bytes = client.DownloadData(playerUrl.BaseUrl + playerUrl.PlaylistSources);
+                            sourceFiles = System.Text.Encoding.UTF8.GetString(bytes);
+                            contentM3u = M3U.Parse(sourceFiles);
+                            playerUrl.endNumberBuffer = contentM3u.Medias.Count() - 1; //start 0 to xx
+
+                            logger.Debug("Done download url with buffer: " + urlPage);
+                        }
+                        if (playerUrl != null)
+                        {
+                            episodes.Add(new EpisodeDTO
+                            {
+                                AnimeId = name,
+                                NumberEpisodeCurrent = numberEpisode,
+                                BaseUrl = playerUrl.BaseUrl,
+                                Playlist = playerUrl.Playlist,
+                                PlaylistSources = playerUrl.PlaylistSources,
+                                Resolution = playerUrl.Resolution,
+                                NumberSeasonCurrent = numberSeason,
+                                endNumberBuffer = playerUrl.endNumberBuffer
+                            });
+                        }
+                        else
+                        {
+                            episodes.Add(new EpisodeDTO
+                            {
+                                AnimeId = name,
+                                UrlVideo = url,
+                                NumberEpisodeCurrent = numberEpisode,
+                                NumberSeasonCurrent = numberSeason
+
+                            });
+                        }
+                        numberEpisode++;
                     }
-                    numberEpisode++;
-                }
-                rangeAnime++;
+                    rangeAnime++;
+                } while (true);
             }catch(ArgumentNullException e)
             {
                 logger.Error("Argument Null, details: "+e.Message);

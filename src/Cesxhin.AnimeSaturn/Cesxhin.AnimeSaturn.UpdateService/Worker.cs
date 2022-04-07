@@ -1,5 +1,6 @@
 using Cesxhin.AnimeSaturn.Application.Exceptions;
 using Cesxhin.AnimeSaturn.Application.Generic;
+using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using MassTransit;
 using Microsoft.Extensions.Hosting;
@@ -18,7 +19,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
         private readonly IBus _publishEndpoint;
 
         //log
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
 
         //env
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
@@ -103,14 +104,13 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                         }
                     }
                 }
-                logger.Info("Worker running at: {time}", DateTimeOffset.Now);
+                logger.Info($"Worker running at: {DateTimeOffset.Now}");
                 await Task.Delay(_timeRefresh, stoppingToken);
             }
         }
 
         private async void ConfirmStartDownloadAnime(EpisodeDTO episode, Api<EpisodeDTO> episodeApi)
         {
-
             //set pending to 
             episode.StateDownload = "pending";
 

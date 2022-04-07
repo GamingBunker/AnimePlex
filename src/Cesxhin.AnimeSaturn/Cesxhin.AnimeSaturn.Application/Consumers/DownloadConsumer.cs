@@ -1,5 +1,6 @@
 ﻿using Cesxhin.AnimeSaturn.Application.Exceptions;
 using Cesxhin.AnimeSaturn.Application.Generic;
+using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using MassTransit;
 using NLog;
@@ -19,7 +20,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         const int LIMIT_TIMEOUT = 10;
 
         //nlog
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
 
 
         public Task Consume(ConsumeContext<EpisodeDTO> context)

@@ -1,6 +1,7 @@
 ﻿using Cesxhin.AnimeSaturn.Application.Exceptions;
 using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
+using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using MassTransit;
 using Microsoft.Extensions.Hosting;
@@ -17,7 +18,7 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
     public class Worker : BackgroundService
     {
         //log
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
 
         //variables
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
@@ -159,7 +160,7 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                     listEpisodesAdd.Clear();
                 }
 
-                logger.Debug("Worker running at: {time}", DateTimeOffset.Now);
+                logger.Info($"Worker running at: {DateTimeOffset.Now}");
                 await Task.Delay(_timeRefresh, stoppingToken);
             }
         }
