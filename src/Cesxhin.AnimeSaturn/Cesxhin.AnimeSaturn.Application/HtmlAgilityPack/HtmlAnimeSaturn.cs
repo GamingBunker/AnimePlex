@@ -175,6 +175,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             try
             {
                 List<HtmlNode> listEpisodes;
+                int currentNumberEpisodes = 0;
                 do
                 {
                     //check group episodes
@@ -195,7 +196,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     for(int i=0; i<listEpisodes.Count; i++)
                     {
                         //inilize every cycle for task [IMPORTANT NOT REMOVE]
-                        int numberEpisode = i+1;
+                        int numberEpisode = currentNumberEpisodes+i + 1;
                         //add task
                         if (capacity < NUMBER_PARALLEL_MAX)
                         {
@@ -217,7 +218,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                             capacity = 0;
                         }
                     }
-
+                    currentNumberEpisodes += listEpisodes.Count;
                     rangeAnime++;
                 } while (true);
             }catch(ArgumentNullException e)
