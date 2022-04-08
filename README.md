@@ -136,6 +136,7 @@ example:
     
     #--- General ---
     DOTNET_ENVIRONMENT: Development [require]
+    LIMIT_THREAD_PARALLEL: "500" #250 [default]
 ```
 
 ## 📨Notify Service
