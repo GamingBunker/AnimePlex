@@ -8,38 +8,22 @@ namespace Cesxhin.AnimeSaturn.Application.Generic
     {
         public static string GetHash(string path)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
+            using (SHA256 hash = SHA256.Create())
             {
-                using (FileStream fileStream = File.OpenRead(path))
-                {
-                    using (StreamReader sr = new StreamReader(fileStream))
-                    {
-                        var content = sr.ReadToEnd();
-                        return GetHash(sha256Hash, content);
-                    }
-                }
+                var content = File.ReadAllBytes(path);
+
+                return BytesToStr(hash.ComputeHash(content));
             }
         }
 
-        private static string GetHash(HashAlgorithm hashAlgorithm, string input)
+        private static string BytesToStr(byte[] bytes)
         {
+            StringBuilder str = new StringBuilder();
 
-            // Convert the input string to a byte array and compute the hash.
-            byte[] data = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(input));
+            for (int i = 0; i < bytes.Length; i++)
+                str.AppendFormat("{0:X2}", bytes[i]);
 
-            // Create a new Stringbuilder to collect the bytes
-            // and create a string.
-            var sBuilder = new StringBuilder();
-
-            // Loop through each byte of the hashed data
-            // and format each one as a hexadecimal string.
-            for (int i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-
-            // Return the hexadecimal string.
-            return sBuilder.ToString();
+            return str.ToString();
         }
     }
 }
