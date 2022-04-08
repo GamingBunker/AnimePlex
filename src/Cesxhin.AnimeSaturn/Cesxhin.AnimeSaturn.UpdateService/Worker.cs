@@ -37,6 +37,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
             //Istance Api
             Api<GenericDTO> animeApi = new Api<GenericDTO>();
             Api<EpisodeDTO> episodeApi = new Api<EpisodeDTO>();
+            Api<SpaceDiskDTO> checkDiskFreeSpaceApi = new Api<SpaceDiskDTO>();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -104,6 +105,18 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                         }
                     }
                 }
+
+                //check disk space free
+                var freeGigabytes = new DriveInfo(_folder).AvailableFreeSpace / 1000000000;
+                var totalGigabytes = new DriveInfo(_folder).TotalSize / 1000000000;
+
+                var disk = new SpaceDiskDTO
+                {
+                    DiskSizeFree = freeGigabytes,
+                    DiskSizeTotal = totalGigabytes,
+                };
+                await checkDiskFreeSpaceApi.PutOne("/disk", disk);
+
                 logger.Info($"Worker running at: {DateTimeOffset.Now}");
                 await Task.Delay(_timeRefresh, stoppingToken);
             }

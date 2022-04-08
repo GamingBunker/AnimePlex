@@ -415,7 +415,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //put metadata into db
+        //get all db
         [HttpGet("/all")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<GenericDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -430,6 +430,56 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                     return NotFound();
 
                 return Ok(list);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        //put data check disk free space
+        [HttpPut("/disk")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SetCheckDiskFreeSpace(SpaceDiskDTO disk)
+        {
+            try
+            {
+                Environment.SetEnvironmentVariable("CHECK_DISK_FREE_SPACE", disk.DiskSizeFree.ToString());
+                Environment.SetEnvironmentVariable("CHECK_DISK_TOTAL_SPACE", disk.DiskSizeTotal.ToString());
+                return Ok(disk);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        //get data check disk free space
+        [HttpGet("/disk")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<SpaceDiskDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCheckDiskFreeSpace()
+        {
+            try
+            {
+                //get
+                var checkDiskFree = Environment.GetEnvironmentVariable("CHECK_DISK_FREE_SPACE");
+                var checkDiskTotal = Environment.GetEnvironmentVariable("CHECK_DISK_TOTAL_SPACE");
+
+                //check
+                if (checkDiskTotal != null && checkDiskTotal != null)
+                {
+                    //return with object
+                    var disk = new SpaceDiskDTO{
+                       DiskSizeTotal = long.Parse(checkDiskTotal),
+                       DiskSizeFree = long.Parse(checkDiskFree)
+                    };
+                    return Ok(disk);
+                }
+                else
+                    return NotFound();
             }
             catch
             {

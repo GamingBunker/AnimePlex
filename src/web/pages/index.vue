@@ -10,6 +10,9 @@
     
     <!-- body -->
     <div>
+      <div>
+        <SpaceDiskComponent />
+      </div>
       <!-- bar search -->
       <div>
         <SearchComponent />
@@ -99,10 +102,11 @@ import PreviewAnime from "../components/previewAnime.vue"
 import DetailsAnime from "../components/detailsAnime.vue";
 import SearchComponent from "../components/searchComponent.vue";
 import PreviewAnimeLoading from "../components/previewAnimeLoading.vue";
+import SpaceDiskComponent from "../components/spaceDiskComponent.vue";
 
 export default {
     name: "IndexPage",
-    components: { PreviewAnime, DetailsAnime, SearchComponent, PreviewAnimeLoading },
+    components: { PreviewAnime, DetailsAnime, SearchComponent, PreviewAnimeLoading, SpaceDiskComponent },
     data() {
         return {
             searchView: true,
