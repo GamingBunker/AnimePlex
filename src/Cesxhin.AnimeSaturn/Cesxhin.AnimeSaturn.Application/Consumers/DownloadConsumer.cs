@@ -24,7 +24,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
 
         //number max parallel
-        private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "1000");
+        private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "250");
 
 
         public Task Consume(ConsumeContext<EpisodeDTO> context)
