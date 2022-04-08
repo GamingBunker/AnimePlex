@@ -1,6 +1,8 @@
 ﻿using Cesxhin.AnimeSaturn.Application.Exceptions;
 using Cesxhin.AnimeSaturn.Application.Generic;
+using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Domain.DTO;
+using Cesxhin.AnimeSaturn.Domain.Models;
 using MassTransit;
 using NLog;
 using System;
@@ -19,7 +21,10 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         const int LIMIT_TIMEOUT = 10;
 
         //nlog
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
+
+        //number max parallel
+        private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "250");
 
 
         public Task Consume(ConsumeContext<EpisodeDTO> context)
@@ -97,11 +102,10 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         private void Download(EpisodeDTO episode, string filePath)
         {
             //timeout if not response one resource and close with status failed
-            int timeout = 0;
             int timeoutFile = 0;
 
             //api
-            Api<EpisodeDTO> episodeDTO = new Api<EpisodeDTO>();
+            Api<EpisodeDTO> episodeDTOApi = new Api<EpisodeDTO>();
 
             while (true)
             {
@@ -109,7 +113,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 {
                     //send api failed download
                     episode.StateDownload = "failed";
-                    SendStatusDownloadAPIAsync(episode, episodeDTO);
+                    SendStatusDownloadAPIAsync(episode, episodeDTOApi);
                     throw new Exception($"{filePath} impossible open file, contact administrator please");
                 }
                 try
@@ -117,65 +121,67 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     //create file and save to end operation
                     using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
                     {
-                        List<byte[]> buffer = new List<byte[]>();
+                        List<EpisodeBuffer> buffer = new List<EpisodeBuffer>();
 
-                        using (var client = new MyWebClient())
+                        logger.Info("start download " + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+
+                        //change by pending to downloading
+                        episode.StateDownload = "downloading";
+                        SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+
+                        //
+                        int count = 0;
+                        int percentual;
+                        int lastTriggerTime = 0;
+                        int intervalCheck;
+
+                        //parallel
+                        int capacity = 0;
+                        List<Task> tasks = new List<Task>();
+
+                        for (int numberFrame = episode.startNumberBuffer; numberFrame <= episode.endNumberBuffer; numberFrame++)
                         {
-                            client.Timeout =  60000; //? check
-                            logger.Info("start download " + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+                            //inilize every cycle for task [IMPORTANT NOT REMOVE]
+                            int numberBufferEpisode = numberFrame;
 
-                            //change by pending to downloading
-                            episode.StateDownload = "downloading";
-                            SendStatusDownloadAPIAsync(episode, episodeDTO);
-
-                            int count = 0;
-                            int percentual;
-                            int lastTriggerTime = 0;
-                            int intervalCheck;
-                            for (int numberFrame = episode.startNumberBuffer; numberFrame <= episode.endNumberBuffer; numberFrame++)
+                            //add task
+                            if (capacity < NUMBER_PARALLEL_MAX)
                             {
-                                //url frame
-                                string url = $"{episode.BaseUrl}/{episode.Resolution}/{episode.Resolution}-{numberFrame.ToString("D3")}.ts";
-                                Uri uri = new Uri(url);
+                                var task = Task.Run(() => DownloadBuffParallel(episode, numberBufferEpisode, filePath, episodeDTOApi));
+                                tasks.Add(task);
+                                capacity++;
+                            }
 
-                                //download frame
-                                do
+                            
+                            //must remove one task for continue download
+                            do
+                            {
+                                List<Task> removeTask = new List<Task>();
+                                foreach (var task in tasks)
                                 {
-                                    if (timeout == LIMIT_TIMEOUT)
+                                    if (task.IsCompleted)
                                     {
-                                        //send api failed download
-                                        episode.StateDownload = "failed";
-                                        SendStatusDownloadAPIAsync(episode, episodeDTO);
+                                        var episodeBuffer = ((Task<EpisodeBuffer>)task).Result;
 
-                                        logger.Error("Failed download, details: " + url);
+                                        //stop download
+                                        if (episodeBuffer == null)
+                                            return;
 
-                                        //delete file
-                                        fs.Close();
-                                        if (File.Exists(filePath))
-                                        {
-                                            File.Delete(filePath);
-                                            logger.Warn($"The file is deleted {filePath}");
-                                        }
-                                        return;
+                                        buffer.Add(episodeBuffer);
+                                        count++;
+
+                                        capacity--;
+                                        removeTask.Add(task);
                                     }
-                                    try
-                                    {
-                                        buffer.Add(client.DownloadData(uri));
-                                        timeout = 0;
-                                        break;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        logger.Error(ex);
-                                        logger.Warn($"The attempts remains: {LIMIT_TIMEOUT - timeout} for {url}");
-                                        timeout++;
+                                }
 
-                                        //waiting before for re-download
-                                        Thread.Sleep(timeout * 1000);
-                                    }
-                                } while (true);
+                                //remove rask completed
+                                foreach (var task in removeTask)
+                                {
+                                    tasks.Remove(task);
+                                }
 
-                                count++;
+                                //send statistic
                                 percentual = (100 * count) / episode.endNumberBuffer;
                                 logger.Debug("status download " + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent + "status download: " + percentual + "%");
 
@@ -190,18 +196,22 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                                     //send status download
                                     episode.PercentualDownload = percentual;
-                                    SendStatusDownloadAPIAsync(episode, episodeDTO);
+                                    SendStatusDownloadAPIAsync(episode, episodeDTOApi);
                                 }
-                            }
-                            logger.Info("end download " + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+
+                            } while (capacity >= NUMBER_PARALLEL_MAX || (numberFrame == episode.endNumberBuffer) && capacity != 0);
 
                         }
+                        logger.Info("end download " + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
 
                         logger.Info("start join most buffer" + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
 
+                        //order by id
+                        buffer.Sort(delegate (EpisodeBuffer e1, EpisodeBuffer e2) { return e1.Id.CompareTo(e2.Id); });
+
                         foreach (var singleBuffer in buffer)
                         {
-                            fs.Write(singleBuffer);
+                            fs.Write(singleBuffer.Data);
                         }
 
                         logger.Info("end join most buffer" + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
@@ -209,7 +219,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                         //send end download
                         episode.StateDownload = "completed";
                         episode.PercentualDownload = 100;
-                        SendStatusDownloadAPIAsync(episode, episodeDTO);
+                        SendStatusDownloadAPIAsync(episode, episodeDTOApi);
                     }
                     return;
                 }
@@ -218,6 +228,64 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     logger.Error($"{filePath} can't open, details: {ex.Message}");
                     timeoutFile++;
                 }
+                catch (Exception ex)
+                {
+                    logger.Fatal($"{filePath} can't open, details: {ex.Message}");
+                }
+            }
+        }
+
+        private async Task<EpisodeBuffer> DownloadBuffParallel(EpisodeDTO episode, int numberFrame, string filePath, Api<EpisodeDTO> episodeDTOApi)
+        {
+            string url = $"{episode.BaseUrl}/{episode.Resolution}/{episode.Resolution}-{numberFrame.ToString("D3")}.ts";
+            Uri uri = new Uri(url);
+
+            //setup
+            int timeout = 0;
+
+            //download frame
+            using (var client = new MyWebClient())
+            {
+                client.Timeout = 60000; //? check
+
+                do
+                {
+                    if (timeout == LIMIT_TIMEOUT)
+                    {
+                        //send api failed download
+                        episode.StateDownload = "failed";
+                        SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+
+                        logger.Error("Failed download, details: " + url);
+
+                        //delete file
+                        //fs.Close();
+                        if (File.Exists(filePath))
+                        {
+                            File.Delete(filePath);
+                            logger.Warn($"The file is deleted {filePath}");
+                        }
+                        return null;
+                    }
+                    try
+                    {
+                        var data = client.DownloadData(uri);
+                        return new EpisodeBuffer
+                        {
+                            Id = numberFrame,
+                            Data = data,
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(ex);
+                        logger.Warn($"The attempts remains: {LIMIT_TIMEOUT - timeout} for {url}");
+                        timeout++;
+
+                        //waiting before for re-download
+                        Thread.Sleep(timeout * 1000);
+                    }
+                } while (true);
             }
         }
 

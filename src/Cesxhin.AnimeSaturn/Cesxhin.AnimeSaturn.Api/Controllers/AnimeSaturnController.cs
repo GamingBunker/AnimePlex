@@ -20,7 +20,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         private readonly IEpisodeRegisterService _episodeRegisterService;
 
         //env
-        private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH");
+        private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
 
         public AnimeSaturnController(IAnimeService animeService, IEpisodeService episodeService, IEpisodeRegisterService episodeRegisterService)
         {

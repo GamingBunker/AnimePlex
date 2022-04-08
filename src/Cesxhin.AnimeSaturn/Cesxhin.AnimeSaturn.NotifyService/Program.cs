@@ -26,12 +26,12 @@ namespace Cesxhin.AnimeSaturn.NotifyService
                         x.UsingRabbitMq((context, cfg) =>
                         {
                             cfg.Host(
-                                Environment.GetEnvironmentVariable("ADDRESS_RABBIT"),
+                                Environment.GetEnvironmentVariable("ADDRESS_RABBIT") ?? "localhost",
                                 "/",
                                 credentials =>
                                 {
-                                    credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT"));
-                                    credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT"));
+                                    credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT") ?? "guest");
+                                    credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT") ?? "guest");
                                 });
                             cfg.ReceiveEndpoint("notify-anime", e => {
                                 e.Consumer<NotifyConsumer>();

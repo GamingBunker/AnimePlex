@@ -49,10 +49,12 @@ example:
     
     #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
     ASPNETCORE_ENVIRONMENT: Development [require]
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #/ [default]
+    LIMIT_THREAD_PARALLEL: "8" #5 [default]
 ```
 
 ## 💾Update Service
@@ -74,6 +76,7 @@ example:
     
     #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
     DOTNET_ENVIRONMENT: Development [require]
@@ -100,11 +103,13 @@ example:
     
     #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
     DOTNET_ENVIRONMENT: Development [require]
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #http [default]
     TIME_REFRESH: "60000" <-- milliseconds #1200000 [default] 20 minutes
+    LIMIT_THREAD_PARALLEL: "8" #5 [default]
 ```
 
 ## 📩Download Service
@@ -127,9 +132,11 @@ example:
     
     #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
     DOTNET_ENVIRONMENT: Development [require]
+    LIMIT_THREAD_PARALLEL: "500" #250 [default]
 ```
 
 ## 📨Notify Service
@@ -147,6 +154,7 @@ example:
     
     #---logger---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #---general---
     DOTNET_ENVIRONMENT: Development [require]

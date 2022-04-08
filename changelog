@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Released]
+## [0.2.3] - 08-04-2022
+### Add
+- Webhook Discord for log
+
+### Fixed
+- Module HtmlAnimeSaturn now work in parallel for download urls of episodes
+- Module Download now work in parallel for second method (use with buffers) of episodes
+- Fixed overflow memory when calculate hash of one episode over 1GB size
+
 ## [0.2.2] - 06-04-2022
 ### Add
 - Setup default environment global

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Cesxhin.AnimeSaturn.Application.Exceptions;
 
@@ -172,6 +173,44 @@ namespace Cesxhin.AnimeSaturn.Application.Generic
                 else
                 {
                     throw new ApiConflictException(resultHttp.Content.ToString());
+                }
+            }
+        }
+
+        //post message to Discord
+        public void PostMessageDiscord(string path, T classDTO)
+        {
+            using (var client = new HttpClient())
+            using (var content = new StringContent(JsonSerializer.Serialize(classDTO), System.Text.Encoding.UTF8, "application/json"))
+            {
+                var resultHttp = client.PostAsync(path, content).GetAwaiter().GetResult();
+                if (resultHttp.IsSuccessStatusCode)
+                {
+                    return;
+                }
+                else if (resultHttp.StatusCode == HttpStatusCode.NotFound)
+                {
+                    throw new ApiNotFoundException(resultHttp.Content.ToString());
+                }
+                else if (resultHttp.StatusCode == HttpStatusCode.Conflict)
+                {
+                    throw new ApiNotFoundException(resultHttp.Content.ToString());
+                }
+                else if(resultHttp.StatusCode == HttpStatusCode.TooManyRequests)
+                {
+                    do
+                    {
+                        var sleep = resultHttp.Headers.RetryAfter.Delta.Value.TotalMilliseconds;
+
+                        Thread.Sleep(3000);
+
+                        resultHttp = client.PostAsync(path, content).GetAwaiter().GetResult();
+
+                        if (resultHttp.IsSuccessStatusCode)
+                        {
+                            break;
+                        }
+                    } while (true);
                 }
             }
         }
