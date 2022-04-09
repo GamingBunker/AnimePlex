@@ -90,7 +90,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                                                 found = true;
                                             }catch (ApiNotFoundException ex)
                                             {
-                                                logger.Error($"Not found episodeRegister id: {episodeRegister.ID} for update information, details: {ex.Message}");
+                                                logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId} for update information, details: {ex.Message}");
                                             }
 
                                             break;

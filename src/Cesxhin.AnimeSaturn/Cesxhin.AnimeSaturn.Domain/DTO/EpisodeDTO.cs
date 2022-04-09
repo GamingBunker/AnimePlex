@@ -4,7 +4,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
 {
     public class EpisodeDTO
     {
-        public int ID { get; set; }
+        public string ID { get; set; }
         public string AnimeId { get; set; }
         public string UrlVideo { get; set; }
         public int NumberEpisodeCurrent { get; set; }

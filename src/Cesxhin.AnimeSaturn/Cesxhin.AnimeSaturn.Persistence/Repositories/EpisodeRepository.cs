@@ -20,7 +20,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
         //get episode by id
-        public async Task<IEnumerable<Episode>> GetEpisodeByIDAsync(int id)
+        public async Task<IEnumerable<Episode>> GetEpisodeByIDAsync(string id)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {

@@ -143,7 +143,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetEpisodeById(int id)
+        public async Task<IActionResult> GetEpisodeById(string id)
         {
             try
             {
@@ -165,7 +165,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeRegisterDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetEpisodeRegisterByEpisodeId(int id)
+        public async Task<IActionResult> GetEpisodeRegisterByEpisodeId(string id)
         {
             try
             {

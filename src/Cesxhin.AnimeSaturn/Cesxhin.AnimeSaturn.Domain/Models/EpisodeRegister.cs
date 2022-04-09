@@ -7,11 +7,8 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
     public class EpisodeRegister
     {
         [Primary]
-        [Map("id")]
-        public int ID { get; set; }
-
         [Map("episodeid")]
-        public int EpisodeId { get; set; }
+        public string EpisodeId { get; set; }
 
         [Map("episodepath")]
         public string EpisodePath { get; set; }
@@ -23,7 +20,6 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         {
             return new EpisodeRegister
             {
-                ID = anime.ID,
                 EpisodeId = anime.EpisodeId,
                 EpisodePath = anime.EpisodePath,
                 EpisodeHash = anime.EpisodeHash

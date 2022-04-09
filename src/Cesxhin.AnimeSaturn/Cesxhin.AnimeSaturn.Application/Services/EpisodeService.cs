@@ -18,7 +18,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //get episode by id
-        public async Task<EpisodeDTO> GetEpisodeByIDAsync(int id)
+        public async Task<EpisodeDTO> GetEpisodeByIDAsync(string id)
         {
             var listEpisode = await _episodeRepository.GetEpisodeByIDAsync(id);
             foreach(var episode in listEpisode)

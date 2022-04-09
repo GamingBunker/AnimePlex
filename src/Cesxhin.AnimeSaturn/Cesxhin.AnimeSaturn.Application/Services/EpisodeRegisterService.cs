@@ -22,7 +22,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //get episodeREgister by episode id
-        public async Task<EpisodeRegisterDTO> GetEpisodeRegisterByEpisodeId(int id)
+        public async Task<EpisodeRegisterDTO> GetEpisodeRegisterByEpisodeId(string id)
         {
             var listEpisodesRegisters = await _episodeRegisterRepository.GetEpisodeRegisterByEpisodeId(id);
             foreach(var episodeRegister in listEpisodesRegisters)

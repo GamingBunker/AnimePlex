@@ -91,7 +91,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 episodeRegisterApi.PutOne("/episode/register", episodeRegister).GetAwaiter().GetResult();
             }catch (ApiNotFoundException ex)
             {
-                logger.Error($"Not found episodeRegister id: {episodeRegister.ID}, details: {ex.Message}");
+                logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId}, details: {ex.Message}");
             }
 
             logger.Info($"Completed task download episode id: {episode.ID}");
