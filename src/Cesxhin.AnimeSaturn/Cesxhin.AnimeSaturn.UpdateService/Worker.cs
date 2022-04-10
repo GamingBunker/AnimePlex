@@ -37,7 +37,6 @@ namespace Cesxhin.AnimeSaturn.UpdateService
             //Istance Api
             Api<GenericDTO> animeApi = new Api<GenericDTO>();
             Api<EpisodeDTO> episodeApi = new Api<EpisodeDTO>();
-            Api<SpaceDiskDTO> checkDiskFreeSpaceApi = new Api<SpaceDiskDTO>();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -66,35 +65,33 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                             else if ((!File.Exists(episodeRegister.EpisodePath) && episode.StateDownload != "pending"))
                             {
                                 var found = false;
+                                string newHash;
                                 foreach (string file in Directory.EnumerateFiles(_folder, "*.mp4", SearchOption.AllDirectories))
                                 {
-                                    if(Path.GetFileNameWithoutExtension(file) == Path.GetFileNameWithoutExtension(episodeRegister.EpisodePath))
+                                    newHash = Hash.GetHash(file);
+                                    if (newHash == episodeRegister.EpisodeHash)
                                     {
-                                        string newHash = Hash.GetHash(file);
-                                        if(newHash == episodeRegister.EpisodeHash)
+                                        logger.Info($"I found file (episode id: {episode.ID}) that was move, now update information");
+                                        
+                                        //api
+                                        Api<EpisodeRegisterDTO> episodeRegisterApi = new Api<EpisodeRegisterDTO>();
+                                        
+                                        //update
+                                        episodeRegister.EpisodePath = file;
+                                        try
                                         {
-                                            logger.Info($"I found file (episode id: {episode.ID}) that was move, now update information");
-
-                                            //api
-                                            Api<EpisodeRegisterDTO> episodeRegisterApi = new Api<EpisodeRegisterDTO>();
-
-                                            //update
-                                            episodeRegister.EpisodePath = file;
-                                            try
-                                            {
-                                                await episodeRegisterApi.PutOne("/episode/register", episodeRegister);
-
-                                                logger.Info($"Ok update episode id: {episode.ID} that was move");
-
-                                                //return
-                                                found = true;
-                                            }catch (ApiNotFoundException ex)
-                                            {
-                                                logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId} for update information, details: {ex.Message}");
-                                            }
-
-                                            break;
+                                            await episodeRegisterApi.PutOne("/episode/register", episodeRegister);
+                                        
+                                            logger.Info($"Ok update episode id: {episode.ID} that was move");
+                                        
+                                            //return
+                                            found = true;
+                                        }catch (ApiNotFoundException ex)
+                                        {
+                                            logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId} for update information, details: {ex.Message}");
                                         }
+                                        
+                                        break;
                                     }
                                 }
 
@@ -105,17 +102,6 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                         }
                     }
                 }
-
-                //check disk space free
-                var freeGigabytes = new DriveInfo(_folder).AvailableFreeSpace / 1000000000;
-                var totalGigabytes = new DriveInfo(_folder).TotalSize / 1000000000;
-
-                var disk = new SpaceDiskDTO
-                {
-                    DiskSizeFree = freeGigabytes,
-                    DiskSizeTotal = totalGigabytes,
-                };
-                await checkDiskFreeSpaceApi.PutOne("/disk", disk);
 
                 logger.Info($"Worker running at: {DateTimeOffset.Now}");
                 await Task.Delay(_timeRefresh, stoppingToken);

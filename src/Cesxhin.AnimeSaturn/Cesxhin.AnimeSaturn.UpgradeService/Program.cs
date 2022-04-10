@@ -1,8 +1,10 @@
+using Cesxhin.AnimeSaturn.Application.CronJob;
 using Cesxhin.AnimeSaturn.Application.Generic;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NLog;
+using Quartz;
 using System;
 
 namespace Cesxhin.AnimeSaturn.UpgradeService
@@ -40,6 +42,17 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                     var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";
                     LogLevel logLevel = NLogManager.GetLevel(level);
                     NLogManager.Configure(logLevel);
+                    
+                    //cronjob for check health
+                    services.AddQuartz(q =>
+                    {
+                        q.UseMicrosoftDependencyInjectionJobFactory();
+                        q.ScheduleJob<HealthJob>(trigger => trigger
+                            .StartNow()
+                            .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("upgrade"));
+                        //q.AddJob<CronJob>(job => job.WithIdentity("update"));
+                    });
+                    services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
                     services.AddHostedService<Worker>();
                 });

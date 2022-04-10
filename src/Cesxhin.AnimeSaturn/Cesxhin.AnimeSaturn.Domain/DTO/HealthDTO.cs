@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Domain.DTO
 {
-    public class SpaceDiskDTO
+    public class HealthDTO
     {
-        public long DiskSizeTotal { get; set; }
-        public long DiskSizeFree { get; set; }
+        public string NameService { get; set; }
         public long LastCheck { get; set; }
+        public int Interval { get; set; }
     }
 }

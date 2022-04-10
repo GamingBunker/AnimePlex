@@ -1,3 +1,4 @@
+using Cesxhin.AnimeSaturn.Application.CronJob;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Repositories;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Application.Services;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Quartz;
 
 namespace Cesxhin.AnimeSaturn.Api
 {
@@ -42,6 +44,17 @@ namespace Cesxhin.AnimeSaturn.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cesxhin.AnimeSaturn.Api", Version = "v1" });
             });
+
+            //cronjob for check health
+            services.AddQuartz(q =>
+            {
+                q.UseMicrosoftDependencyInjectionJobFactory();
+                q.ScheduleJob<HealthJob>(trigger => trigger
+                    .StartNow()
+                    .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("api"));
+                //q.AddJob<CronJob>(job => job.WithIdentity("update"));
+            });
+            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

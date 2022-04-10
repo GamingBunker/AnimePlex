@@ -1,97 +1,115 @@
 <template>
-  <div class="container">
-    <!-- head -->
-    <div>
-      <!-- title -->
-      <div style="padding-bottom: 10px;">
-        <img src="../assets/img/bar-anime.jpg" style="object-fit: contain;" height="220" width="100%">
-      </div>
+  <div>
+    <div style="position:absolute; margin: 10px;">
+      <b-button v-b-toggle.sidebar-no-header style="background-color: #98ccd4; border:#98ccd4;"><i class="bi bi-caret-right"></i></b-button>
     </div>
-    
-    <!-- body -->
-    <div>
-      <div>
-        <SpaceDiskComponent />
-      </div>
-      <!-- bar search -->
-      <div>
-        <SearchComponent />
-      </div>
+    <b-sidebar id="sidebar-no-header" no-header shadow>
+      <template #default="{ hide }">
+        <div style="margin: 20px;">
+          <!-- Space Disk -->
+          <div>
+            <SpaceDiskComponent />
+          </div>
+          <!-- Health Services -->
+          <div>
+            <HealthServicesComponent />
+          </div>
+          <b-button variant="primary" block @click="hide">Close</b-button>
+        </div>
+      </template>
+    </b-sidebar>
 
-      <!-- validate cert -->
-      <!-- <template v-if="validateCertificate">
-        <a class="btn btn-danger" :href="protocol+'://'+host+':'+port+'/check'" role="button">Validate API</a>
-      </template> -->
-      
-      <!-- animation loading pages -->
-      <div v-if="loading" class="d-flex flex-row flex-wrap justify-content-center"  style="padding-top: 60px;">
-        <div v-for="number in 8" :key="number">
-          <PreviewAnimeLoading />
+    <div class="container">
+      <!-- head -->
+      <div>
+        <!-- title -->
+        <div style="padding-bottom: 10px;">
+          <img src="../assets/img/bar-anime.jpg" style="object-fit: contain;" height="220" width="100%">
         </div>
       </div>
       
-      <!-- empty -->
-      <div v-else-if="pages != null && pages.length <= 0">
-        <div class="alert alert-danger" role="alert">
-          <i class="bi bi-emoji-dizzy-fill"></i>
-          <strong>Not found!</strong>
+      <!-- body -->
+      <div>
+        <!-- bar search -->
+        <div>
+          <SearchComponent />
         </div>
-      </div>
 
-      <!-- search -->
-      <div v-else-if="searchView">
-
-        <!-- pagination -->
-        <nav style="margin: 10px 0px;">
-          <template v-if="numberPageTotal != -1">
-            <ul class="pagination nav justify-content-center pagination-sm">
-              <div>
-                <li class="page-item"><a @click="Previous()" class="page-link" style="margin: 0px 2px;" href="#"><i class="bi bi-arrow-left"></i></a></li>
-              </div>
-              <div v-for="numberPage in (numberPageTotal + 1)" :key="numberPage">
-                  <template v-if="(numberPage-1) == numberPageCurrent">
-                    <li class="page-item active" style="margin: 0px 2px;">
-                        <a @click="ToPage(numberPage)" class="page-link " href="#">{{numberPage}}</a>
-                    </li>
-                  </template>
-                  <template v-else>  
-                    <li class="page-item" style="margin: 0px 2px;">
-                      <a @click="ToPage(numberPage)" class="page-link" href="#">{{numberPage}}</a>
-                    </li>
-                  </template>
-              </div>
-              <div>
-                <li class="page-item"><a @click="Next()" class="page-link" style="margin: 0px 2px;" href="#"><i class="bi bi-arrow-right"></i></a></li>
-              </div>
-            </ul>
-          </template>
-        </nav>
-
-        <!-- list previewAnime -->
-        <div v-if="pages != null"  class="d-flex flex-row flex-wrap justify-content-center">
-          <div v-for="view in pages[numberPageCurrent]" :key="view.name">
-            <PreviewAnime :name="view.name" :image="view.image" :data="view" :urlExternal="urlExternal"/>
+        <!-- validate cert -->
+        <!-- <template v-if="validateCertificate">
+          <a class="btn btn-danger" :href="protocol+'://'+host+':'+port+'/check'" role="button">Validate API</a>
+        </template> -->
+        
+        <!-- animation loading pages -->
+        <div v-if="loading" class="d-flex flex-row flex-wrap justify-content-center"  style="padding-top: 60px;">
+          <div v-for="number in 8" :key="number">
+            <PreviewAnimeLoading />
           </div>
         </div>
-      </div>
+        
+        <!-- empty -->
+        <div v-else-if="pages != null && pages.length <= 0">
+          <div class="alert alert-danger" role="alert">
+            <i class="bi bi-emoji-dizzy-fill"></i>
+            <strong>Not found!</strong>
+          </div>
+        </div>
 
-      <!-- details anime -->
-      <div v-else class="row justify-content-center">
-        <DetailsAnime
-          :name="payload.name" 
-          :date="new Date(Date.parse(payload.dateRelease)).getDay()+'-'+new Date(Date.parse(payload.dateRelease)).getMonth()+'-'+new Date(Date.parse(payload.dateRelease)).getFullYear()" 
-          :description="payload.description" 
-          :image="payload.image" 
-          :status="payload.finish" 
-          :studio="payload.studio" 
-          :urlPage="payload.urlPage"
-          :duration="payload.durationEpisode"
-          :totalEpisode="payload.episodeTotal"
-          :vote="payload.vote"
-          :urlPageDownload="payload.urlPageDownload"
-          :urlExternal="urlExternal"
-          :exists="payload.exists"
-        />
+        <!-- search -->
+        <div v-else-if="searchView">
+
+          <!-- pagination -->
+          <nav style="margin: 10px 0px;">
+            <template v-if="numberPageTotal != -1">
+              <ul class="pagination nav justify-content-center pagination-sm">
+                <div>
+                  <li class="page-item"><a @click="Previous()" class="page-link" style="margin: 0px 2px;" href="#"><i class="bi bi-arrow-left"></i></a></li>
+                </div>
+                <div v-for="numberPage in (numberPageTotal + 1)" :key="numberPage">
+                    <template v-if="(numberPage-1) == numberPageCurrent">
+                      <li class="page-item active" style="margin: 0px 2px;">
+                          <a @click="ToPage(numberPage)" class="page-link " href="#">{{numberPage}}</a>
+                      </li>
+                    </template>
+                    <template v-else>  
+                      <li class="page-item" style="margin: 0px 2px;">
+                        <a @click="ToPage(numberPage)" class="page-link" href="#">{{numberPage}}</a>
+                      </li>
+                    </template>
+                </div>
+                <div>
+                  <li class="page-item"><a @click="Next()" class="page-link" style="margin: 0px 2px;" href="#"><i class="bi bi-arrow-right"></i></a></li>
+                </div>
+              </ul>
+            </template>
+          </nav>
+
+          <!-- list previewAnime -->
+          <div v-if="pages != null"  class="d-flex flex-row flex-wrap justify-content-center">
+            <div v-for="view in pages[numberPageCurrent]" :key="view.name">
+              <PreviewAnime :name="view.name" :image="view.image" :data="view" :urlExternal="urlExternal"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- details anime -->
+        <div v-else class="row justify-content-center">
+          <DetailsAnime
+            :name="payload.name" 
+            :date="new Date(Date.parse(payload.dateRelease)).getDay()+'-'+new Date(Date.parse(payload.dateRelease)).getMonth()+'-'+new Date(Date.parse(payload.dateRelease)).getFullYear()" 
+            :description="payload.description" 
+            :image="payload.image" 
+            :status="payload.finish" 
+            :studio="payload.studio" 
+            :urlPage="payload.urlPage"
+            :duration="payload.durationEpisode"
+            :totalEpisode="payload.episodeTotal"
+            :vote="payload.vote"
+            :urlPageDownload="payload.urlPageDownload"
+            :urlExternal="urlExternal"
+            :exists="payload.exists"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -103,10 +121,11 @@ import DetailsAnime from "../components/detailsAnime.vue";
 import SearchComponent from "../components/searchComponent.vue";
 import PreviewAnimeLoading from "../components/previewAnimeLoading.vue";
 import SpaceDiskComponent from "../components/spaceDiskComponent.vue";
+import HealthServicesComponent from "../components/healthServicesComponent.vue";
 
 export default {
     name: "IndexPage",
-    components: { PreviewAnime, DetailsAnime, SearchComponent, PreviewAnimeLoading, SpaceDiskComponent },
+    components: { PreviewAnime, DetailsAnime, SearchComponent, PreviewAnimeLoading, SpaceDiskComponent, HealthServicesComponent },
     data() {
         return {
             searchView: true,

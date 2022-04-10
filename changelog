@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Released]
+## [0.2.4]
+### Fixed
+- Resolve problem get urls for episodes during download in parallel
+- UpdateService also update the renaming of a file
+
+### Add
+- Show information space disk
+- Show information health of services
+- Add slide bar for see informations
+
 ## [0.2.3] - 08-04-2022
 ### Add
 - Webhook Discord for log
