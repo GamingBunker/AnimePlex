@@ -24,6 +24,7 @@ namespace Cesxhin.AnimeSaturn.Application.CronJob
             {
                 DiskSizeFree = freeGigabytes,
                 DiskSizeTotal = totalGigabytes,
+                Interval = 60000
             };
 
             checkDiskFreeSpaceApi.PutOne("/disk", disk).GetAwaiter().GetResult();

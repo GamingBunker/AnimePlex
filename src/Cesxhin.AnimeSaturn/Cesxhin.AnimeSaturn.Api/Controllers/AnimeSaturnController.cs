@@ -447,6 +447,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             {
                 Environment.SetEnvironmentVariable("CHECK_DISK_FREE_SPACE", disk.DiskSizeFree.ToString());
                 Environment.SetEnvironmentVariable("CHECK_DISK_TOTAL_SPACE", disk.DiskSizeTotal.ToString());
+                Environment.SetEnvironmentVariable("CHECK_DISK_INTERVAL", disk.Interval.ToString());
 
                 var check = new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
                 Environment.SetEnvironmentVariable("CHECK_DISK_LAST_CHECK", check.ToString());
@@ -471,6 +472,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 var checkDiskFree = Environment.GetEnvironmentVariable("CHECK_DISK_FREE_SPACE");
                 var checkDiskTotal = Environment.GetEnvironmentVariable("CHECK_DISK_TOTAL_SPACE");
                 var lastCheck = Environment.GetEnvironmentVariable("CHECK_DISK_LAST_CHECK");
+                var interval = Environment.GetEnvironmentVariable("CHECK_DISK_INTERVAL");
 
                 //check
                 if (checkDiskTotal != null && checkDiskTotal != null)
@@ -480,6 +482,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                        DiskSizeTotal = long.Parse(checkDiskTotal),
                        DiskSizeFree = long.Parse(checkDiskFree),
                        LastCheck = long.Parse(lastCheck),
+                       Interval = int.Parse(interval)
                     };
                     return Ok(disk);
                 }

@@ -3,7 +3,7 @@
         <span hidden>{{time}}</span>
             <div class="card text-dark bg-light mb-3" style="max-width: 18rem;">
                 <div class="card-header">
-                    Space Disk
+                    Disk Space
                 </div>
                 <div class="card-body" style="padding: 5px;">
                     <div class="d-flex flex-row align-items-center">
@@ -11,7 +11,7 @@
                             <h3 style="margin: 0px;"><i class="bi bi-device-hdd"></i></h3>
                         </div>
                         <div class="flex-column" style="width: 100%; margin-top: 5px;">
-                            <template v-if="disk != null && time - disk.lastCheck <= 30000">
+                            <template v-if="disk != null && (time - disk.lastCheck) <= (disk.interval + 5000)">
                                 <div class="progress" style="padding: 0px;">
                                     <template v-if="spaceFreePercentual < 75">
                                         <div class="progress-bar bg-success" role="progressbar" :style="'width: '+spaceFreePercentual+'%;'" :aria-valuenow="spaceFreePercentual" aria-valuemin="0" aria-valuemax="100">{{spaceFreePercentual}}%</div>
@@ -60,7 +60,7 @@
                     this.$axios.get(`${this.protocol}://${this.host}:${this.port}/disk`)
                     .then(rs => {
                         this.disk = rs.data
-                        this.spaceFreePercentual = ((this.disk.diskSizeTotal - this.disk.diskSizeFree)*100)/this.disk.diskSizeTotal;
+                        this.spaceFreePercentual = Math.round(((this.disk.diskSizeTotal - this.disk.diskSizeFree)*100)/this.disk.diskSizeTotal);
                     })
                     .catch(error => {
                         this.disk = null;

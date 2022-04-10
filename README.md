@@ -46,6 +46,9 @@ Questo progetto verrà utilizzato per esporre i dati in maniera facile e veloce 
 example:
     #--- DB ---
     DATABASE_CONNECTION: User ID=guest;Password=guest;Host=localhost;Port=33333;Database=db; [require]
+
+    #--- API ---
+    PORT_API: "33333" #5000 [default]
     
     #--- Logger ---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
@@ -148,6 +151,11 @@ example:
     USERNAME_RABBIT: "guest" #guest [default]
     PASSWORD_RABBIT: "guest" #guest [default]
     ADDRESS_RABBIT: "localhost" #localhost [default]
+
+    #--- API ---
+    ADDRESS_API: "localhost" #localhost [default]
+    PORT_API: "33333" #5000 [default]
+    PROTOCOL_API: "http" or "https" #http [default]
     
     #---Webhook---
     WEBHOOK_DISCORD: "url" [require]
