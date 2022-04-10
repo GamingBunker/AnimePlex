@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Released]
-## [0.2.4]
+## [0.2.5] - 10-04-2022
+### Fixed
+- Resolve problem show disk space
+
+## [0.2.4] - 10-04-2022
 ### Fixed
 - Resolve problem get urls for episodes during download in parallel
 - UpdateService also update the renaming of a file
