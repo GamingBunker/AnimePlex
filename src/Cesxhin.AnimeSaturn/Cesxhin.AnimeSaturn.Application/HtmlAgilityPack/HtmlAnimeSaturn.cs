@@ -197,10 +197,17 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     {
                         //inilize every cycle for task [IMPORTANT NOT REMOVE]
                         int numberEpisode = currentNumberEpisodes+i + 1;
+                        var episodeTask = listEpisodes[i];
                         //add task
                         if (capacity < NUMBER_PARALLEL_MAX)
                         {
-                            var task = Task.Run(() => DownloadMetadataEpisodeAsync(listEpisodes[i], numberSeason, numberEpisode, urlPage, name));
+                            var task = Task.Run(() => DownloadMetadataEpisodeAsync(episodeTask, numberSeason, numberEpisode, urlPage, name));
+
+                            do
+                            {
+                                //waiting;
+                            } while (task.Status != TaskStatus.Running);
+
                             tasks.Add(task);
                             capacity++;
                         }
@@ -236,7 +243,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             return episodes;
         }
 
-        private static async Task<EpisodeDTO> DownloadMetadataEpisodeAsync(HtmlNode episode, int numberSeason, int numberEpisode, string urlPage, string name)
+        private static EpisodeDTO DownloadMetadataEpisodeAsync(HtmlNode episode, int numberSeason, int numberEpisode, string urlPage, string name)
         {
             string urlEpisode = episode.
                             SelectNodes("a")
@@ -324,6 +331,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             {
                 return new EpisodeDTO
                 {
+                    ID = $"{name}-s{numberSeason}-e{numberEpisode}",
                     AnimeId = name,
                     NumberEpisodeCurrent = numberEpisode,
                     BaseUrl = playerUrl.BaseUrl,
@@ -338,6 +346,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             {
                 return new EpisodeDTO
                 {
+                    ID = $"{name}-s{numberSeason}-e{numberEpisode}",
                     AnimeId = name,
                     UrlVideo = url,
                     NumberEpisodeCurrent = numberEpisode,

@@ -4,8 +4,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
 {
     public class EpisodeRegisterDTO
     {
-        public int ID { get; set; }
-        public int EpisodeId { get; set; }
+        public string EpisodeId { get; set; }
         public string EpisodePath { get; set; }
         public string EpisodeHash { get; set; }
 
@@ -13,7 +12,6 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         {
             return new EpisodeRegisterDTO
             {
-                ID = anime.ID,
                 EpisodeId = anime.EpisodeId,
                 EpisodePath = anime.EpisodePath,
                 EpisodeHash = anime.EpisodeHash

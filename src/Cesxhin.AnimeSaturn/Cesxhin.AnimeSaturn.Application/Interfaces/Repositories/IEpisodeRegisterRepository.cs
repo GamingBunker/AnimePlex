@@ -7,7 +7,7 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Repositories
     public interface IEpisodeRegisterRepository
     {
         //get
-        Task<List<EpisodeRegister>> GetEpisodeRegisterByEpisodeId(int id);
+        Task<List<EpisodeRegister>> GetEpisodeRegisterByEpisodeId(string id);
         
         //insert
         Task<EpisodeRegister> InsertEpisodeRegisterAsync(EpisodeRegister episodeRegister);

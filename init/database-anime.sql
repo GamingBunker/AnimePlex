@@ -16,7 +16,7 @@ CREATE TABLE anime
 
 CREATE TABLE episode
 (
-    id serial primary key not null,
+    id varchar(500) primary key not null,
     animeId  varchar(250) REFERENCES anime(name),
     numberEpisodeCurrent int not null,
     numberSeasonCurrent int default 1,
@@ -35,8 +35,7 @@ CREATE TABLE episode
 
 CREATE TABLE episodeRegister
 (
-    id serial primary key not null,
-    episodeId integer REFERENCES episode(id) not null,
+    episodeId varchar(500) primary key REFERENCES episode(id) not null,
     episodePath varchar(500),
     episodeHash varchar(64)
 );

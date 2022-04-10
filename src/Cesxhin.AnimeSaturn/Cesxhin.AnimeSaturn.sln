@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.Downloa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.UpgradeService", "Cesxhin.AnimeSaturn.UpgradeService\Cesxhin.AnimeSaturn.UpgradeService.csproj", "{B3AB1F94-7D06-4927-9CDE-8F6CDB9A725A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cesxhin.AnimeSaturn.NotifyService", "Cesxhin.AnimeSaturn.NotifyService\Cesxhin.AnimeSaturn.NotifyService.csproj", "{6323304A-1DC0-4AA8-AB3E-66AC5C6CC36B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cesxhin.AnimeSaturn.NotifyService", "Cesxhin.AnimeSaturn.NotifyService\Cesxhin.AnimeSaturn.NotifyService.csproj", "{6323304A-1DC0-4AA8-AB3E-66AC5C6CC36B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

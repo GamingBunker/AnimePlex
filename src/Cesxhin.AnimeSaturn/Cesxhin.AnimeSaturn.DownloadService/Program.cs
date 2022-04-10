@@ -5,6 +5,8 @@ using Cesxhin.AnimeSaturn.Application.Consumers;
 using System;
 using NLog;
 using Cesxhin.AnimeSaturn.Application.Generic;
+using Quartz;
+using Cesxhin.AnimeSaturn.Application.CronJob;
 
 namespace Cesxhin.AnimeSaturn.DownloadService
 {
@@ -50,6 +52,17 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                     var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";
                     LogLevel logLevel = NLogManager.GetLevel(level);
                     NLogManager.Configure(logLevel);
+
+                    //cronjob for check health
+                    services.AddQuartz(q =>
+                    {
+                        q.UseMicrosoftDependencyInjectionJobFactory();
+                        q.ScheduleJob<HealthJob>(trigger => trigger
+                            .StartNow()
+                            .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("download"));
+                        //q.AddJob<CronJob>(job => job.WithIdentity("update"));
+                    });
+                    services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
                     services.AddHostedService<Worker>();
                 });

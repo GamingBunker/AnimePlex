@@ -20,7 +20,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
         //get all episodesRegisters
-        public async Task<List<EpisodeRegister>> GetEpisodeRegisterByEpisodeId(int id)
+        public async Task<List<EpisodeRegister>> GetEpisodeRegisterByEpisodeId(string id)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -62,7 +62,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             {
                 try
                 {
-                    var rs = await connection.UpdateAsync(episodeRegister, e => e.ID == episodeRegister.ID);
+                    var rs = await connection.UpdateAsync(episodeRegister, e => e.EpisodeId == episodeRegister.EpisodeId);
 
                     //check update
                     if(rs > 0)

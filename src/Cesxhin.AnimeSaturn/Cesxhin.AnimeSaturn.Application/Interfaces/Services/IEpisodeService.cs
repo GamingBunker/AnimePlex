@@ -7,7 +7,7 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
     public interface IEpisodeService
     {
         //get
-        Task<EpisodeDTO> GetEpisodeByIDAsync(int id);
+        Task<EpisodeDTO> GetEpisodeByIDAsync(string id);
         Task<IEnumerable<EpisodeDTO>> GetEpisodesByNameAsync(string name);
 
         //insert

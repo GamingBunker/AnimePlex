@@ -4,6 +4,8 @@ using MassTransit;
 using System;
 using Cesxhin.AnimeSaturn.Application.Generic;
 using NLog;
+using Cesxhin.AnimeSaturn.Application.CronJob;
+using Quartz;
 
 namespace Cesxhin.AnimeSaturn.UpdateService
 {
@@ -16,7 +18,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) =>
+                .ConfigureServices(async (hostContext, services) =>
                 {
                     //rabbit
                     services.AddMassTransit(
@@ -40,6 +42,20 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                     var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";
                     LogLevel logLevel = NLogManager.GetLevel(level);
                     NLogManager.Configure(logLevel);
+
+                    //cronjob for check health
+                    services.AddQuartz(q =>
+                    {
+                        q.UseMicrosoftDependencyInjectionJobFactory();
+                        q.ScheduleJob<HealthJob>(trigger => trigger
+                            .StartNow()
+                            .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("update"));
+
+                        q.ScheduleJob<SpaceDiskJob>(trigger => trigger
+                            .StartNow()
+                            .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)));
+                    });
+                    services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
                     services.AddHostedService<Worker>();
                 });
