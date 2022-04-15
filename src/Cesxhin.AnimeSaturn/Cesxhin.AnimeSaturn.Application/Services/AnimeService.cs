@@ -24,7 +24,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         //get all anime
         public async Task<IEnumerable<AnimeDTO>> GetAnimeAllAsync()
         {
-            List<AnimeDTO> animes = new List<AnimeDTO>();
+            List<AnimeDTO> animes = new();
             var listAnime = await _animeRepository.GetAnimeAllAsync();
 
             if (listAnime == null || listAnime.Count <= 0)
@@ -41,9 +41,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         //get all tables
         public async Task<IEnumerable<GenericDTO>> GetAnimeAllWithAllAsync()
         {
-            List<GenericDTO> listGenericDTO = new List<GenericDTO>();
-            List<EpisodeDTO> listEpisodeDTO = new List<EpisodeDTO>();
-            List<EpisodeRegisterDTO> listEpisodeRegisterDTO = new List<EpisodeRegisterDTO>();
+            List<GenericDTO> listGenericDTO = new();
+            List<EpisodeDTO> listEpisodeDTO = new();
+            List<EpisodeRegisterDTO> listEpisodeRegisterDTO = new();
 
             var listAnime = await _animeRepository.GetAnimeAllAsync();
             if (listAnime == null)
@@ -74,8 +74,8 @@ namespace Cesxhin.AnimeSaturn.Application.Services
                 });
 
                 //reset
-                listEpisodeDTO = new List<EpisodeDTO>();
-                listEpisodeRegisterDTO = new List<EpisodeRegisterDTO>();
+                listEpisodeDTO = new();
+                listEpisodeRegisterDTO = new();
             }
 
             return listGenericDTO;
@@ -97,7 +97,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         //get list anime
         public async Task<IEnumerable<AnimeDTO>> GetMostAnimeByNameAsync(string name)
         {
-            List<AnimeDTO> animeDTO = new List<AnimeDTO>();
+            List<AnimeDTO> animeDTO = new();
 
             var listAnime = await _animeRepository.GetMostAnimeByNameAsync(name);
 

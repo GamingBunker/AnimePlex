@@ -10,15 +10,24 @@ namespace Cesxhin.AnimeSaturn.Application.Generic
         {
             using (SHA256 hash = SHA256.Create())
             {
-                var content = File.ReadAllBytes(path);
+                try
+                {
+                    File.OpenRead(path).Close();
 
-                return BytesToStr(hash.ComputeHash(content));
+                    var content = File.ReadAllBytes(path);
+
+                    return BytesToStr(hash.ComputeHash(content));
+                }
+                catch(IOException)
+                {
+                    return null;
+                }
             }
         }
 
         private static string BytesToStr(byte[] bytes)
         {
-            StringBuilder str = new StringBuilder();
+            StringBuilder str = new();
 
             for (int i = 0; i < bytes.Length; i++)
                 str.AppendFormat("{0:X2}", bytes[i]);

@@ -19,12 +19,10 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
     {
         //const
         const int LIMIT_TIMEOUT = 10;
+        private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "250");
 
         //nlog
-        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
-
-        //number max parallel
-        private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "250");
+        private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
 
         public Task Consume(ConsumeContext<EpisodeDTO> context)
@@ -33,68 +31,119 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             var episode = context.Message;
 
             //api
-            Api<EpisodeRegisterDTO> episodeRegisterApi = new Api<EpisodeRegisterDTO>();
-            Api<AnimeDTO> animeApi = new Api<AnimeDTO>();
+            Api<EpisodeRegisterDTO> episodeRegisterApi = new();
+            Api<AnimeDTO> animeApi = new();
+            Api<EpisodeDTO> episodeApi = new();
 
-            var episodeRegister = episodeRegisterApi.GetOne($"/episode/register/episodeid/{episode.ID}").GetAwaiter().GetResult();
+            EpisodeRegisterDTO episodeRegister = null;
+            EpisodeDTO episodeVerify = null;
 
-            //paths
-            var directoryPath = Path.GetDirectoryName(episodeRegister.EpisodePath);
-            var filePath = episodeRegister.EpisodePath;
-
-            //check directory
-            if (!Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-
-            //check type url
-            if (episode.UrlVideo != null)
-            {
-                //url with file
-                using (var client = new MyWebClient())
-                {
-                    //task
-                    client.DownloadProgressChanged += client_DownloadProgressChanged(filePath, episode);
-                    client.DownloadFileCompleted += client_DownloadFileCompleted(filePath, episode);
-
-                    //add referer for download, also recive error 403 forbidden
-                    
-                    logger.Info("try download: " + episode.UrlVideo);
-                    try
-                    {
-                        var anime = animeApi.GetOne($"/anime/name/{episode.AnimeId}").GetAwaiter().GetResult();
-                        //start download
-                        client.Headers.Add("Referer", anime.UrlPage);
-                        client.Timeout = 60000; //? check
-                        client.DownloadFileTaskAsync(new Uri(episode.UrlVideo), filePath).ConfigureAwait(false).GetAwaiter().GetResult();
-                    }
-                    catch (ApiNotFoundException ex)
-                    {
-                        logger.Error($"not found anime so can't set headers referer for download, details: {ex.Message}");
-                    }
-                }
-            }
-            else
-            {
-                //url stream
-                Download(episode, filePath);
-            }
-
-            //get hash and update
-            logger.Info($"start calculate hash of episode id: {episode.ID}");
-            string hash = Hash.GetHash(episodeRegister.EpisodePath);
-            logger.Info($"end calculate hash of episode id: {episode.ID}");
-
-            episodeRegister.EpisodeHash = hash;
-
+            //episodeRegister
             try
             {
-                episodeRegisterApi.PutOne("/episode/register", episodeRegister).GetAwaiter().GetResult();
-            }catch (ApiNotFoundException ex)
+                episodeRegister = episodeRegisterApi.GetOne($"/episode/register/episodeid/{episode.ID}").GetAwaiter().GetResult();
+            }
+            catch (ApiNotFoundException ex)
             {
-                logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId}, details: {ex.Message}");
+                _logger.Error($"Not found episodeRegister, details error: {ex.Message}");
+            }catch (ApiGenericException ex)
+            {
+                _logger.Fatal($"Impossible error generic get episodeRegister, details error: {ex.Message}");
             }
 
-            logger.Info($"Completed task download episode id: {episode.ID}");
+            //episode
+            try
+            {
+                episodeVerify = episodeApi.GetOne($"/episode/id/{episode.ID}").GetAwaiter().GetResult();
+            }
+            catch (ApiNotFoundException ex)
+            {
+                _logger.Error($"Not found episodeRegister, details error: {ex.Message}");
+            }
+            catch (ApiGenericException ex)
+            {
+                _logger.Fatal($"Impossible error generic get episodeRegister, details error: {ex.Message}");
+            }
+
+            //check duplication messages
+            if (episodeVerify != null && episodeVerify.StateDownload == "pending" )
+            {
+                //paths
+                var directoryPath = Path.GetDirectoryName(episodeRegister.EpisodePath);
+                var filePath = episodeRegister.EpisodePath;
+
+                //check directory
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+
+                //check type url
+                if (episode.UrlVideo != null)
+                {
+                    //url with file
+                    using (var client = new MyWebClient())
+                    {
+                        //task
+                        client.DownloadProgressChanged += client_DownloadProgressChanged(filePath, episode);
+                        client.DownloadFileCompleted += client_DownloadFileCompleted(filePath, episode);
+
+                        //add referer for download, also recive error 403 forbidden
+
+                        _logger.Info("try download: " + episode.UrlVideo);
+                        try
+                        {
+                            var anime = animeApi.GetOne($"/anime/name/{episode.AnimeId}").GetAwaiter().GetResult();
+
+                            //setup client
+                            client.Headers.Add("Referer", anime.UrlPage);
+                            client.Timeout = 60000; //? check
+
+                            //start download
+                            client.DownloadFileTaskAsync(new Uri(episode.UrlVideo), filePath).ConfigureAwait(false).GetAwaiter().GetResult();
+                        }
+                        catch (ApiNotFoundException ex)
+                        {
+                            _logger.Error($"not found anime so can't set headers referer for download, details: {ex.Message}");
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Fatal($"Error download with url easy, details error: {ex.Message}");
+                        }
+                    }
+                }
+                else
+                {
+                    //url stream
+                    try
+                    {
+                        Download(episode, filePath);
+                    }catch (Exception ex)
+                    {
+                        _logger.Fatal($"Error download with url stream, details error: {ex.Message}");
+                    }
+                }
+
+                //get hash and update
+                _logger.Info($"start calculate hash of episode id: {episode.ID}");
+                string hash = Hash.GetHash(episodeRegister.EpisodePath);
+                _logger.Info($"end calculate hash of episode id: {episode.ID}");
+
+                episodeRegister.EpisodeHash = hash;
+
+                try
+                {
+                    episodeRegisterApi.PutOne("/episode/register", episodeRegister).GetAwaiter().GetResult();
+                }
+                catch (ApiNotFoundException ex)
+                {
+                    _logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId}, details error: {ex.Message}");
+                }
+                catch (ApiGenericException ex)
+                {
+                    _logger.Fatal($"Error generic put episodeRegister, details error: {ex.Message}");
+                }
+            }
+
+            _logger.Info($"Completed task download episode id: {episode.ID}");
             return Task.CompletedTask;
         }
 
@@ -105,7 +154,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             int timeoutFile = 0;
 
             //api
-            Api<EpisodeDTO> episodeDTOApi = new Api<EpisodeDTO>();
+            Api<EpisodeDTO> episodeDTOApi = new();
 
             while (true)
             {
@@ -114,6 +163,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     //send api failed download
                     episode.StateDownload = "failed";
                     SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+
                     throw new Exception($"{filePath} impossible open file, contact administrator please");
                 }
                 try
@@ -121,9 +171,9 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     //create file and save to end operation
                     using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
                     {
-                        List<EpisodeBuffer> buffer = new List<EpisodeBuffer>();
+                        List<EpisodeBuffer> buffer = new();
 
-                        logger.Info("start download " + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+                        _logger.Info($"start download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
 
                         //change by pending to downloading
                         episode.StateDownload = "downloading";
@@ -137,7 +187,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                         //parallel
                         int capacity = 0;
-                        List<Task> tasks = new List<Task>();
+                        List<Task> tasks = new();
 
                         for (int numberFrame = episode.startNumberBuffer; numberFrame <= episode.endNumberBuffer; numberFrame++)
                         {
@@ -156,7 +206,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                             //must remove one task for continue download
                             do
                             {
-                                List<Task> removeTask = new List<Task>();
+                                List<Task> removeTask = new();
                                 foreach (var task in tasks)
                                 {
                                     if (task.IsCompleted)
@@ -183,7 +233,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                                 //send statistic
                                 percentual = (100 * count) / episode.endNumberBuffer;
-                                logger.Debug("status download " + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent + "status download: " + percentual + "%");
+                                _logger.Debug($"status download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent} status download: {percentual}%");
 
                                 //send only one data every 3 seconds
                                 intervalCheck = DateTime.Now.Second;
@@ -202,9 +252,9 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                             } while (capacity >= NUMBER_PARALLEL_MAX || (numberFrame == episode.endNumberBuffer) && capacity != 0);
 
                         }
-                        logger.Info("end download " + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+                        _logger.Info($"end download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
 
-                        logger.Info("start join most buffer" + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+                        _logger.Info($"start join most buffer {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
 
                         //order by id
                         buffer.Sort(delegate (EpisodeBuffer e1, EpisodeBuffer e2) { return e1.Id.CompareTo(e2.Id); });
@@ -214,7 +264,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                             fs.Write(singleBuffer.Data);
                         }
 
-                        logger.Info("end join most buffer" + episode.AnimeId + "s" + episode.NumberSeasonCurrent + "-e" + episode.NumberEpisodeCurrent);
+                        _logger.Info($"end join most buffer {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
 
                         //send end download
                         episode.StateDownload = "completed";
@@ -225,12 +275,12 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 }
                 catch (IOException ex)
                 {
-                    logger.Error($"{filePath} can't open, details: {ex.Message}");
+                    _logger.Error($"{filePath} can't open, details: {ex.Message}");
                     timeoutFile++;
                 }
                 catch (Exception ex)
                 {
-                    logger.Fatal($"{filePath} can't open, details: {ex.Message}");
+                    _logger.Fatal($"{filePath} can't open, details: {ex.Message}");
                 }
             }
         }
@@ -256,14 +306,14 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                         episode.StateDownload = "failed";
                         SendStatusDownloadAPIAsync(episode, episodeDTOApi);
 
-                        logger.Error("Failed download, details: " + url);
+                        _logger.Error($"Failed download, details: {url}");
 
                         //delete file
                         //fs.Close();
                         if (File.Exists(filePath))
                         {
                             File.Delete(filePath);
-                            logger.Warn($"The file is deleted {filePath}");
+                            _logger.Warn($"The file is deleted {filePath}");
                         }
                         return null;
                     }
@@ -278,8 +328,8 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     }
                     catch (Exception ex)
                     {
-                        logger.Error(ex);
-                        logger.Warn($"The attempts remains: {LIMIT_TIMEOUT - timeout} for {url}");
+                        _logger.Error(ex);
+                        _logger.Warn($"The attempts remains: {LIMIT_TIMEOUT - timeout} for {url}");
                         timeout++;
 
                         //waiting before for re-download
@@ -298,14 +348,14 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             int intervalCheck;
 
             //api
-            Api<EpisodeDTO> episodeDTO = new Api<EpisodeDTO>();
+            Api<EpisodeDTO> episodeDTO = new();
 
             try
             {
                 Action<object, DownloadProgressChangedEventArgs> action = (sender, e) =>
                 {
                     //print progress
-                    logger.Debug(e.ProgressPercentage + "% | " + e.BytesReceived + " bytes out of " + e.TotalBytesToReceive + " bytes retrieven of the file: " + filePath);
+                    _logger.Debug(e.ProgressPercentage + "% | " + e.BytesReceived + " bytes out of " + e.TotalBytesToReceive + " bytes retrieven of the file: " + filePath);
 
                     //send only one data every 3 seconds
                     intervalCheck = DateTime.Now.Second;
@@ -325,7 +375,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             }
             catch (Exception ex)
             {
-                logger.Error(ex.Message);
+                _logger.Error(ex.Message);
             }
             return null;
 
@@ -335,26 +385,26 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             try
             {
                 //api
-                Api<EpisodeDTO> episodeDTO = new Api<EpisodeDTO>();
+                Api<EpisodeDTO> episodeDTO = new();
 
                 //recive response action
                 Action<object, AsyncCompletedEventArgs> action = (sender, e) =>
                 {
                     if (e.Error != null)
                     {
-                        logger.Error($"Interrupt download file {filePath}");
-                        logger.Error(e.Error);
+                        _logger.Error($"Interrupt download file {filePath}");
+                        _logger.Error(e.Error);
 
                         if (File.Exists(filePath))
                         {
                             try
                             {
                                 File.Delete(filePath);
-                                logger.Warn($"The file is deleted {filePath}");
+                                _logger.Warn($"The file is deleted {filePath}");
                             }
                             catch (IOException ex)
                             {
-                                logger.Error($"cannot delete file {filePath}, details error:{ex.Message}");
+                                _logger.Error($"cannot delete file {filePath}, details error:{ex.Message}");
                             }
                         }
 
@@ -364,7 +414,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     }
                     else
                     {
-                        logger.Info($"Download completed! {filePath}");
+                        _logger.Info($"Download completed! {filePath}");
 
                         //download finish download
                         episode.StateDownload = "completed";
@@ -376,7 +426,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                _logger.Error(ex);
             }
             return null;
         }
@@ -388,10 +438,10 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 episodeApi.PutOne("/statusDownload", episode).GetAwaiter().GetResult();
             }catch (ApiNotFoundException ex)
             {
-                logger.Error($"Not found episode id: {episode.ID}, details: {ex.Message}");
+                _logger.Error($"Not found episode id: {episode.ID}, details: {ex.Message}");
             }catch (ApiGenericException ex)
             {
-                logger.Error($"Error generic api, details: {ex.Message}");
+                _logger.Error($"Error generic api, details: {ex.Message}");
             }
         }
     }

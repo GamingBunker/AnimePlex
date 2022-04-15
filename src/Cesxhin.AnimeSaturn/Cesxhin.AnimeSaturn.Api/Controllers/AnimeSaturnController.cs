@@ -64,6 +64,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
                 if (anime == null)
                     return NotFound();
+
                 return Ok(anime);
             }
             catch
@@ -85,6 +86,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
                 if (anime == null)
                     return NotFound();
+
                 return Ok(anime);
             }
             catch
@@ -260,6 +262,9 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 var rs = await _episodeRegisterService.UpdateEpisodeRegisterAsync(episodeRegister);
+                if(rs == null)
+                    return NotFound();
+
                 return Ok(rs);
             }
             catch
@@ -277,7 +282,11 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //update
-                return Ok(await _episodeService.UpdateStateDownloadAsync(episode));
+                var rs = await _episodeService.UpdateStateDownloadAsync(episode);
+                if (rs == null)
+                    return NotFound();
+
+                return Ok(rs);
             }catch
             {
                 return StatusCode(500);
@@ -296,7 +305,9 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 var animeUrls = HtmlAnimeSaturn.GetAnimeUrl(name);
                 if (animeUrls != null || animeUrls.Count >= 0)
                 {
-                    List<AnimeUrlDTO> list = new List<AnimeUrlDTO>();
+                    //list anime
+                    List<AnimeUrlDTO> list = new();
+
                     foreach (var animeUrl in animeUrls)
                     {
                         var animeUrlDTO = new AnimeUrlDTO().AnimeToAnimeUrlDTO(animeUrl);
@@ -310,8 +321,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                     }
                     return Ok(list);
                 }
-                else
-                    return NotFound();
+                return NotFound();
             }
             catch
             {
@@ -328,6 +338,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
+                //get anime and episodes
                 var anime = HtmlAnimeSaturn.GetAnime(download.Url);
                 var episodes = HtmlAnimeSaturn.GetEpisodes(download.Url, anime.Name);
 
@@ -343,24 +354,13 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 if (episodeResult == null)
                     return Conflict();
 
-                episodes = ConvertGeneric<EpisodeDTO>.ConvertIEnurableToListCollection(episodeResult);
-
-              
                 var listEpisodeRegister = new List<EpisodeRegisterDTO>();
-                string formatNumberView;
 
                 foreach (var episode in episodes)
                 {
-                    //check max space numbers
-                    formatNumberView = "D2"; //default
-                    if (episode.NumberEpisodeCurrent > 99)
-                        formatNumberView = "D3";
-                    else if (episode.NumberEpisodeCurrent > 999)
-                        formatNumberView = "D4";
-
                     listEpisodeRegister.Add(new EpisodeRegisterDTO{
                         EpisodeId = episode.ID,
-                        EpisodePath = $"{_folder}/{episode.AnimeId}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4"
+                        EpisodePath = $"{_folder}/{episode.AnimeId}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4"
                     });
                 }
 
@@ -439,9 +439,9 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
         //put data check disk free space
         [HttpPut("/disk")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<SpaceDiskDTO>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DiskSpaceDTO>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SetCheckDiskFreeSpace(SpaceDiskDTO disk)
+        public async Task<IActionResult> SetCheckDiskFreeSpace(DiskSpaceDTO disk)
         {
             try
             {
@@ -461,7 +461,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
         //get data check disk free space
         [HttpGet("/disk")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<SpaceDiskDTO>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DiskSpaceDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCheckDiskFreeSpace()
@@ -478,7 +478,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 if (checkDiskTotal != null && checkDiskTotal != null)
                 {
                     //return with object
-                    var disk = new SpaceDiskDTO{
+                    var disk = new DiskSpaceDTO{
                        DiskSizeTotal = long.Parse(checkDiskTotal),
                        DiskSizeFree = long.Parse(checkDiskFree),
                        LastCheck = long.Parse(lastCheck),
@@ -515,7 +515,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
         //get data check disk free space
         [HttpGet("/health")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<SpaceDiskDTO>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DiskSpaceDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetHealtService()
@@ -523,8 +523,10 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //set
-                List<HealthDTO> healthServiceDTOs = new List<HealthDTO>();
+                List<HealthDTO> healthServiceDTOs = new();
+
                 string[] services = new string[5] { "DOWNLOAD", "UPGRADE", "API", "UPDATE", "NOTIFY" };
+
                 var lastCheck = "";
                 var intervalCheck = "";
 

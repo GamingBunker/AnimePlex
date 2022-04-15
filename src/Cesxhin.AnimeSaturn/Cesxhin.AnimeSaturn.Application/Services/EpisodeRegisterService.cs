@@ -42,7 +42,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         //insert list episodeRegister
         public async Task<List<EpisodeRegisterDTO>> InsertEpisodesRegistersAsync(List<EpisodeRegisterDTO> episodesRegistersDTO)
         {
-            List<EpisodeRegisterDTO> resultEpisodes = new List<EpisodeRegisterDTO>();
+            List<EpisodeRegisterDTO> resultEpisodes = new();
             foreach (var episode in episodesRegistersDTO)
             {
                 var episodeResult = await _episodeRegisterRepository.InsertEpisodeRegisterAsync(EpisodeRegister.EpisodeRegisterToEpisodeRegisterDTO(episode));

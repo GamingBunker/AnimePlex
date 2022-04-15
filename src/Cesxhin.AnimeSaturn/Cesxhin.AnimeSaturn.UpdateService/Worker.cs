@@ -6,6 +6,7 @@ using MassTransit;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -19,7 +20,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
         private readonly IBus _publishEndpoint;
 
         //log
-        private readonly NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
+        private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
         //env
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
@@ -32,17 +33,30 @@ namespace Cesxhin.AnimeSaturn.UpdateService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            HttpClient client = new HttpClient();
+            //client
+            HttpClient client = new();
 
             //Istance Api
-            Api<GenericDTO> animeApi = new Api<GenericDTO>();
-            Api<EpisodeDTO> episodeApi = new Api<EpisodeDTO>();
+            Api<GenericDTO> animeApi = new();
+            Api<EpisodeDTO> episodeApi = new();
+            Api<EpisodeRegisterDTO> episodeRegisterApi = new();
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 //download api
-                var listAnime = await animeApi.GetMore("/all");
+                List<GenericDTO> listAnime = null;
+                try
+                {
+                    listAnime = await animeApi.GetMore("/all");
+                }catch (ApiNotFoundException ex)
+                {
+                    _logger.Error($"Not found get all, details error: {ex.Message}");
+                }catch(ApiGenericException ex)
+                {
+                    _logger.Fatal($"Error generic get all, details error: {ex.Message}");
+                }
 
+                //if exists listAnime
                 if(listAnime != null)
                 {
                     //step one check file
@@ -53,12 +67,15 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                         {
                             var episodeRegister = anime.EpisodeRegister.Find(e => e.EpisodeId == episode.ID);
                             if (episodeRegister == null)
-                                throw new Exception("not found episodeRegister");
+                            {
+                                _logger.Warn($"not found episodeRegister by episode id: {episode.ID}");
+                                continue;
+                            }
 
-                            logger.Debug($"check {episodeRegister.EpisodePath}");
+                            _logger.Debug($"check {episodeRegister.EpisodePath}");
 
                             //check integry file
-                            if (episode.StateDownload == null || episode.StateDownload == "failed")
+                            if (episode.StateDownload == null || episode.StateDownload == "failed" || (episode.StateDownload == "completed" && episodeRegister.EpisodeHash == null))
                             {
                                 ConfirmStartDownloadAnime(episode, episodeApi);
                             }
@@ -71,10 +88,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                                     newHash = Hash.GetHash(file);
                                     if (newHash == episodeRegister.EpisodeHash)
                                     {
-                                        logger.Info($"I found file (episode id: {episode.ID}) that was move, now update information");
-                                        
-                                        //api
-                                        Api<EpisodeRegisterDTO> episodeRegisterApi = new Api<EpisodeRegisterDTO>();
+                                        _logger.Info($"I found file (episode id: {episode.ID}) that was move, now update information");
                                         
                                         //update
                                         episodeRegister.EpisodePath = file;
@@ -82,15 +96,23 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                                         {
                                             await episodeRegisterApi.PutOne("/episode/register", episodeRegister);
                                         
-                                            logger.Info($"Ok update episode id: {episode.ID} that was move");
+                                            _logger.Info($"Ok update episode id: {episode.ID} that was move");
                                         
                                             //return
                                             found = true;
                                         }catch (ApiNotFoundException ex)
                                         {
-                                            logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId} for update information, details: {ex.Message}");
+                                            _logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId} for update information, details: {ex.Message}");
                                         }
-                                        
+                                        catch (ApiConflictException ex)
+                                        {
+                                            _logger.Error($"Error conflict put episodeRegister, details error: {ex.Message}");
+                                        }
+                                        catch (ApiGenericException ex)
+                                        {
+                                            _logger.Fatal($"Error generic put episodeRegister, details error: {ex.Message}");
+                                        }
+
                                         break;
                                     }
                                 }
@@ -103,7 +125,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                     }
                 }
 
-                logger.Info($"Worker running at: {DateTimeOffset.Now}");
+                _logger.Info($"Worker running at: {DateTimeOffset.Now}");
                 await Task.Delay(_timeRefresh, stoppingToken);
             }
         }
@@ -119,11 +141,15 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                 await episodeApi.PutOne("/statusDownload", episode);
 
                 await _publishEndpoint.Publish(episode);
-                logger.Info($"this file ({episode.AnimeId} episode: {episode.NumberEpisodeCurrent}) does not exists, sending message to DownloadService");
+                _logger.Info($"this file ({episode.AnimeId} episode: {episode.NumberEpisodeCurrent}) does not exists, sending message to DownloadService");
             }
             catch (ApiNotFoundException ex)
             {
-                logger.Error($"Impossible update episode becouse not found episode id: {episode.ID}, details: {ex.Message}");
+                _logger.Error($"Impossible update episode becouse not found episode id: {episode.ID}, details: {ex.Message}");
+            }
+            catch(ApiGenericException ex)
+            {
+                _logger.Fatal($"Error update episode, details error: {ex.Message}");
             }
         }
     }

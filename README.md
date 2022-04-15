@@ -5,7 +5,7 @@ Scarica le serie tv/film dal sito [AnimeSaturn](https://www.animesaturn.it/) e m
 
 ## La struttura del progetto
 Il progetto si suddivide in 4 progetti:
-- 🧮Api Server (C#)
+- 🧮Api Service (C#)
 - 📩Download Service (C#)
 - 📨Notify Service (C#)
 - 💾Update Service (C#)
@@ -19,7 +19,7 @@ Servizi utilizzati:
 ### Lista di immagini disponibili su DockerHub
 | Nome Immagine | Link |
 | ------ | ------ |
-| 🧮Api Server | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-api) |
+| 🧮Api Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-api) |
 | 📩Download Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-downloadservice) |
 | 📨Notify Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-notifyservice) |
 | 💾Update Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-updateservice) |
@@ -28,6 +28,10 @@ Servizi utilizzati:
 
 ## 🌐Web Server
 Questo progetto verrà utilizzato per gli utenti che vorranno visualizzare e scaricare gli episodi.
+
+### Expose Ports:
+- 3000 tcp
+
 ### Variabili globali richiesti:
 ```sh
 example:
@@ -37,8 +41,12 @@ example:
     PROTOCOL_API: "https" or "http" #http [default]
 ```
 
-## 🧮Api Server
+## 🧮Api Service
 Questo progetto verrà utilizzato per esporre i dati in maniera facile e veloce con il database postgresql.
+
+### Expose Ports:
+- 80 tcp
+
 ### Information general:
 - `not` require volume mounted on Docker
 ### Variabili globali richiesti:

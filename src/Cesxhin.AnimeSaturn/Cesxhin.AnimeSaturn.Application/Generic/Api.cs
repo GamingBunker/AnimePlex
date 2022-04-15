@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Cesxhin.AnimeSaturn.Application.Exceptions;
 
@@ -17,7 +16,7 @@ namespace Cesxhin.AnimeSaturn.Application.Generic
         readonly string _protocol = Environment.GetEnvironmentVariable("PROTOCOL_API") ?? "http";
 
         //settings deserialize
-        readonly JsonSerializerOptions options = new JsonSerializerOptions
+        readonly JsonSerializerOptions options = new()
         {
             PropertyNameCaseInsensitive = true,
         };
@@ -195,22 +194,6 @@ namespace Cesxhin.AnimeSaturn.Application.Generic
                 else if (resultHttp.StatusCode == HttpStatusCode.Conflict)
                 {
                     throw new ApiNotFoundException(resultHttp.Content.ToString());
-                }
-                else if(resultHttp.StatusCode == HttpStatusCode.TooManyRequests)
-                {
-                    do
-                    {
-                        var sleep = resultHttp.Headers.RetryAfter.Delta.Value.TotalMilliseconds;
-
-                        Thread.Sleep(3000);
-
-                        resultHttp = client.PostAsync(path, content).GetAwaiter().GetResult();
-
-                        if (resultHttp.IsSuccessStatusCode)
-                        {
-                            break;
-                        }
-                    } while (true);
                 }
             }
         }

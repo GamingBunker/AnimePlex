@@ -22,7 +22,7 @@ namespace Cesxhin.AnimeSaturn.Application.NlogManager
             webhookUrl = Environment.GetEnvironmentVariable("WEBHOOK_DISCORD_DEBUG") ?? null;
 
             //api
-            webhookApi = new Api<MessageDiscord>();
+            webhookApi = new();
         }
 
         private string DefaultMessage(LogLevel level,  string msg)

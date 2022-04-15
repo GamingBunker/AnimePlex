@@ -14,7 +14,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
     public class AnimeRepository : IAnimeRepository
     {
         //log
-        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
+        private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
         //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
@@ -29,9 +29,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                     var rs = await connection.QueryAllAsync<Anime>();
                     return ConvertGeneric<Anime>.ConvertIEnurableToListCollection(rs);
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
-                    logger.Error("Failed GetAnimeAllAsync, details error: " + e);
+                    _logger.Error($"Failed GetAnimeAllAsync, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -47,9 +47,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                     var rs = await connection.QueryAsync<Anime>(e => e.Name == name);
                     return ConvertGeneric<Anime>.ConvertIEnurableToListCollection(rs);
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
-                    logger.Error("Failed GetAnimeByNameAsync, details error: " + e);
+                    _logger.Error($"Failed GetAnimeByNameAsync, details error: {ex.Message}"); ;
                     return null;
                 }
             }
@@ -65,9 +65,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                     var rs = await connection.ExecuteQueryAsync<Anime>("SELECT * FROM anime WHERE lower(name) like '%" + name.ToLower() + "%'");
                     return ConvertGeneric<Anime>.ConvertIEnurableToListCollection(rs);
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
-                    logger.Error("Failed GetMostAnimeByNameAsync, details error: " + e);
+                    _logger.Error($"Failed GetMostAnimeByNameAsync, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -82,9 +82,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 {
                     await connection.InsertAsync(anime);
                     return anime;
-                }catch(Exception e)
+                }catch(Exception ex)
                 {
-                    logger.Error("Failed InsertAnimeAsync, details error: " + e);
+                    _logger.Error($"Failed InsertAnimeAsync, details error: {ex.Message}");
                     return null;
                 }
             }

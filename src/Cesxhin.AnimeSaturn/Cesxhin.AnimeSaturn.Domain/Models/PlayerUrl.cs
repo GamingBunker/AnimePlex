@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Cesxhin.AnimeSaturn.Domain.Models
+﻿namespace Cesxhin.AnimeSaturn.Domain.Models
 {
     public class PlayerUrl
     {

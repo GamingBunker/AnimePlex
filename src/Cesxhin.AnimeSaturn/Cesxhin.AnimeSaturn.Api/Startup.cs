@@ -1,4 +1,5 @@
 using Cesxhin.AnimeSaturn.Application.CronJob;
+using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Repositories;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Application.Services;
@@ -9,7 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using NLog;
 using Quartz;
+using System;
 
 namespace Cesxhin.AnimeSaturn.Api
 {
@@ -52,8 +55,13 @@ namespace Cesxhin.AnimeSaturn.Api
                 q.ScheduleJob<HealthJob>(trigger => trigger
                     .StartNow()
                     .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("api"));
-                //q.AddJob<CronJob>(job => job.WithIdentity("update"));
             });
+
+            //setup nlog
+            var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";
+            LogLevel logLevel = NLogManager.GetLevel(level);
+            NLogManager.Configure(logLevel);
+
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
         }
 

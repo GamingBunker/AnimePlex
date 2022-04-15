@@ -18,7 +18,7 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
     public class Worker : BackgroundService
     {
         //log
-        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
+        private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
         //variables
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
@@ -35,21 +35,21 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                List<GenericDTO> listGenerics = new List<GenericDTO>();
+                List<GenericDTO> listGenerics = new();
                 List<EpisodeRegisterDTO> listEpisodeRegister;
                 List<EpisodeRegisterDTO> blacklist;
 
                 //api
-                Api<GenericDTO> genericApi = new Api<GenericDTO>();
-                Api<EpisodeDTO> episodeApi = new Api<EpisodeDTO>();
-                Api<EpisodeRegisterDTO> episodeRegisterApi = new Api<EpisodeRegisterDTO>();
+                Api<GenericDTO> genericApi = new();
+                Api<EpisodeDTO> episodeApi = new();
+                Api<EpisodeRegisterDTO> episodeRegisterApi = new();
 
                 try
                 {
                     listGenerics = await genericApi.GetMore("/all");
                 }catch (ApiNotFoundException ex)
                 {
-                    logger.Error($"not found, details: "+ex.Message);
+                    _logger.Error($"not found, details: "+ex.Message);
                 }
 
                 //step check on website if the anime is still active
@@ -61,7 +61,7 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                     List<EpisodeDTO> checkEpisodes = null;
                     List<EpisodeDTO> listEpisodesAdd = null;
 
-                    logger.Info("Check new episodes for Anime: " + anime.Name);
+                    _logger.Info("Check new episodes for Anime: " + anime.Name);
 
                     //check new episode
                     checkEpisodes = HtmlAnimeSaturn.GetEpisodes(anime.UrlPage, anime.Name);
@@ -69,12 +69,12 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                     //check if null
                     if (checkEpisodes == null)
                     {
-                        logger.Error($"Can't download with this url, {anime.UrlPage}");
+                        _logger.Error($"Can't download with this url, {anime.UrlPage}");
                         continue;
                     }
 
-                    listEpisodesAdd = new List<EpisodeDTO>(checkEpisodes);
-                    blacklist = new List<EpisodeRegisterDTO>();
+                    listEpisodesAdd = new(checkEpisodes);
+                    blacklist = new();
 
                     foreach (var checkEpisode in checkEpisodes)
                     {
@@ -91,15 +91,14 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
 
                     if (listEpisodesAdd.Count > 0)
                     {
-                        logger.Info($"There are new episodes ({listEpisodesAdd.Count}) of {anime.Name}");
+                        _logger.Info($"There are new episodes ({listEpisodesAdd.Count}) of {anime.Name}");
 
                         //insert to db
                         listEpisodesAdd = await episodeApi.PostMore("/episodes", listEpisodesAdd);
 
                         //create episodeRegister
-                        listEpisodeRegister = new List<EpisodeRegisterDTO>();
+                        listEpisodeRegister = new();
 
-                        string formatNumberView;
                         string pathDefault = null; 
                         string path = null;
 
@@ -108,22 +107,15 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
 
                         foreach (var episode in listEpisodesAdd)
                         {
-                            formatNumberView = "D2"; //default
-                                                     //check max space numbers
-                            if (episode.NumberEpisodeCurrent > 99)
-                                formatNumberView = "D3";
-                            else if (episode.NumberEpisodeCurrent > 999)
-                                formatNumberView = "D4";
-
                             path = "";
                             //use path how others episodesRegisters
                             if (pathDefault != null)
                             {
-                                path = $"{pathDefault}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4";
+                                path = $"{pathDefault}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4";
                             }
                             else //default
                             {
-                                path = $"{_folder}/{episode.AnimeId}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString(formatNumberView)}.mp4";
+                                path = $"{_folder}/{episode.AnimeId}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4";
                             }
 
                             listEpisodeRegister.Add(new EpisodeRegisterDTO
@@ -150,17 +142,17 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                             await _publishEndpoint.Publish(messageNotify);
                         }catch (Exception ex)
                         {
-                            logger.Error("Cannot send message rabbit, details: " + ex.Message);
+                            _logger.Error($"Cannot send message rabbit, details: {ex.Message}");
                         }
 
 
-                        logger.Info($"Done upgrade! of {anime.Name}");
+                        _logger.Info($"Done upgrade! of {anime.Name}");
                     }
                     //clear resource
                     listEpisodesAdd.Clear();
                 }
 
-                logger.Info($"Worker running at: {DateTimeOffset.Now}");
+                _logger.Info($"Worker running at: {DateTimeOffset.Now}");
                 await Task.Delay(_timeRefresh, stoppingToken);
             }
         }
