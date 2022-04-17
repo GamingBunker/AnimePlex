@@ -3,6 +3,7 @@ CREATE DATABASE animePlex;
 CREATE TABLE anime
 (
     name varchar(250) primary key not null,
+    surname varchar(250) not null,
     studio varchar(250),
     description text,
     vote varchar(10),

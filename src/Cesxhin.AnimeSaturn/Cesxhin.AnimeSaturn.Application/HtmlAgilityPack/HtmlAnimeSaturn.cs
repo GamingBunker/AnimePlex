@@ -25,7 +25,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
         public static AnimeDTO GetAnime(string urlPage)
         {
             //set variable
-            string durationEpisode = null, vote = null, description = null, nameAnime = null, numberTotalEpisodes = null, date = null, studio = null;
+            string durationEpisode = null, vote = null, description = null, surname = null, nameAnime = null, numberTotalEpisodes = null, date = null, studio = null;
             bool finish = false;
             byte[] imageBytes = null;
 
@@ -117,6 +117,21 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 .First()
                 .InnerText;
 
+            // get surname
+             surname = doc.DocumentNode
+                 .SelectNodes("//div/div/div[2]/div/b")
+                 .First()
+                 .InnerText;
+
+            if(surname.Contains("Sub ITA"))
+            {
+                surname = surname.Replace(" Sub ITA", "");
+            }else if(surname.Contains(")  ITA"))
+            {
+                surname = surname.Replace(")  ITA", "");
+                surname = surname.Replace("(ITA", "(ITA)");
+            }
+
             //get image
             var webClient = new WebClient();
 
@@ -143,6 +158,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 
             return new AnimeDTO
             {
+                Surname = surname,
                 DateRelease = DateTime.Parse(date),
                 DurationEpisode = durationEpisode,
                 Vote = vote,

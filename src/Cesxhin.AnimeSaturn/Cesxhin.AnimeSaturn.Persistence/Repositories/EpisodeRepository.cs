@@ -44,7 +44,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             {
                 try
                 {
-                    var rs = await connection.ExecuteQueryAsync<Episode>($"SELECT * FROM episode WHERE animeid like '{name}' ORDER BY numberepisodecurrent ASC;");
+                    var rs = await connection.ExecuteQueryAsync<Episode>($"SELECT * FROM episode, anime WHERE episode.animeid like '{name}' or anime.surname like '{name}' ORDER BY numberepisodecurrent ASC;");
                     return ConvertGeneric<Episode>.ConvertIEnurableToListCollection(rs);
                 }
                 catch(Exception ex)
