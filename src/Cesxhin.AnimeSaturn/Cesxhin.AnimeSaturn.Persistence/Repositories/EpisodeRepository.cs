@@ -44,8 +44,15 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             {
                 try
                 {
-                    var rs = await connection.ExecuteQueryAsync<Episode>($"SELECT * FROM episode, anime WHERE episode.animeid like '{name}' or anime.surname like '{name}' ORDER BY numberepisodecurrent ASC;");
-                    return ConvertGeneric<Episode>.ConvertIEnurableToListCollection(rs);
+                    var rs = await connection.QueryMultipleAsync<Episode, Anime>(e => e.AnimeId == name, e=> e.Name == name || e.Surname == name);
+                    //var rs = await connection.ExecuteQueryAsync<Episode>($"SELECT * FROM episode, anime WHERE anime.name like '{name}' or anime.surname like '{name}' and anime.name like episode.animeid ORDER BY numberepisodecurrent ASC;");
+                    var list = ConvertGeneric<Episode>.ConvertIEnurableToListCollection(rs.Item1);
+                    list.Sort(
+                    delegate (Episode p1, Episode p2)
+                    {
+                        return p1.ID.CompareTo(p2.ID);
+                    });
+                    return list;
                 }
                 catch(Exception ex)
                 {
