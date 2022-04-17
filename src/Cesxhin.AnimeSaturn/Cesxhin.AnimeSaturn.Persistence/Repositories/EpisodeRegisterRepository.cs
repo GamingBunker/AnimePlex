@@ -14,7 +14,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
     public class EpisodeRegisterRepository : IEpisodeRegisterRepository
     {
         //log
-        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
+        private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
         //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
@@ -29,9 +29,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                     var rs = await connection.QueryAsync<EpisodeRegister>(e => e.EpisodeId == id);
                     return ConvertGeneric<EpisodeRegister>.ConvertIEnurableToListCollection(rs);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    logger.Error("Failed GetAnimeAllAsync, details error: " + e);
+                    _logger.Error($"Failed GetAnimeAllAsync, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -47,9 +47,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                     await connection.InsertAsync(episodeRegister);
                     return episodeRegister;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    logger.Error("Failed GetAnimeAllAsync, details error: " + e);
+                    _logger.Error($"Failed GetAnimeAllAsync, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -69,9 +69,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                         return episodeRegister;
                     return null;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    logger.Error("Failed GetAnimeAllAsync, details error: " + e);
+                    _logger.Error($"Failed GetAnimeAllAsync, details error: {ex.Message}");
                     return null;
                 }
             }

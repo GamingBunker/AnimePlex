@@ -5,8 +5,9 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
 {
     public class AnimeDTO
     {
+        public string Name { get; set; }
+        public string Surname { get; set; }
         public string Studio { get; set; }
-        public string Name { get; set;}
         public string Description { get; set; }
         public string Vote { get; set; }
         public bool Finish { get; set; }
@@ -29,7 +30,8 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
                 Finish = anime.Finish,
                 Image = anime.Image,
                 UrlPage = anime.UrlPage,
-                Studio = anime.Studio
+                Studio = anime.Studio,
+                Surname = anime.Surname
             };
         }
 

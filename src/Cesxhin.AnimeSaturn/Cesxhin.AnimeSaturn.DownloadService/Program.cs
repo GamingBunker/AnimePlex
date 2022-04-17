@@ -60,7 +60,6 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                         q.ScheduleJob<HealthJob>(trigger => trigger
                             .StartNow()
                             .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("download"));
-                        //q.AddJob<CronJob>(job => job.WithIdentity("update"));
                     });
                     services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 

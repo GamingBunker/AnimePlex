@@ -8,10 +8,13 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
     public class Anime
     {
         [Identity]
-        [Map("studio")]
-        public string Studio { get; set; }
         [Map("name")]
         public string Name { get; set; }
+        [Map("surname")]
+        public string Surname { get; set; }
+
+        [Map("studio")]
+        public string Studio { get; set; }
         [Map("description")]
         public string Description { get; set; }
         [Map("vote")]
@@ -30,7 +33,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         public string UrlPage { get; set; }
 
         //convert AnimeDTO to Anime
-        public Anime AnimeDTOToAnime(AnimeDTO anime)
+        public static Anime AnimeDTOToAnime(AnimeDTO anime)
         {
             return new Anime
             {
@@ -43,7 +46,8 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
                 Image = anime.Image,
                 Finish = anime.Finish,
                 UrlPage = anime.UrlPage,
-                Studio = anime.Studio
+                Studio = anime.Studio,
+                Surname = anime.Surname
             };
         }
     }

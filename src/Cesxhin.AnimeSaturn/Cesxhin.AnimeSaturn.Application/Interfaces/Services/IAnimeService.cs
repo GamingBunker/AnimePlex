@@ -14,5 +14,9 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
 
         //insert
         Task<AnimeDTO> InsertAnimeAsync(AnimeDTO anime);
+
+        //delete
+        Task<string> DeleteAnimeAsync(string id);
+
     }
 }

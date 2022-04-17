@@ -14,7 +14,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
     public class EpisodeRepository : IEpisodeRepository
     {
         //log
-        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
+        private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
         //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
@@ -29,9 +29,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                     var rs = await connection.QueryAsync<Episode>(e => e.ID == id);
                     return ConvertGeneric<Episode>.ConvertIEnurableToListCollection(rs);
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
-                    logger.Error("Failed GetEpisodeByIDAsync, details error: " + e);
+                    _logger.Error($"Failed GetEpisodeByIDAsync, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -44,12 +44,12 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             {
                 try
                 {
-                    var rs = await connection.ExecuteQueryAsync<Episode>($"SELECT * FROM episode WHERE animeid like '{name}' ORDER BY numberepisodecurrent ASC;");
+                    var rs = await connection.ExecuteQueryAsync<Episode>($"SELECT * FROM episode, anime WHERE episode.animeid like '{name}' or anime.surname like '{name}' ORDER BY numberepisodecurrent ASC;");
                     return ConvertGeneric<Episode>.ConvertIEnurableToListCollection(rs);
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
-                    logger.Error("Failed GetEpisodesByNameAsync, details error: " + e);
+                    _logger.Error($"Failed GetEpisodesByNameAsync, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -65,9 +65,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                     await connection.InsertAsync(episode);
                     return episode;
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
-                    logger.Error("Failed InsertEpisodeAsync, details error: " + e);
+                    _logger.Error($"Failed InsertEpisodeAsync, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -83,9 +83,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                     await connection.UpdateAsync(episode, e=> e.StateDownload != "completed" && e.PercentualDownload == episode.PercentualDownload && e.ID == episode.ID);
                     return episode;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    logger.Error("Failed GetEpisodesByNameAsync, details error: " + e);
+                    _logger.Error($"Failed GetEpisodesByNameAsync, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -101,9 +101,9 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                     await connection.UpdateAsync(episode);
                     return episode;
                 }
-                catch(Exception e)
+                catch(Exception ex)
                 {
-                    logger.Error("Failed UpdateStateDownloadAsync, details error: " + e);
+                    _logger.Error($"Failed UpdateStateDownloadAsync, details error: {ex.Message}");
                     return null;
                 }
             }

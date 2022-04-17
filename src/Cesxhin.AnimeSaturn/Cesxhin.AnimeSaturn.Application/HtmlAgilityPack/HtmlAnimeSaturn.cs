@@ -17,7 +17,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
     public static class HtmlAnimeSaturn
     {
         //log
-        private static NLogConsole logger = new NLogConsole(LogManager.GetCurrentClassLogger());
+        private static NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
         //number max parallel
         private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "5");
@@ -25,11 +25,11 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
         public static AnimeDTO GetAnime(string urlPage)
         {
             //set variable
-            string durationEpisode = null, vote = null, description = null, nameAnime = null, numberTotalEpisodes = null, date = null, studio = null;
+            string durationEpisode = null, vote = null, description = null, surname = null, nameAnime = null, numberTotalEpisodes = null, date = null, studio = null;
             bool finish = false;
             byte[] imageBytes = null;
 
-            logger.Info("Start download page anime: " + urlPage);
+            _logger.Info($"Start download page anime: {urlPage}");
 
             //get page
             HtmlDocument doc = new HtmlWeb().Load(urlPage);
@@ -117,6 +117,21 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 .First()
                 .InnerText;
 
+            // get surname
+             surname = doc.DocumentNode
+                 .SelectNodes("//div/div/div[2]/div/b")
+                 .First()
+                 .InnerText;
+
+            if(surname.Contains("Sub ITA"))
+            {
+                surname = surname.Replace(" Sub ITA", "");
+            }else if(surname.Contains(")  ITA"))
+            {
+                surname = surname.Replace(")  ITA", "");
+                surname = surname.Replace("(ITA", "(ITA)");
+            }
+
             //get image
             var webClient = new WebClient();
 
@@ -130,7 +145,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             }
             catch
             {
-                logger.Error($"Error download image from this url {imageUrl}");
+                _logger.Error($"Error download image from this url {imageUrl}");
             }
 
             var resultBool = int.TryParse(numberTotalEpisodes, out int resultEpisodeTotal);
@@ -139,10 +154,11 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 resultEpisodeTotal = 1;
             }
 
-            logger.Info("End download page anime: " + urlPage);
+            _logger.Info($"End download page anime: {urlPage}");
 
             return new AnimeDTO
             {
+                Surname = surname,
                 DateRelease = DateTime.Parse(date),
                 DurationEpisode = durationEpisode,
                 Vote = vote,
@@ -159,10 +175,10 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
         public static List<EpisodeDTO> GetEpisodes(string urlPage, string name)
         {
             //set variable
-            List<EpisodeDTO> episodes = new List<EpisodeDTO>();
+            List<EpisodeDTO> episodes = new();
             int numberSeason = 1; //default
 
-            logger.Info("Start download page episode: " + urlPage);
+            _logger.Info($"Start download page episode: {urlPage}");
 
             //get page
             HtmlDocument doc = new HtmlWeb().Load(urlPage);
@@ -192,7 +208,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 
                     //thread for download parallel
                     int capacity = 0;
-                    List<Task> tasks = new List<Task>();
+                    List<Task> tasks = new();
                     for(int i=0; i<listEpisodes.Count; i++)
                     {
                         //inilize every cycle for task [IMPORTANT NOT REMOVE]
@@ -221,7 +237,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                                 var episode = ((Task<EpisodeDTO>)task).Result;
                                 episodes.Add(episode);
                             }
-                            tasks = new List<Task>();
+                            tasks = new();
                             capacity = 0;
                         }
                     }
@@ -230,15 +246,15 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 } while (true);
             }catch(ArgumentNullException e)
             {
-                logger.Error("Argument Null, details: "+e.Message);
+                _logger.Error($"Argument Null, details: {e.Message}");
                 return null;
             }catch(Exception e)
             {
-                logger.Error("Error generic: " + e.Message);
+                _logger.Fatal($"Error generic: {e.Message}");
                 return null;
             }
 
-            logger.Info("End download page episode: " + urlPage);
+            _logger.Info($"End download page episode: {urlPage}");
 
             return episodes;
         }
@@ -262,7 +278,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 
             try
             {
-                logger.Debug("Try download url with file: " + urlPage);
+                _logger.Debug($"Try download url with file: {urlPage}");
 
                 HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
 
@@ -270,12 +286,12 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     .SelectNodes("//center/div[2]/div/div/div/div/video/source")
                     .First()
                     .Attributes["src"].Value;
-                logger.Debug("Done download url with file: " + urlPage);
+                _logger.Debug($"Done download url with file: {urlPage}");
             }
             catch (ArgumentNullException)
             {
-                logger.Debug("Failed download url with file: " + urlPage);
-                logger.Debug("Try download url with buffer: " + urlPage);
+                _logger.Debug($"Failed download url with file: {urlPage}");
+                _logger.Debug($"Try download url with buffer: {urlPage}");
 
                 HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
 
@@ -308,7 +324,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 playerUrl.BaseUrl = playerUrl.Playlist.Replace("/playlist.m3u8", "");
 
                 //download source files
-                WebClient client = new WebClient();
+                WebClient client = new();
                 var bytes = client.DownloadData(playerUrl.Playlist);
                 var sourceFiles = System.Text.Encoding.UTF8.GetString(bytes);
 
@@ -324,7 +340,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 contentM3u = M3U.Parse(sourceFiles);
                 playerUrl.endNumberBuffer = contentM3u.Medias.Count() - 1; //start 0 to xx
 
-                logger.Debug("Done download url with buffer: " + urlPage);
+                _logger.Debug($"Done download url with buffer: {urlPage}");
             }
 
             if (playerUrl != null)
@@ -359,7 +375,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
         //get list anime external
         public static List<AnimeUrl> GetAnimeUrl(string name)
         {
-            logger.Info("Start download lsit anime, search: "+name);
+            _logger.Info($"Start download lsit anime, search: {name}");
             //get page
             HtmlDocument doc = new HtmlWeb().Load("https://www.animesaturn.it/animelist?search=" + name);
 
@@ -375,7 +391,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 .SelectNodes("//ul/li/div")
                 .ToList();
 
-            var animeUrl = new List<AnimeUrl>();
+            List<AnimeUrl> animeUrl = new();
             foreach (var anime in animes)
             {
                 try
@@ -399,7 +415,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 
                     animeUrl.Add(new AnimeUrl
                     {
-                        Name = nameAnime,
+                        Name = RemoveSpecialCharacters(nameAnime),
                         Url = linkPage,
                         UrlImage = linkCopertina
                     });
@@ -408,14 +424,14 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 catch { /*ignore other link a */ }
             }
 
-            logger.Info("End download lsit anime, search: " + name);
+            _logger.Info($"End download lsit anime, search: {name}");
             return animeUrl;
         }
 
         public static string RemoveSpecialCharacters(string str)
         {
             //remove character special
-            return Regex.Replace(str, "[^a-zA-Z0-9_.() ]+", "", RegexOptions.Compiled);
+            return Regex.Replace(str, "[^a-zA-Z0-9_() ]+", "", RegexOptions.Compiled);
         }
     }
 }

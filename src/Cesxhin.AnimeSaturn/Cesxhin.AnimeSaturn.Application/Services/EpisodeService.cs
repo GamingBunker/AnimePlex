@@ -31,7 +31,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         //get episodes by name
         public async Task<IEnumerable<EpisodeDTO>> GetEpisodesByNameAsync(string name)
         {
-            List<EpisodeDTO> episodes = new List<EpisodeDTO>();
+            List<EpisodeDTO> episodes = new();
             var listEpisode = await _episodeRepository.GetEpisodesByNameAsync(name);
 
             if (listEpisode == null)
@@ -62,7 +62,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         //insert episodes
         public async Task<List<EpisodeDTO>> InsertEpisodesAsync(List<EpisodeDTO> episodes)
         {
-            List<EpisodeDTO> resultEpisodes = new List<EpisodeDTO>();
+            List<EpisodeDTO> resultEpisodes = new();
             foreach(var episode in episodes)
             {
                 var episodeResult = await _episodeRepository.InsertEpisodeAsync(new Episode().EpisodeDTOToEpisode(episode));
