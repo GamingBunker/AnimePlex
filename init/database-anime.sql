@@ -17,7 +17,7 @@ CREATE TABLE anime
 CREATE TABLE episode
 (
     id varchar(500) primary key not null,
-    animeId  varchar(250) REFERENCES anime(name),
+    animeId  varchar(250) REFERENCES anime(name) ON DELETE CASCADE,
     numberEpisodeCurrent int not null,
     numberSeasonCurrent int default 1,
     stateDownload varchar(100),
@@ -35,7 +35,7 @@ CREATE TABLE episode
 
 CREATE TABLE episodeRegister
 (
-    episodeId varchar(500) primary key REFERENCES episode(id) not null,
+    episodeId varchar(500) primary key REFERENCES episode(id) ON DELETE CASCADE not null,
     episodePath varchar(500),
     episodeHash varchar(64)
 );

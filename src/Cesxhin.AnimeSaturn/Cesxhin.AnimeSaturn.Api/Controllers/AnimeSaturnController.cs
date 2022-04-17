@@ -1,9 +1,11 @@
-﻿using Cesxhin.AnimeSaturn.Application.Generic;
-using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
+﻿using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
+using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Domain.DTO;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,15 +20,20 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         private readonly IAnimeService _animeService;
         private readonly IEpisodeService _episodeService;
         private readonly IEpisodeRegisterService _episodeRegisterService;
+        private readonly IBus _publishEndpoint;
+
+        //log
+        private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
         //env
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
 
-        public AnimeSaturnController(IAnimeService animeService, IEpisodeService episodeService, IEpisodeRegisterService episodeRegisterService)
+        public AnimeSaturnController(IAnimeService animeService, IEpisodeService episodeService, IEpisodeRegisterService episodeRegisterService, IBus publishEndpoint)
         {
             _animeService = animeService;
             _episodeService = episodeService;
             _episodeRegisterService = episodeRegisterService;
+            _publishEndpoint = publishEndpoint;
         }
 
         //get list all anime without filter
@@ -111,6 +118,47 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                     return Conflict();
 
                 return Created("none", animeResult);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        //delete anime
+        [HttpDelete("/anime/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AnimeDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteAnime(string id)
+        {
+            try
+            {
+                //insert
+                var animeResult = await _animeService.DeleteAnimeAsync(id);
+
+                if (animeResult == null)
+                    return NotFound();
+                else if (animeResult == "-1")
+                    return Conflict();
+
+                //create message for notify
+                string message = $"🧮ApiService say: \nRemoved this Anime by DB and Plex: {id}\n";
+
+                try
+                {
+                    var messageNotify = new NotifyDTO
+                    {
+                        Message = message
+                    };
+                    await _publishEndpoint.Publish(messageNotify);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Cannot send message rabbit, details: {ex.Message}");
+                }
+
+                return Ok(animeResult);
             }
             catch
             {
@@ -369,6 +417,22 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
                 if (episodeResult == null)
                     return Conflict();
+
+                //create message for notify
+                string message = $"🧮ApiService say: \nAdd new Anime: {anime.Name}\n";
+
+                try
+                {
+                    var messageNotify = new NotifyDTO
+                    {
+                        Message = message
+                    };
+                    await _publishEndpoint.Publish(messageNotify);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Cannot send message rabbit, details: {ex.Message}");
+                }
 
                 return Created("none", animeResult);
             }

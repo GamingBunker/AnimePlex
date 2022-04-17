@@ -30,7 +30,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         public string UrlPage { get; set; }
 
         //convert AnimeDTO to Anime
-        public Anime AnimeDTOToAnime(AnimeDTO anime)
+        public static Anime AnimeDTOToAnime(AnimeDTO anime)
         {
             return new Anime
             {

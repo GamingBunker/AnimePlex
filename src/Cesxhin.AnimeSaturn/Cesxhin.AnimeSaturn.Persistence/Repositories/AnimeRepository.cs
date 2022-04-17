@@ -19,6 +19,22 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
+        public async Task<int> DeleteAnimeAsync(string id)
+        {
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    return await connection.DeleteAsync<Anime>(e => e.Name == id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Failed GetAnimeAllAsync, details error: {ex.Message}");
+                    return 0;
+                }
+            }
+        }
+
         //get all anime
         public async Task<List<Anime>> GetAnimeAllAsync()
         {

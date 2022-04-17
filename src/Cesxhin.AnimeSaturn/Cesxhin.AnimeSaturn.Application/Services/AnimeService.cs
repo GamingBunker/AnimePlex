@@ -21,6 +21,33 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             _episodeRegisterRepository = episodeRegisterRepository;
         }
 
+        public async Task<string> DeleteAnimeAsync(string id)
+        {
+            //check all finish downloaded
+
+            //get anime
+            var anime = await _animeRepository.GetAnimeByNameAsync(id);
+
+            if(anime == null)
+                return null;
+
+            //get episodes
+            var episodes = await _episodeRepository.GetEpisodesByNameAsync(id);
+            
+            foreach(var episode in episodes)
+            {
+                if (!(episode.StateDownload == "completed" || episode.StateDownload == null))
+                    return "-1";
+            }
+
+            var rs = await _animeRepository.DeleteAnimeAsync(id);
+
+            if (rs <= 0)
+                return null;
+
+            return id;
+        }
+
         //get all anime
         public async Task<IEnumerable<AnimeDTO>> GetAnimeAllAsync()
         {
@@ -115,7 +142,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         //insert one anime
         public async Task<AnimeDTO> InsertAnimeAsync(AnimeDTO anime)
         {
-            var animeResult = await _animeRepository.InsertAnimeAsync(new Anime().AnimeDTOToAnime(anime));
+            var animeResult = await _animeRepository.InsertAnimeAsync(Anime.AnimeDTOToAnime(anime));
 
             //get error
             if (animeResult == null)

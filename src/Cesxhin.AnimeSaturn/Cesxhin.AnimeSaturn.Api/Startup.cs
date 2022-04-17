@@ -4,6 +4,7 @@ using Cesxhin.AnimeSaturn.Application.Interfaces.Repositories;
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Application.Services;
 using Cesxhin.AnimeSaturn.Persistence.Repositories;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -41,6 +42,24 @@ namespace Cesxhin.AnimeSaturn.Api
 
             //init repoDb
             RepoDb.PostgreSqlBootstrap.Initialize();
+
+            //rabbit
+            services.AddMassTransit(
+            x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(
+                        Environment.GetEnvironmentVariable("ADDRESS_RABBIT") ?? "localhost",
+                        "/",
+                        credentials =>
+                        {
+                            credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT") ?? "guest");
+                            credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT") ?? "guest");
+                        });
+                });
+            });
+            services.AddMassTransitHostedService();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

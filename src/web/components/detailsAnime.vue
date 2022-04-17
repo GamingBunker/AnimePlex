@@ -6,14 +6,14 @@
         <!-- message error  -->
         <template v-if="conflict">
             <div class="alert alert-danger alert-dismissible">
-                <strong>This anime already exists!</strong>
+                <strong>{{message}}</strong>
                 <button @click="closeAlert()" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </template>
         <!-- message success download  -->
         <template v-else-if="success">
             <div class="alert alert-success alert-dismissible">
-                Success download information! Soon the downloads will start.
+                {{message}}
                 <button @click="closeAlert()" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </template>
@@ -27,12 +27,12 @@
                 <!-- button download -->
                 <template v-if="urlPageDownload && exists == false">
                     <template v-if="loading">
-                        <button @click="Download()" type="button" class="btn btn-danger">
+                        <button @click="Download()" type="button" class="btn btn-warning">
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         </button>
                     </template>
                     <template v-else>
-                        <button @click="Download()" type="button" class="btn btn-danger"><i class="bi bi-cloud-download"></i></button>
+                        <button @click="Download()" type="button" class="btn btn-warning"><i class="bi bi-cloud-download"></i></button>
                     </template>
                 </template>
 
@@ -51,6 +51,7 @@
                             <button @click="ReDownload()" type="button" class="btn btn-warning"><i class="bi bi-wrench-adjustable-circle"></i> Are you sure?</button>
                         </template>
                     </template>
+                    <button @click="Delete()" class="btn btn-danger"><i class="bi bi-trash"></i></button>
                 </template>
 
                 <!-- button already downloaded -->
@@ -129,7 +130,7 @@
                     <div v-for="episode in episodes" :key="episode.id">
                         <div class="row">
                             <div class="col">
-                                <span>Id:<b>{{episode.id}}</b></span>
+                                <span>Id: <b>{{episode.id}}</b></span>
                             </div>
                         </div>
                         <div class="row">
@@ -189,7 +190,8 @@ export default {
             port:this.$config.portAPI,
             protocol:this.$config.protocolAPI,
 
-            sure:false
+            sure:false,
+            message:""
         }
     },
     props:{
@@ -256,6 +258,7 @@ export default {
             .then(rs => {
                 if(rs.status == 201){
                     this.success = true;
+                    this.message = "Success download information! Soon the downloads will start."
                     this.Close()
                     $nuxt.$emit("reloadViewDetails", rs.data);
                 }else{
@@ -265,15 +268,31 @@ export default {
             .catch(error => {
                 if(error.message.includes('409')){
                     this.conflict = true;
+                    this.message = "This anime already exists!";
                 }
             })
             .then(() => {
                 this.loading = false;
             })
         },
+        Delete(){
+            this.$axios.delete(`${this.protocol}://${this.host}:${this.port}/anime/${this.name}`)
+            .then(rs => {
+                if(rs.status == 200){
+                    this.Close();
+                }
+            })
+            .catch(error => {
+                if(error.message.includes('409')){
+                    this.conflict = true;
+                    this.message = "you can't delete this anime becouse there are episodes that are downloading"
+                }
+            })
+        },
         closeAlert(){
             this.conflict = false;
             this.success = false;
+            this.message = ""
         },
         showStatusDownload(){
             this.showStatus = true;

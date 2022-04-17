@@ -5,7 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Released]
-## [0.2.6] - 15-04-2022
+## [0.2.6] - 17-04-2022
+### Added
+- Now you can delete anime (only in db!)
+- Now recive also notify of when add new anime and remove old anime
+
+### Changed
+- change color for download anime (now is yellow)
+
 ### Fixed
 - Refactory code c#
 
