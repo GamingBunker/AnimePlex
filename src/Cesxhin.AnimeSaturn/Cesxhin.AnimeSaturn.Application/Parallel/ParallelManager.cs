@@ -1,18 +1,25 @@
-﻿using HtmlAgilityPack;
+﻿using Cesxhin.AnimeSaturn.Application.NlogManager;
+using NLog;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Parallel
 {
     public class ParallelManager<T> where T : class
     {
+        //env
         private readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "5");
+
+        //variable
         private readonly List<Func<T>> queue = new();
         private readonly List<Task> tasks = new();
 
-        private List<T> list = new List<T>();
+        //nlog
+        private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
+
+        //completed
+        private List<T> list = new();
 
         public ParallelManager()
         {
@@ -24,8 +31,6 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
             //thread for download parallel
             int capacity = 0;
             int count = 0;
-            int lastTriggerTime = 0;
-            int intervalCheck;
 
             while (true)
             {
@@ -41,9 +46,9 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
                     catch (ArgumentNullException ex)
                     {
                         list = null;
+                        _logger.Error($"Problem task null, details error: {ex.Message}");
                         break;
                     }
-
                     capacity++;
 
                     queue.Remove(task);
@@ -71,16 +76,6 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
                     foreach (var task in removeTask)
                     {
                         tasks.Remove(task);
-                    }
-
-                    //send only one data every 3 seconds
-                    intervalCheck = DateTime.Now.Second;
-                    if (lastTriggerTime > intervalCheck)
-                        lastTriggerTime = 3;
-
-                    if (intervalCheck % 3 == 0 && (intervalCheck - lastTriggerTime) >= 3)
-                    {
-                        lastTriggerTime = DateTime.Now.Second;
                     }
 
                 } while (capacity >= NUMBER_PARALLEL_MAX);

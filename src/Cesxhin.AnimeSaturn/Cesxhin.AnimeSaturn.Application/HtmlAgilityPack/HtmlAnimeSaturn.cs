@@ -11,17 +11,13 @@ using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 {
     public static class HtmlAnimeSaturn
     {
         //log
-        private static NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
-
-        //number max parallel
-        private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "5");
+        private static readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
         public static AnimeDTO GetAnime(string urlPage)
         {

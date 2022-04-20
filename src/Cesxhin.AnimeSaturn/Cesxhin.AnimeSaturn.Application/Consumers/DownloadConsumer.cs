@@ -20,7 +20,6 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
     {
         //const
         const int LIMIT_TIMEOUT = 10;
-        private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "250");
 
         //nlog
         private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
