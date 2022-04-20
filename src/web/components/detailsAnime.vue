@@ -117,7 +117,7 @@
 
                 <!-- show episodes and status download -->
                 <template v-if="!urlPageDownload">
-                    <div class="d-md-flex justify-content-md-end">
+                    <div class="d-grid gap-2">
                         <template v-if="showStatus">
                             <button @click="hideStatusDownload()" class="btn btn-secondary" type="button">hide status download</button>
                         </template>
@@ -127,7 +127,7 @@
                     </div>
                 </template>
                 <template v-if="showStatus">
-                    <div v-for="episode in episodes" :key="episode.id">
+                    <div v-for="episode in episodes" :key="episode.id" style="margin: 10px 0px;">
                         <div class="row">
                             <div class="col">
                                 <span>Id: <b>{{episode.id}}</b></span>
@@ -139,7 +139,7 @@
                             </div>
                         </div>
                         
-                        <div class="progress" style="height: 20px; margin-bottom: 10px;">
+                        <div class="progress" style="height: 20px; background-color: azure;">
                             <template v-if="episode.stateDownload == 'downloading'">
                                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100">{{episode.percentualDownload}}%</div>
                             </template>
@@ -191,7 +191,9 @@ export default {
             protocol:this.$config.protocolAPI,
 
             sure:false,
-            message:""
+            message:"",
+
+            backgroundColor: null
         }
     },
     props:{

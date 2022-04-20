@@ -305,4 +305,19 @@ body{
   background-attachment: fixed;
 }
 
+.card
+{
+  border: none;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+  background-color: rgba(237, 237, 238, 0.95);
+}
+.card img
+{
+  border-bottom-right-radius: 25px;
+  border-bottom-left-radius: 25px;
+}
+
 </style>

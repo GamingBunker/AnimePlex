@@ -137,7 +137,8 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                         try
                         {
                             var messageNotify = new NotifyDTO { 
-                                Message = message 
+                                Message = message,
+                                Image = anime.Image
                             };
                             await _publishEndpoint.Publish(messageNotify);
                         }catch (Exception ex)

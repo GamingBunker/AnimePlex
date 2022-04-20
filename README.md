@@ -98,6 +98,7 @@ example:
     DOTNET_ENVIRONMENT: Development [require]
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #/ [default]
     TIME_REFRESH: "60000" <-- milliseconds #120000 [default] 2 minutes
+    LIMIT_THREAD_PARALLEL: "8" #5 [default]
 ```
 
 ## 💽Upgrade Service
@@ -152,7 +153,7 @@ example:
     
     #--- General ---
     DOTNET_ENVIRONMENT: Development [require]
-    LIMIT_THREAD_PARALLEL: "500" #250 [default]
+    LIMIT_THREAD_PARALLEL: "500" #5 [default]
 ```
 
 ## 📨Notify Service

@@ -1,17 +1,13 @@
-﻿using Cesxhin.AnimeSaturn.Application.Generic;
-using Cesxhin.AnimeSaturn.Domain.Models;
+﻿using Discord.Webhook;
 using NLog;
 using System;
-using System.Collections.Generic;
-using System.Text.Json;
 
 namespace Cesxhin.AnimeSaturn.Application.NlogManager
 {
     public class NLogConsole
     {
         private readonly Logger _logger;
-        private readonly string webhookUrl;
-        private readonly Api<MessageDiscord> webhookApi;
+        private readonly DiscordWebhookClient discord;
 
         public NLogConsole(Logger logger)
         {
@@ -19,10 +15,10 @@ namespace Cesxhin.AnimeSaturn.Application.NlogManager
             _logger = logger;
 
             //webhook
-            webhookUrl = Environment.GetEnvironmentVariable("WEBHOOK_DISCORD_DEBUG") ?? null;
+            var webhookUrl = Environment.GetEnvironmentVariable("WEBHOOK_DISCORD_DEBUG") ?? null;
 
-            //api
-            webhookApi = new();
+            if(webhookUrl != null)
+                discord = new DiscordWebhookClient(webhookUrl);
         }
 
         private string DefaultMessage(LogLevel level,  string msg)
@@ -62,14 +58,11 @@ namespace Cesxhin.AnimeSaturn.Application.NlogManager
         {
             _logger.Info(msg);
 
-            if (webhookUrl != null)
+            if (discord != null)
             {
                 var _content = DefaultMessage(LogLevel.Info, msg.ToString());
 
-                webhookApi.PostMessageDiscord(webhookUrl, new MessageDiscord
-                {
-                    content = _content,
-                });
+                discord.SendMessageAsync(_content).GetAwaiter().GetResult();
             }
         }
 
@@ -78,14 +71,11 @@ namespace Cesxhin.AnimeSaturn.Application.NlogManager
         {
             _logger.Warn(msg);
 
-            if (webhookUrl != null)
+            if (discord != null)
             {
                 var _content = DefaultMessage(LogLevel.Warn, msg.ToString());
 
-                webhookApi.PostMessageDiscord(webhookUrl, new MessageDiscord
-                {
-                    content = _content
-                });
+                discord.SendMessageAsync(_content).GetAwaiter().GetResult();
             }
         }
 
@@ -94,14 +84,11 @@ namespace Cesxhin.AnimeSaturn.Application.NlogManager
         {
             _logger.Error(msg);
 
-            if (webhookUrl != null)
+            if (discord != null)
             {
                 var _content = DefaultMessage(LogLevel.Error, msg.ToString());
 
-                webhookApi.PostMessageDiscord(webhookUrl, new MessageDiscord
-                {
-                    content = _content
-                });
+                discord.SendMessageAsync(_content).GetAwaiter().GetResult();
             }
         }
 
@@ -110,14 +97,11 @@ namespace Cesxhin.AnimeSaturn.Application.NlogManager
         {
             _logger.Fatal(msg);
 
-            if (webhookUrl != null)
+            if (discord != null)
             {
                 var _content = DefaultMessage(LogLevel.Fatal, msg.ToString());
 
-                webhookApi.PostMessageDiscord(webhookUrl, new MessageDiscord
-                {
-                    content = _content
-                });
+                discord.SendMessageAsync(_content).GetAwaiter().GetResult();
             }
         }
     }
