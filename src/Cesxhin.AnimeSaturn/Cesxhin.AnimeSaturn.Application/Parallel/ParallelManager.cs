@@ -2,6 +2,8 @@
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Parallel
@@ -37,21 +39,18 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
                 //add task
                 if (capacity < NUMBER_PARALLEL_MAX && queue.Count > 0)
                 {
-                    var task = queue[0];
+                    var task = queue.First();
 
-                    try
+                    if(task != null)
                     {
                         tasks.Add(Task.Run(task));
+                        capacity++;
+                        queue.Remove(task);
                     }
-                    catch (ArgumentNullException ex)
+                    else
                     {
-                        list = null;
-                        _logger.Error($"Problem task null, details error: {ex.Message}");
-                        break;
+                        _logger.Error($"Problem task null");
                     }
-                    capacity++;
-
-                    queue.Remove(task);
                 }
 
                 //must remove one task for continue download
