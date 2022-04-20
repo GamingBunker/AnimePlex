@@ -1,11 +1,12 @@
 ﻿using Cesxhin.AnimeSaturn.Application.Exceptions;
-using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using Cesxhin.AnimeSaturn.Domain.Models;
+using Discord.Webhook;
 using MassTransit;
 using NLog;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Consumers
@@ -20,19 +21,20 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
         public Task Consume(ConsumeContext<NotifyDTO> context)
         {
-            //api
-            Api<MessageDiscord> discordApi = new();
+            DiscordWebhookClient discord = new(_webhookDiscord);
 
             var notify = context.Message;
             _logger.Info($"Recive this message: {notify.Message}");
 
-            var data = new MessageDiscord { 
-                content = notify.Message 
-            };
-
             try
             {
-                discordApi.PostMessageDiscord(_webhookDiscord, data);
+                if(notify.Image != null)
+                {
+                    Stream image = new MemoryStream(notify.Image);
+                    discord.SendFileAsync(image, "Cover.png", notify.Message).GetAwaiter().GetResult();
+                }
+                else
+                    discord.SendMessageAsync(notify.Message).GetAwaiter().GetResult();
                 _logger.Info("Ok send done!");
             }
             catch (ApiGenericException ex)

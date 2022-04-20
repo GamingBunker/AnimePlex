@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net.Webhook" Version="3.5.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
     <PackageReference Include="m3uParser.NET" Version="1.0.17" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.4" />

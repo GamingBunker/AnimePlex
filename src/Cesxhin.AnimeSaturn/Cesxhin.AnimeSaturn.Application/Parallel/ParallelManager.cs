@@ -105,12 +105,19 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
 
         public int PercentualCompleted()
         {
+            if (list == null)
+                return 0;
             return (list.Count * 100)/(list.Count + tasks.Count + queue.Count); //43 : 100 = 4 : x
         }
 
         public List<T> GetResult()
         {
             return list;
+        }
+
+        public void ClearList()
+        {
+            list.Clear();
         }
     }
 }

@@ -425,7 +425,8 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 {
                     var messageNotify = new NotifyDTO
                     {
-                        Message = message
+                        Message = message,
+                        Image = anime.Image
                     };
                     await _publishEndpoint.Publish(messageNotify);
                 }
