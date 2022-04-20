@@ -1,4 +1,5 @@
 ﻿using Cesxhin.AnimeSaturn.Application.NlogManager;
+using Cesxhin.AnimeSaturn.Application.Parallel;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using Cesxhin.AnimeSaturn.Domain.Models;
 using HtmlAgilityPack;
@@ -10,17 +11,13 @@ using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 {
     public static class HtmlAnimeSaturn
     {
         //log
-        private static NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
-
-        //number max parallel
-        private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "5");
+        private static readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
         public static AnimeDTO GetAnime(string urlPage)
         {
@@ -192,6 +189,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             {
                 List<HtmlNode> listEpisodes;
                 int currentNumberEpisodes = 0;
+                ParallelManager<EpisodeDTO> parallel = new ParallelManager<EpisodeDTO>();
                 do
                 {
                     //check group episodes
@@ -203,44 +201,24 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     }
                     catch
                     {
+
+                        parallel.WhenCompleted();
+
+                        var results = parallel.GetResult();
+
+                        foreach (var result in results)
+                            episodes.Add(result);
+
                         break;
                     }
 
-                    //thread for download parallel
-                    int capacity = 0;
-                    List<Task> tasks = new();
-                    for(int i=0; i<listEpisodes.Count; i++)
+                    for (int i = 0; i < listEpisodes.Count; i++)
                     {
-                        //inilize every cycle for task [IMPORTANT NOT REMOVE]
-                        int numberEpisode = currentNumberEpisodes+i + 1;
+                        var numberEpisode = currentNumberEpisodes + i + 1;
                         var episodeTask = listEpisodes[i];
-                        //add task
-                        if (capacity < NUMBER_PARALLEL_MAX)
-                        {
-                            var task = Task.Run(() => DownloadMetadataEpisodeAsync(episodeTask, numberSeason, numberEpisode, urlPage, name));
-
-                            do
-                            {
-                                //waiting;
-                            } while (task.Status != TaskStatus.Running);
-
-                            tasks.Add(task);
-                            capacity++;
-                        }
-                        
-                        //if full or finish listEpisodes by DocumentNode
-                        if(capacity >= NUMBER_PARALLEL_MAX || (i+1) == listEpisodes.Count)
-                        {
-                            Task.WhenAll(tasks);
-                            foreach(var task in tasks)
-                            {
-                                var episode = ((Task<EpisodeDTO>)task).Result;
-                                episodes.Add(episode);
-                            }
-                            tasks = new();
-                            capacity = 0;
-                        }
+                        parallel.AddTask(new Func<EpisodeDTO>(() => { return DownloadMetadataEpisodeAsync(episodeTask, numberSeason, numberEpisode, urlPage, name);  }));
                     }
+
                     currentNumberEpisodes += listEpisodes.Count;
                     rangeAnime++;
                 } while (true);

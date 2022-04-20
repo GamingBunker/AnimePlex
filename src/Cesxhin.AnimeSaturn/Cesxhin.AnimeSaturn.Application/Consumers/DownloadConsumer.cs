@@ -1,6 +1,7 @@
 ﻿using Cesxhin.AnimeSaturn.Application.Exceptions;
 using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.NlogManager;
+using Cesxhin.AnimeSaturn.Application.Parallel;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using Cesxhin.AnimeSaturn.Domain.Models;
 using MassTransit;
@@ -19,7 +20,6 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
     {
         //const
         const int LIMIT_TIMEOUT = 10;
-        private static readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "250");
 
         //nlog
         private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
@@ -179,79 +179,37 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                         episode.StateDownload = "downloading";
                         SendStatusDownloadAPIAsync(episode, episodeDTOApi);
 
-                        //
-                        int count = 0;
-                        int percentual;
-                        int lastTriggerTime = 0;
-                        int intervalCheck;
 
                         //parallel
-                        int capacity = 0;
-                        List<Task> tasks = new();
+                        ParallelManager<EpisodeBuffer> parallel = new();
 
-                        for (int numberFrame = episode.startNumberBuffer; numberFrame <= episode.endNumberBuffer; numberFrame++)
+                        for (int numberFrame = episode.startNumberBuffer; numberFrame < episode.endNumberBuffer; numberFrame++)
                         {
-                            //inilize every cycle for task [IMPORTANT NOT REMOVE]
-                            int numberBufferEpisode = numberFrame;
-
-                            //add task
-                            if (capacity < NUMBER_PARALLEL_MAX)
-                            {
-                                var task = Task.Run(() => DownloadBuffParallel(episode, numberBufferEpisode, filePath, episodeDTOApi));
-                                tasks.Add(task);
-                                capacity++;
-                            }
-
-                            
-                            //must remove one task for continue download
-                            do
-                            {
-                                List<Task> removeTask = new();
-                                foreach (var task in tasks)
-                                {
-                                    if (task.IsCompleted)
-                                    {
-                                        var episodeBuffer = ((Task<EpisodeBuffer>)task).Result;
-
-                                        //stop download
-                                        if (episodeBuffer == null)
-                                            return;
-
-                                        buffer.Add(episodeBuffer);
-                                        count++;
-
-                                        capacity--;
-                                        removeTask.Add(task);
-                                    }
-                                }
-
-                                //remove rask completed
-                                foreach (var task in removeTask)
-                                {
-                                    tasks.Remove(task);
-                                }
-
-                                //send statistic
-                                percentual = (100 * count) / episode.endNumberBuffer;
-                                _logger.Debug($"status download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent} status download: {percentual}%");
-
-                                //send only one data every 3 seconds
-                                intervalCheck = DateTime.Now.Second;
-                                if (lastTriggerTime > intervalCheck)
-                                    lastTriggerTime = 3;
-
-                                if (intervalCheck % 3 == 0 && (intervalCheck - lastTriggerTime) >= 3)
-                                {
-                                    lastTriggerTime = DateTime.Now.Second;
-
-                                    //send status download
-                                    episode.PercentualDownload = percentual;
-                                    SendStatusDownloadAPIAsync(episode, episodeDTOApi);
-                                }
-
-                            } while (capacity >= NUMBER_PARALLEL_MAX || (numberFrame == episode.endNumberBuffer) && capacity != 0);
-
+                            var numberFrameSave = numberFrame;
+                            parallel.AddTask(new Func<EpisodeBuffer>(() => { return DownloadBuffParallel(episode, numberFrameSave, filePath, episodeDTOApi); }));
                         }
+
+                        while(!parallel.CheckFinish())
+                        {
+                            //send status download
+                            episode.PercentualDownload = parallel.PercentualCompleted();
+                            SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+                            Thread.Sleep(3000);
+                        }
+
+                        buffer = parallel.GetResult();
+
+                        if(buffer == null)
+                        {
+                            //send end download
+                            episode.StateDownload = "failed";
+                            episode.PercentualDownload = 0;
+                            SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+
+                            _logger.Error($"failed download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
+                            return;
+                        }
+
                         _logger.Info($"end download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
 
                         _logger.Info($"start join most buffer {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
@@ -285,7 +243,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             }
         }
 
-        private async Task<EpisodeBuffer> DownloadBuffParallel(EpisodeDTO episode, int numberFrame, string filePath, Api<EpisodeDTO> episodeDTOApi)
+        private EpisodeBuffer DownloadBuffParallel(EpisodeDTO episode, int numberFrame, string filePath, Api<EpisodeDTO> episodeDTOApi)
         {
             string url = $"{episode.BaseUrl}/{episode.Resolution}/{episode.Resolution}-{numberFrame.ToString("D3")}.ts";
             Uri uri = new Uri(url);
