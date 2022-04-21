@@ -24,6 +24,9 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         //nlog
         private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
+        //parallel
+        private readonly ParallelManager<EpisodeBuffer> parallel = new();
+
 
         public Task Consume(ConsumeContext<EpisodeDTO> context)
         {
@@ -172,6 +175,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
                     {
                         List<EpisodeBuffer> buffer = new();
+                        List<Func<EpisodeBuffer>> tasks = new();
 
                         _logger.Info($"start download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
 
@@ -179,17 +183,16 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                         episode.StateDownload = "downloading";
                         SendStatusDownloadAPIAsync(episode, episodeDTOApi);
 
-
-                        //parallel
-                        ParallelManager<EpisodeBuffer> parallel = new();
-
                         for (int numberFrame = episode.startNumberBuffer; numberFrame < episode.endNumberBuffer; numberFrame++)
                         {
                             var numberFrameSave = numberFrame;
-                            parallel.AddTask(new Func<EpisodeBuffer>(() => { return DownloadBuffParallel(episode, numberFrameSave, filePath, episodeDTOApi); }));
+                            tasks.Add(new Func<EpisodeBuffer>(() => { return DownloadBuffParallel(episode, numberFrameSave, filePath, episodeDTOApi); }));
                         }
 
-                        while(!parallel.CheckFinish())
+                        parallel.AddTasks(tasks);
+                        parallel.Start();
+
+                        while (!parallel.CheckFinish())
                         {
                             //send status download
                             episode.PercentualDownload = parallel.PercentualCompleted();
@@ -197,7 +200,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                             Thread.Sleep(3000);
                         }
 
-                        buffer = parallel.GetResult();
+                        buffer = parallel.GetResultAndClear();
 
                         if(buffer == null)
                         {
