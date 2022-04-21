@@ -19,6 +19,9 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
         //log
         private static readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
+        //parallel
+        private static readonly ParallelManager<EpisodeDTO> parallel = new();
+
         public static AnimeDTO GetAnime(string urlPage)
         {
             //set variable
@@ -189,7 +192,8 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             {
                 List<HtmlNode> listEpisodes;
                 int currentNumberEpisodes = 0;
-                ParallelManager<EpisodeDTO> parallel = new ParallelManager<EpisodeDTO>();
+
+                List<Func<EpisodeDTO>> tasks = new();
                 do
                 {
                     //check group episodes
@@ -201,10 +205,10 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     }
                     catch
                     {
-
+                        parallel.AddTasks(tasks);
+                        parallel.Start();
                         parallel.WhenCompleted();
-
-                        var results = parallel.GetResult();
+                        var results = parallel.GetResultAndClear();
 
                         foreach (var result in results)
                             episodes.Add(result);
@@ -216,9 +220,8 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     {
                         var numberEpisode = currentNumberEpisodes + i + 1;
                         var episodeTask = listEpisodes[i];
-                        parallel.AddTask(new Func<EpisodeDTO>(() => { return DownloadMetadataEpisodeAsync(episodeTask, numberSeason, numberEpisode, urlPage, name);  }));
+                        tasks.Add(new Func<EpisodeDTO>(() => { return DownloadMetadataEpisodeAsync(episodeTask, numberSeason, numberEpisode, urlPage, name);  }));
                     }
-
                     currentNumberEpisodes += listEpisodes.Count;
                     rangeAnime++;
                 } while (true);

@@ -14,7 +14,7 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
         private readonly int NUMBER_PARALLEL_MAX = int.Parse(Environment.GetEnvironmentVariable("LIMIT_THREAD_PARALLEL") ?? "5");
 
         //variable
-        private readonly List<Func<T>> queue = new();
+        private List<Func<T>> queue = new();
         private readonly List<Task> tasks = new();
 
         //nlog
@@ -23,18 +23,16 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
         //completed
         private List<T> list = new();
 
-        public ParallelManager()
-        {
-            Task.Run(() => Process());
-        }
+        //task id
+        private Task process;
 
-        private async void Process()
+        private void Process()
         {
             //thread for download parallel
             int capacity = 0;
             int count = 0;
 
-            while (true)
+            while (queue.Count != 0 || tasks.Count != 0)
             {
                 //add task
                 if (capacity < NUMBER_PARALLEL_MAX && queue.Count > 0)
@@ -81,9 +79,14 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
             }
         }
 
-        public void AddTask(Func<T> run)
+        public void Start()
         {
-            queue.Add(run);
+            process = Task.Run(() => Process());
+        }
+
+        public void AddTasks(List<Func<T>> tasks)
+        {
+            queue = tasks;
         }
 
         public bool CheckFinish()
@@ -96,10 +99,7 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
 
         public void WhenCompleted()
         {
-            while(tasks.Count != 0 || queue.Count != 0)
-            {
-
-            }
+            Task.WaitAll(process);
         }
 
         public int PercentualCompleted()
@@ -112,6 +112,13 @@ namespace Cesxhin.AnimeSaturn.Application.Parallel
         public List<T> GetResult()
         {
             return list;
+        }
+        public List<T> GetResultAndClear()
+        {
+            List<T> copy = new(list);
+            list.Clear();
+
+            return copy;
         }
 
         public void ClearList()

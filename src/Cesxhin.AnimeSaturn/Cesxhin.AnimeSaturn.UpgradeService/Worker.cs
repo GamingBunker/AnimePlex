@@ -129,7 +129,9 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
 
                         //create message for notify
                         string message = $"💽UpgradeService say: \nAdd new episode of {anime.Name}\n";
-                        foreach(var episodeNotify in listEpisodesAdd)
+
+                        listEpisodesAdd.Sort(delegate (EpisodeDTO p1, EpisodeDTO p2) { return p1.NumberEpisodeCurrent.CompareTo(p2.NumberEpisodeCurrent); });
+                        foreach (var episodeNotify in listEpisodesAdd)
                         {
                             message += $"- {episodeNotify.AnimeId} Episode: {episodeNotify.NumberEpisodeCurrent}\n";
                         }

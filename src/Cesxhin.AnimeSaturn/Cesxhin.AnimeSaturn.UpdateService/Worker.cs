@@ -27,6 +27,9 @@ namespace Cesxhin.AnimeSaturn.UpdateService
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
         private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH") ?? "120000");
 
+        //Instance Parallel
+        private readonly ParallelManager<object> parallel = new();
+
         public Worker(IBus publishEndpoint)
         {
             _publishEndpoint = publishEndpoint;
@@ -41,9 +44,6 @@ namespace Cesxhin.AnimeSaturn.UpdateService
             Api<GenericDTO> animeApi = new();
             Api<EpisodeDTO> episodeApi = new();
             Api<EpisodeRegisterDTO> episodeRegisterApi = new();
-
-            //Instance Parallel
-            ParallelManager<object> parallel = new();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -65,17 +65,22 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                 //if exists listAnime
                 if(listAnime != null)
                 {
+                    var tasks = new List<Func<object>>();
                     //step one check file
                     foreach (var anime in listAnime)
                     {
+
                         //foreach episodes
                         foreach (var episode in anime.Episodes)
                         {
-                            parallel.AddTask(new Func<object>(() => CheckEpisode(anime, episode, episodeApi, episodeRegisterApi)));
+                            tasks.Add(new Func<object>(() => CheckEpisode(anime, episode, episodeApi, episodeRegisterApi)));
                         }
                     }
+                    parallel.AddTasks(tasks);
+                    parallel.Start();
+                    parallel.WhenCompleted();
+                    parallel.ClearList();
                 }
-
                 _logger.Info($"Worker running at: {DateTimeOffset.Now}");
                 await Task.Delay(_timeRefresh, stoppingToken);
             }
