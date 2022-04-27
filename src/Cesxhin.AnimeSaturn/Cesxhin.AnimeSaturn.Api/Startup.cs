@@ -34,11 +34,15 @@ namespace Cesxhin.AnimeSaturn.Api
             services.AddSingleton<IAnimeService, AnimeService>();
             services.AddSingleton<IEpisodeService, EpisodeService>();
             services.AddSingleton<IEpisodeRegisterService, EpisodeRegisterService>();
+            services.AddSingleton<IChapterService, ChapterService>();
+            services.AddSingleton<IMangaService, MangaService>();
 
             //repositories
             services.AddSingleton<IAnimeRepository, AnimeRepository>();
             services.AddSingleton<IEpisodeRepository, EpisodeRepository>();
             services.AddSingleton<IEpisodeRegisterRepository, EpisodeRegisterRepository>();
+            services.AddSingleton<IChapterRepository, ChapterRepository>();
+            services.AddSingleton<IMangaRepository, MangaRepository>();
 
             //init repoDb
             RepoDb.PostgreSqlBootstrap.Initialize();

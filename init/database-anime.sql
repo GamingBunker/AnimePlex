@@ -1,5 +1,6 @@
 CREATE DATABASE animePlex;
 
+/*anime*/
 CREATE TABLE anime
 (
     name varchar(250) primary key not null,
@@ -39,4 +40,31 @@ CREATE TABLE episodeRegister
     episodeId varchar(500) primary key REFERENCES episode(id) ON DELETE CASCADE not null,
     episodePath varchar(500),
     episodeHash varchar(64)
+);
+
+/*anime*/
+CREATE TABLE manga
+(
+    name varchar(250) primary key not null,
+    anime varchar(250) REFERENCES anime(name),
+    author varchar(250),
+    artist varchar(250),
+    type varchar(250),
+    description text,
+    status boolean default true,
+    totalVolumes integer,
+    totalChapters integer,
+    dateRelease integer,
+    image bytea,
+    urlPage text not null
+);
+
+CREATE TABLE chapter
+(
+    id serial primary key not null,
+    nameManga varchar(250) REFERENCES manga(name) ON DELETE CASCADE not null,
+    currentVolume integer not null,
+    currentChapter decimal not null,
+    pages bytea[],
+    urlPage text not null
 );

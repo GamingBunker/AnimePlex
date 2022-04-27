@@ -20,6 +20,8 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         private readonly IAnimeService _animeService;
         private readonly IEpisodeService _episodeService;
         private readonly IEpisodeRegisterService _episodeRegisterService;
+        private readonly IMangaService _mangaService;
+        private readonly IChapterService _chapterService;
         private readonly IBus _publishEndpoint;
 
         //log
@@ -28,12 +30,21 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         //env
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
 
-        public AnimeSaturnController(IAnimeService animeService, IEpisodeService episodeService, IEpisodeRegisterService episodeRegisterService, IBus publishEndpoint)
+        public AnimeSaturnController(
+            IAnimeService animeService, 
+            IEpisodeService episodeService, 
+            IEpisodeRegisterService episodeRegisterService, 
+            IBus publishEndpoint,
+            IMangaService mangaService,
+            IChapterService chapterService
+            )
         {
             _animeService = animeService;
             _episodeService = episodeService;
             _episodeRegisterService = episodeRegisterService;
             _publishEndpoint = publishEndpoint;
+            _mangaService = mangaService;
+            _chapterService = chapterService;
         }
 
         //get list all anime without filter
@@ -47,7 +58,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             {
                 var listAnime = await _animeService.GetAnimeAllAsync();
 
-                if(listAnime == null)
+                if (listAnime == null)
                     return NotFound();
 
                 return Ok(listAnime);
@@ -63,7 +74,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AnimeDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAnimeByName (string name)
+        public async Task<IActionResult> GetAnimeByName(string name)
         {
             try
             {
@@ -310,7 +321,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 var rs = await _episodeRegisterService.UpdateEpisodeRegisterAsync(episodeRegister);
-                if(rs == null)
+                if (rs == null)
                     return NotFound();
 
                 return Ok(rs);
@@ -335,7 +346,8 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                     return NotFound();
 
                 return Ok(rs);
-            }catch
+            }
+            catch
             {
                 return StatusCode(500);
             }
@@ -362,7 +374,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
                         //check if already exists
                         var anime = await _episodeService.GetEpisodesByNameAsync(animeUrlDTO.Name);
-                        if(anime != null)
+                        if (anime != null)
                             animeUrlDTO.Exists = true;
 
                         list.Add(animeUrlDTO);
@@ -379,7 +391,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
         //put metadata into db
         [HttpPost("/animesaturn/download")]
-        [ProducesResponseType(StatusCodes.Status201Created, Type=typeof(AnimeDTO))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AnimeDTO))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DownloadAnimeByUrlPage(DownloadDTO download)
@@ -406,7 +418,8 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
                 foreach (var episode in episodes)
                 {
-                    listEpisodeRegister.Add(new EpisodeRegisterDTO{
+                    listEpisodeRegister.Add(new EpisodeRegisterDTO
+                    {
                         EpisodeId = episode.ID,
                         EpisodePath = $"{_folder}/{episode.AnimeId}/Season {episode.NumberSeasonCurrent.ToString("D2")}/{episode.AnimeId} s{episode.NumberSeasonCurrent.ToString("D2")}e{episode.NumberEpisodeCurrent.ToString("D2")}.mp4"
                     });
@@ -451,7 +464,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                foreach(var episode in episodes)
+                foreach (var episode in episodes)
                 {
                     episode.StateDownload = null;
                     await _episodeService.ResetStatusDownloadEpisodesByIdAsync(episode);
@@ -491,7 +504,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             {
                 var list = await _animeService.GetAnimeAllWithAllAsync();
 
-                if(list == null)
+                if (list == null)
                     return NotFound();
 
                 return Ok(list);
@@ -543,11 +556,12 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 if (checkDiskTotal != null && checkDiskTotal != null)
                 {
                     //return with object
-                    var disk = new DiskSpaceDTO{
-                       DiskSizeTotal = long.Parse(checkDiskTotal),
-                       DiskSizeFree = long.Parse(checkDiskFree),
-                       LastCheck = long.Parse(lastCheck),
-                       Interval = int.Parse(interval)
+                    var disk = new DiskSpaceDTO
+                    {
+                        DiskSizeTotal = long.Parse(checkDiskTotal),
+                        DiskSizeFree = long.Parse(checkDiskFree),
+                        LastCheck = long.Parse(lastCheck),
+                        Interval = int.Parse(interval)
                     };
                     return Ok(disk);
                 }
@@ -612,7 +626,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
                     //get interval
                     intervalCheck = Environment.GetEnvironmentVariable($"HEALT_SERVICE_{service}_INTERVAL");
-                    if(intervalCheck != null)
+                    if (intervalCheck != null)
                         health.Interval = int.Parse(intervalCheck);
                     else
                         health.Interval = 0;
@@ -625,6 +639,23 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             {
                 return StatusCode(500);
             }
+        }
+
+        [HttpGet("/manga")]
+        public async Task<IActionResult> GetManga(string urlPage = "https://www.mangaworld.in/manga/678/toukyou-ghoul")
+        {
+            var html = HtmlMangaMangaWorld.GetMangaHtml(urlPage);
+            var manga = HtmlMangaMangaWorld.GetManga(html, urlPage);
+
+            //insert manga
+            manga = await _mangaService.InsertMangaAsync(manga);
+
+            var chapters = HtmlMangaMangaWorld.GetChapters(html, urlPage, manga);
+
+            //insert chapters
+            await _chapterService.InsertChaptersAsync(chapters);
+
+            return Ok(manga);
         }
     }
 }

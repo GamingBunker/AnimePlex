@@ -6,6 +6,8 @@ using Cesxhin.AnimeSaturn.Application.Generic;
 using NLog;
 using Cesxhin.AnimeSaturn.Application.CronJob;
 using Quartz;
+using Cesxhin.AnimeSaturn.Application.AnimeManager;
+using Cesxhin.AnimeSaturn.Application.AnimeManager.Interfaces;
 
 namespace Cesxhin.AnimeSaturn.UpdateService
 {
@@ -56,6 +58,9 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                             .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)));
                     });
                     services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+                    //services
+                    services.AddSingleton<IUpdateAnime, UpdateAnime>();
 
                     services.AddHostedService<Worker>();
                 });
