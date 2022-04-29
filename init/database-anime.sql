@@ -12,7 +12,7 @@ CREATE TABLE anime
     durationEpisode varchar(100),
     episodeTotal int,
     dateRelease date,
-    image bytea,
+    image text,
     urlpage text not null
 );
 

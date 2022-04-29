@@ -27,7 +27,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             //set variable
             string durationEpisode = null, vote = null, description = null, surname = null, nameAnime = null, numberTotalEpisodes = null, date = null, studio = null;
             bool finish = false;
-            byte[] imageBytes = null;
+            string imageBase64=null;
 
             _logger.Info($"Start download page anime: {urlPage}");
 
@@ -141,7 +141,8 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 .Attributes["src"].Value;
             try
             {
-                imageBytes = webClient.DownloadData(imageUrl);
+                var imageBytes = webClient.DownloadData(imageUrl);
+                imageBase64 = Convert.ToBase64String(imageBytes);
             }
             catch
             {
@@ -166,7 +167,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 Finish = finish,
                 Description = description,
                 Name = RemoveSpecialCharacters(nameAnime),
-                Image = imageBytes,
+                Image = imageBase64,
                 Studio = studio,
                 UrlPage = urlPage
             };
