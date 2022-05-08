@@ -355,7 +355,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
         }
 
         //get list anime external
-        public static List<AnimeUrl> GetAnimeUrl(string name)
+        public static List<GenericUrl> GetAnimeUrl(string name)
         {
             _logger.Info($"Start download lsit anime, search: {name}");
             //get page
@@ -373,7 +373,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 .SelectNodes("//ul/li/div")
                 .ToList();
 
-            List<AnimeUrl> animeUrl = new();
+            List<GenericUrl> animeUrl = new();
             foreach (var anime in animes)
             {
                 try
@@ -395,11 +395,12 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                         .First()
                         .Attributes["src"].Value;
 
-                    animeUrl.Add(new AnimeUrl
+                    animeUrl.Add(new GenericUrl
                     {
                         Name = RemoveSpecialCharacters(nameAnime),
                         Url = linkPage,
-                        UrlImage = linkCopertina
+                        UrlImage = linkCopertina,
+                        TypeView = "anime"
                     });
 
                 }

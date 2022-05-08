@@ -26,6 +26,12 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         [Map("urlpage")]
         public string UrlPage { get; set; }
 
+        [Map("statedownload")]
+        public string StateDownload { get; set; }
+
+        [Map("percentualdownload")]
+        public int PercentualDownload { get; set; }
+
         public static Chapter ChapterDTOToChapter(ChapterDTO chapter)
         {
             return new Chapter
@@ -35,7 +41,9 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
                 Pages = chapter.Pages,
                 UrlPage = chapter.UrlPage,
                 CurrentVolume = chapter.CurrentVolume,
-                NameManga = chapter.NameManga
+                NameManga = chapter.NameManga,
+                StateDownload = chapter.StateDownload,
+                PercentualDownload = chapter.PercentualDownload
             };
         }
     }

@@ -14,14 +14,12 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class AnimeSaturnController : ControllerBase
+    public class AnimeController : ControllerBase
     {
         //interfaces
         private readonly IAnimeService _animeService;
         private readonly IEpisodeService _episodeService;
         private readonly IEpisodeRegisterService _episodeRegisterService;
-        private readonly IMangaService _mangaService;
-        private readonly IChapterService _chapterService;
         private readonly IBus _publishEndpoint;
 
         //log
@@ -30,21 +28,17 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         //env
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
 
-        public AnimeSaturnController(
-            IAnimeService animeService, 
-            IEpisodeService episodeService, 
-            IEpisodeRegisterService episodeRegisterService, 
-            IBus publishEndpoint,
-            IMangaService mangaService,
-            IChapterService chapterService
+        public AnimeController(
+            IAnimeService animeService,
+            IEpisodeService episodeService,
+            IEpisodeRegisterService episodeRegisterService,
+            IBus publishEndpoint
             )
         {
             _animeService = animeService;
             _episodeService = episodeService;
             _episodeRegisterService = episodeRegisterService;
             _publishEndpoint = publishEndpoint;
-            _mangaService = mangaService;
-            _chapterService = chapterService;
         }
 
         //get list all anime without filter
@@ -170,6 +164,28 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 }
 
                 return Ok(animeResult);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        //get all db
+        [HttpGet("/anime/all")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<GenericAnimeDTO>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var listAnime = await _animeService.GetAnimeAllWithAllAsync();
+
+                if (listAnime == null)
+                    return NotFound();
+
+                return Ok(listAnime);
             }
             catch
             {
@@ -332,30 +348,9 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //update status of someone episode
-        [HttpPut("/statusDownload")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeDTO))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> PutUpdateStateDownload(EpisodeDTO episode)
-        {
-            try
-            {
-                //update
-                var rs = await _episodeService.UpdateStateDownloadAsync(episode);
-                if (rs == null)
-                    return NotFound();
-
-                return Ok(rs);
-            }
-            catch
-            {
-                return StatusCode(500);
-            }
-        }
-
         //get list name by external db
-        [HttpGet("/animesaturn/name/{name}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<AnimeUrlDTO>))]
+        [HttpGet("/anime/list/name/{name}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GenericUrlDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetListSearchByName(string name)
@@ -366,11 +361,11 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 if (animeUrls != null || animeUrls.Count >= 0)
                 {
                     //list anime
-                    List<AnimeUrlDTO> list = new();
+                    List<GenericUrlDTO> list = new();
 
                     foreach (var animeUrl in animeUrls)
                     {
-                        var animeUrlDTO = new AnimeUrlDTO().AnimeToAnimeUrlDTO(animeUrl);
+                        var animeUrlDTO = GenericUrlDTO.GenericUrlToGenericUrlDTO(animeUrl);
 
                         //check if already exists
                         var anime = await _episodeService.GetEpisodesByNameAsync(animeUrlDTO.Name);
@@ -390,7 +385,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         }
 
         //put metadata into db
-        [HttpPost("/animesaturn/download")]
+        [HttpPost("/anime/download")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AnimeDTO))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -457,7 +452,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         }
 
         //put metadata into db
-        [HttpPut("/animesaturn/redownload")]
+        [HttpPut("/anime/redownload")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DownloadAnimeByUrlPage(List<EpisodeDTO> episodes)
@@ -477,185 +472,25 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //check test
-        [HttpGet("/check")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        //update status of someone episode
+        [HttpPut("/statusDownload")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeDTO))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Check()
+        public async Task<IActionResult> PutUpdateStateDownload(EpisodeDTO episode)
         {
             try
             {
-                return Ok("Ok");
-            }
-            catch
-            {
-                return StatusCode(500);
-            }
-        }
-
-        //get all db
-        [HttpGet("/all")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<GenericDTO>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAll()
-        {
-            try
-            {
-                var list = await _animeService.GetAnimeAllWithAllAsync();
-
-                if (list == null)
+                //update
+                var rs = await _episodeService.UpdateStateDownloadAsync(episode);
+                if (rs == null)
                     return NotFound();
 
-                return Ok(list);
+                return Ok(rs);
             }
             catch
             {
                 return StatusCode(500);
             }
-        }
-
-        //put data check disk free space
-        [HttpPut("/disk")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DiskSpaceDTO>))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SetCheckDiskFreeSpace(DiskSpaceDTO disk)
-        {
-            try
-            {
-                Environment.SetEnvironmentVariable("CHECK_DISK_FREE_SPACE", disk.DiskSizeFree.ToString());
-                Environment.SetEnvironmentVariable("CHECK_DISK_TOTAL_SPACE", disk.DiskSizeTotal.ToString());
-                Environment.SetEnvironmentVariable("CHECK_DISK_INTERVAL", disk.Interval.ToString());
-
-                var check = new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
-                Environment.SetEnvironmentVariable("CHECK_DISK_LAST_CHECK", check.ToString());
-                return Ok(disk);
-            }
-            catch
-            {
-                return StatusCode(500);
-            }
-        }
-
-        //get data check disk free space
-        [HttpGet("/disk")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DiskSpaceDTO>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCheckDiskFreeSpace()
-        {
-            try
-            {
-                //get
-                var checkDiskFree = Environment.GetEnvironmentVariable("CHECK_DISK_FREE_SPACE");
-                var checkDiskTotal = Environment.GetEnvironmentVariable("CHECK_DISK_TOTAL_SPACE");
-                var lastCheck = Environment.GetEnvironmentVariable("CHECK_DISK_LAST_CHECK");
-                var interval = Environment.GetEnvironmentVariable("CHECK_DISK_INTERVAL");
-
-                //check
-                if (checkDiskTotal != null && checkDiskTotal != null)
-                {
-                    //return with object
-                    var disk = new DiskSpaceDTO
-                    {
-                        DiskSizeTotal = long.Parse(checkDiskTotal),
-                        DiskSizeFree = long.Parse(checkDiskFree),
-                        LastCheck = long.Parse(lastCheck),
-                        Interval = int.Parse(interval)
-                    };
-                    return Ok(disk);
-                }
-                else
-                    return NotFound();
-            }
-            catch
-            {
-                return StatusCode(500);
-            }
-        }
-
-        //put data check disk free space
-        [HttpPut("/health")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SetHealtService(HealthDTO disk)
-        {
-            try
-            {
-                Environment.SetEnvironmentVariable($"HEALT_SERVICE_{disk.NameService.ToUpper()}_LAST_CHECK", disk.LastCheck.ToString());
-                Environment.SetEnvironmentVariable($"HEALT_SERVICE_{disk.NameService.ToUpper()}_INTERVAL", disk.Interval.ToString());
-                return Ok(disk);
-            }
-            catch
-            {
-                return StatusCode(500);
-            }
-        }
-
-        //get data check disk free space
-        [HttpGet("/health")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DiskSpaceDTO>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetHealtService()
-        {
-            try
-            {
-                //set
-                List<HealthDTO> healthServiceDTOs = new();
-
-                string[] services = new string[5] { "DOWNLOAD", "UPGRADE", "API", "UPDATE", "NOTIFY" };
-
-                var lastCheck = "";
-                var intervalCheck = "";
-
-                //gets
-                foreach (string service in services)
-                {
-                    var health = new HealthDTO
-                    {
-                        NameService = service
-                    };
-
-                    //get last check
-                    lastCheck = Environment.GetEnvironmentVariable($"HEALT_SERVICE_{service}_LAST_CHECK");
-                    if (lastCheck != null)
-                        health.LastCheck = long.Parse(lastCheck);
-                    else
-                        health.LastCheck = 0;
-
-                    //get interval
-                    intervalCheck = Environment.GetEnvironmentVariable($"HEALT_SERVICE_{service}_INTERVAL");
-                    if (intervalCheck != null)
-                        health.Interval = int.Parse(intervalCheck);
-                    else
-                        health.Interval = 0;
-
-                    healthServiceDTOs.Add(health);
-                }
-                return Ok(healthServiceDTOs);
-            }
-            catch
-            {
-                return StatusCode(500);
-            }
-        }
-
-        [HttpGet("/manga")]
-        public async Task<IActionResult> GetManga(string urlPage = "https://www.mangaworld.in/manga/678/toukyou-ghoul")
-        {
-            var html = HtmlMangaMangaWorld.GetMangaHtml(urlPage);
-            var manga = HtmlMangaMangaWorld.GetManga(html, urlPage);
-
-            //insert manga
-            manga = await _mangaService.InsertMangaAsync(manga);
-
-            var chapters = HtmlMangaMangaWorld.GetChapters(html, urlPage, manga);
-
-            //insert chapters
-            await _chapterService.InsertChaptersAsync(chapters);
-
-            return Ok(manga);
         }
     }
 }

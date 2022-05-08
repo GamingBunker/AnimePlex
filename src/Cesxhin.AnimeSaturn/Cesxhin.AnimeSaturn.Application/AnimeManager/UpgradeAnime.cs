@@ -32,18 +32,18 @@ namespace Cesxhin.AnimeSaturn.Application.AnimeManager
         public void ExecuteUpgrade()
         {
             //list
-            List<GenericDTO> listGenerics = new();
+            List<GenericAnimeDTO> listGenerics = new();
             List<EpisodeRegisterDTO> listEpisodeRegister;
             List<EpisodeRegisterDTO> blacklist;
 
             //api
-            Api<GenericDTO> genericApi = new();
+            Api<GenericAnimeDTO> genericApi = new();
             Api<EpisodeDTO> episodeApi = new();
             Api<EpisodeRegisterDTO> episodeRegisterApi = new();
 
             try
             {
-                listGenerics = genericApi.GetMore("/all").GetAwaiter().GetResult();
+                listGenerics = genericApi.GetMore("/anime/all").GetAwaiter().GetResult();
             }
             catch (ApiNotFoundException ex)
             {

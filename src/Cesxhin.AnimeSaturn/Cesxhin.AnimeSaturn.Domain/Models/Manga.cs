@@ -39,7 +39,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         public int DateRelease { get; set; }
 
         [Map("image")]
-        public byte[] Image { get; set; }
+        public string Image { get; set; }
 
         [Map("urlpage")]
         public string UrlPage { get; set; }

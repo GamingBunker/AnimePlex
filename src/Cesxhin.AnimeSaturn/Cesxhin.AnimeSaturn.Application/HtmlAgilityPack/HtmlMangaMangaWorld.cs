@@ -1,8 +1,10 @@
 ﻿using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Application.Parallel;
 using Cesxhin.AnimeSaturn.Domain.DTO;
+using Cesxhin.AnimeSaturn.Domain.Models;
 using HtmlAgilityPack;
 using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -27,7 +29,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             string author=null, artist=null, type=null;
             bool status=false;
             int totalVolumes=0, totalChapters=0, releaseDate=0;
-            byte[] imageBytes=null;
+            string imageBase64 = null;
 
             _logger.Info($"Start download page manga: {urlPage}");
 
@@ -91,7 +93,8 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 .Attributes["src"].Value;
             try
             {
-                imageBytes = webClient.DownloadData(imageUrl);
+                var imageBytes = webClient.DownloadData(imageUrl);
+                imageBase64 = Convert.ToBase64String(imageBytes);
             }
             catch
             {
@@ -109,7 +112,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 Author = author,
                 TotalChapters = totalChapters,
                 Description = description,
-                Image = imageBytes,
+                Image = imageBase64,
                 Status = status,
                 Type = type,
                 UrlPage = urlPage,
@@ -161,6 +164,65 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 }
             }
             return chaptersList;
+        }
+
+        public static List<GenericUrl> GetMangaUrl(string name)
+        {
+            List<GenericUrl> listUrlManga = new();
+
+            HtmlDocument doc;
+            HtmlNode[] listManga;
+
+            string url, imageUrl = null, urlPage = null, nameManga = null;
+
+            var page = 1;
+            while (true)
+            {
+                try
+                {
+                    url = $"https://www.mangaworld.in/archive?keyword={name}&page={page}";
+                    doc = new HtmlWeb().Load(url);
+
+                    listManga = doc.DocumentNode
+                        .SelectNodes("//div/div/div/div[2]/div[@class='entry']")
+                        .ToArray();
+
+                    foreach(var manga in listManga)
+                    {
+                        //get image cover
+                        imageUrl = manga
+                            .SelectNodes("a/img")
+                            .First()
+                            .Attributes["src"].Value;
+
+                        //url page
+                        urlPage = manga
+                            .SelectNodes("a")
+                            .First()
+                            .Attributes["href"].Value;
+
+                        //name
+                        nameManga = manga
+                            .SelectNodes("div/p")
+                            .First().InnerText;
+
+                        listUrlManga.Add(new GenericUrl
+                        {
+                            Name = nameManga,
+                            Url = urlPage,
+                            UrlImage = imageUrl,
+                            TypeView = "manga"
+                        });
+                    }
+                }
+                catch
+                {
+                    //not found other pages
+                    return listUrlManga;
+                }
+
+                page++;
+            }
         }
     }
 }

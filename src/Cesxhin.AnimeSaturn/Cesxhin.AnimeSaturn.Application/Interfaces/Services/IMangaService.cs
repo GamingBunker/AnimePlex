@@ -9,6 +9,15 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
 {
     public interface IMangaService
     {
+        //get
+        Task<List<GenericMangaDTO>> GetMangaAllWithAllAsync();
+        Task<List<MangaDTO>> GetMangaAllAsync();
+        Task<MangaDTO> GetMangaByName(string name);
+
+        //insert
         Task<MangaDTO> InsertMangaAsync(MangaDTO manga);
+
+        //delete
+        Task<MangaDTO> DeleteMangaByNameAsync(string name);
     }
 }

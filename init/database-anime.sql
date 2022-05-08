@@ -55,7 +55,7 @@ CREATE TABLE manga
     totalVolumes integer,
     totalChapters integer,
     dateRelease integer,
-    image bytea,
+    image text,
     urlPage text not null
 );
 
@@ -65,6 +65,8 @@ CREATE TABLE chapter
     nameManga varchar(250) REFERENCES manga(name) ON DELETE CASCADE not null,
     currentVolume integer not null,
     currentChapter decimal not null,
-    pages bytea[],
-    urlPage text not null
+    pages varchar[],
+    urlPage text not null,
+    stateDownload varchar(100),
+    percentualDownload int default 0
 );

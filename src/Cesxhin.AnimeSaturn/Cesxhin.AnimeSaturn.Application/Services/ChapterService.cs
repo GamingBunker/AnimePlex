@@ -39,5 +39,15 @@ namespace Cesxhin.AnimeSaturn.Application.Services
 
             return outChapters;
         }
+
+        public async Task<ChapterDTO> ResetStatusDownloadChaptersByIdAsync(ChapterDTO chapter)
+        {
+            var rs = await _chapterRepository.ResetStatusDownloadChaptersByIdAsync(Chapter.ChapterDTOToChapter(chapter));
+
+            if (rs == null)
+                return null;
+
+            return ChapterDTO.ChapterToChapterDTO(rs);
+        }
     }
 }

@@ -71,7 +71,7 @@
                 </template>
 
                 <!-- start information anime -->
-                <template v-if="date != 'NaN-NaN-NaN'">
+                <template v-if="date && date != 'NaN-NaN-NaN'">
                     <div>
                         <h6>Date release:</h6>
                         <p class="card-text">{{date}}</p>
@@ -92,10 +92,45 @@
                     </div>
                 <hr>
                 </template>
+                <template v-if="artist">
+                    <div>
+                        <h6>Astist:</h6>
+                        <p class="card-text">{{artist}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="author">
+                    <div>
+                        <h6>Author:</h6>
+                        <p class="card-text">{{author}}</p>
+                    </div>
+                <hr>
+                </template>
                 <template v-if="duration">
                     <div>
                         <h6>Duration:</h6>
                         <p class="card-text">{{duration}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="totalChapters">
+                    <div>
+                        <h6>Total Chapters:</h6>
+                        <p class="card-text">{{totalChapters}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="totalVolumes">
+                    <div>
+                        <h6>Total Volumes:</h6>
+                        <p class="card-text">{{totalVolumes}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="type">
+                    <div>
+                        <h6>Type:</h6>
+                        <p class="card-text">{{type}}</p>
                     </div>
                 <hr>
                 </template>
@@ -197,19 +232,27 @@ export default {
         }
     },
     props:{
+        anime:String,
+        artist:String,
+        author:String,
+        dataRelease:String,
+        totalChapters:Number,
+        totalVolumes:Number,
+        type:String,
         name:String,
         description:String,
         date:String,
         vote:String,
         studio:String,
         image:String,
-        finish:Boolean,
+        status:Boolean,
         urlPage:String,
         duration:String,
         totalEpisode:Number,
         urlPageDownload:String,
         urlExternal:Boolean,
-        exists:Boolean
+        exists:Boolean,
+        typeView:String
     },
 
     methods: {
@@ -227,7 +270,7 @@ export default {
                 return
             }
             this.loading = true;
-            this.$axios.put(`${this.protocol}://${this.host}:${this.port}/animesaturn/redownload`, JSON.stringify(this.episodes),
+            this.$axios.put(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/redownload`, JSON.stringify(this.episodes),
                 {
                     headers: {
                         'Content-Type': 'application/json'
@@ -251,7 +294,7 @@ export default {
         Download(){
             //get api external
             this.loading = true;
-            this.$axios.post(`${this.protocol}://${this.host}:${this.port}/animesaturn/download`, JSON.stringify({Url: this.urlPageDownload}),
+            this.$axios.post(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/download`, JSON.stringify({Url: this.urlPageDownload}),
             {
                 headers: {
                     'Content-Type': 'application/json'
@@ -278,7 +321,7 @@ export default {
             })
         },
         Delete(){
-            this.$axios.delete(`${this.protocol}://${this.host}:${this.port}/anime/${this.name}`)
+            this.$axios.delete(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/${this.name}`)
             .then(rs => {
                 if(rs.status == 200){
                     this.Close();
@@ -309,11 +352,16 @@ export default {
             handler(){
                 if(this.urlPage != null)
                 {
-                    //get api internal
-                    this.$axios.get(`${this.protocol}://${this.host}:${this.port}/episode/name/${this.name}`)
-                        .then(rs => {
-                        this.episodes = rs.data
-                    });
+                    if(this.typeView === "anime")
+                    {
+                        //get api internal
+                        this.$axios.get(`${this.protocol}://${this.host}:${this.port}/episode/name/${this.name}`)
+                            .then(rs => {
+                            this.episodes = rs.data
+                        });
+                    }else if(this.typeView === "manga"){
+
+                    }
                 }
                 setTimeout(() => {
                     this.hide = new Date();

@@ -11,6 +11,8 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public float CurrentChapter { get; set; }
         public List<byte[]> Pages { get; set; }
         public string UrlPage { get; set; }
+        public string StateDownload { get; set; }
+        public int PercentualDownload { get; set; }
 
         public static ChapterDTO ChapterToChapterDTO(Chapter chapter)
         {
@@ -22,6 +24,8 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
                 UrlPage = chapter.UrlPage,
                 CurrentVolume = chapter.CurrentVolume,
                 NameManga = chapter.NameManga,
+                PercentualDownload = chapter.PercentualDownload,
+                StateDownload = chapter.StateDownload
             };
         }
     }

@@ -27,7 +27,7 @@ namespace Cesxhin.AnimeSaturn.Application.AnimeManager
         private readonly ParallelManager<object> parallel = new();
 
         //Istance Api
-        private readonly Api<GenericDTO> animeApi = new();
+        private readonly Api<GenericAnimeDTO> animeApi = new();
         private readonly Api<EpisodeDTO> episodeApi = new();
         private readonly Api<EpisodeRegisterDTO> episodeRegisterApi = new();
 
@@ -39,12 +39,12 @@ namespace Cesxhin.AnimeSaturn.Application.AnimeManager
         public void ExecuteUpdate()
         {
             //download api
-            List<GenericDTO> listAnime = null;
+            List<GenericAnimeDTO> listAnime = null;
             parallel.ClearList();
 
             try
             {
-                listAnime = animeApi.GetMore("/all").GetAwaiter().GetResult();
+                listAnime = animeApi.GetMore("/anime/all").GetAwaiter().GetResult();
             }
             catch (ApiNotFoundException ex)
             {
@@ -76,7 +76,7 @@ namespace Cesxhin.AnimeSaturn.Application.AnimeManager
             }
         }
 
-        private object CheckEpisode(GenericDTO anime, EpisodeDTO episode, Api<EpisodeDTO> episodeApi, Api<EpisodeRegisterDTO> episodeRegisterApi)
+        private object CheckEpisode(GenericAnimeDTO anime, EpisodeDTO episode, Api<EpisodeDTO> episodeApi, Api<EpisodeRegisterDTO> episodeRegisterApi)
         {
             var episodeRegister = anime.EpisodeRegister.Find(e => e.EpisodeId == episode.ID);
             if (episodeRegister == null)
