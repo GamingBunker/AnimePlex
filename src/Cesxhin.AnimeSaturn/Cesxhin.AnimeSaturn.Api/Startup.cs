@@ -34,6 +34,7 @@ namespace Cesxhin.AnimeSaturn.Api
             services.AddSingleton<IAnimeService, AnimeService>();
             services.AddSingleton<IEpisodeService, EpisodeService>();
             services.AddSingleton<IEpisodeRegisterService, EpisodeRegisterService>();
+            services.AddSingleton<IChapterRegisterService, ChapterRegisterService>();
             services.AddSingleton<IChapterService, ChapterService>();
             services.AddSingleton<IMangaService, MangaService>();
 
@@ -41,6 +42,7 @@ namespace Cesxhin.AnimeSaturn.Api
             services.AddSingleton<IAnimeRepository, AnimeRepository>();
             services.AddSingleton<IEpisodeRepository, EpisodeRepository>();
             services.AddSingleton<IEpisodeRegisterRepository, EpisodeRegisterRepository>();
+            services.AddSingleton<IChapterRegisterRepository, ChapterRegisterRepository>();
             services.AddSingleton<IChapterRepository, ChapterRepository>();
             services.AddSingleton<IMangaRepository, MangaRepository>();
 

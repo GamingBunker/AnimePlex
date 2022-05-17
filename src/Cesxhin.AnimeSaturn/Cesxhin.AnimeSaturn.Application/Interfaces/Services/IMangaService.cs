@@ -1,8 +1,5 @@
 ﻿using Cesxhin.AnimeSaturn.Domain.DTO;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
@@ -10,9 +7,10 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
     public interface IMangaService
     {
         //get
-        Task<List<GenericMangaDTO>> GetMangaAllWithAllAsync();
-        Task<List<MangaDTO>> GetMangaAllAsync();
-        Task<MangaDTO> GetMangaByName(string name);
+        Task<IEnumerable<GenericMangaDTO>> GetMangaAllWithAllAsync();
+        Task<IEnumerable<MangaDTO>> GetMostMangaByNameAsync(string name);
+        Task<IEnumerable<MangaDTO>> GetMangaAllAsync();
+        Task<MangaDTO> GetMangaByNameAsync(string name);
 
         //insert
         Task<MangaDTO> InsertMangaAsync(MangaDTO manga);

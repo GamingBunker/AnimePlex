@@ -61,7 +61,7 @@ CREATE TABLE manga
 
 CREATE TABLE chapter
 (
-    id serial primary key not null,
+    id varchar(500) primary key not null,
     nameManga varchar(250) REFERENCES manga(name) ON DELETE CASCADE not null,
     currentVolume integer not null,
     currentChapter decimal not null,
@@ -69,4 +69,11 @@ CREATE TABLE chapter
     urlPage text not null,
     stateDownload varchar(100),
     percentualDownload int default 0
+);
+
+CREATE TABLE chapterRegister
+(
+    chapterId varchar(500) primary key REFERENCES chapter(id) ON DELETE CASCADE not null,
+    chapterPath varchar(500),
+    chapterHash varchar(64)
 );

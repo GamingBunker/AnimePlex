@@ -9,6 +9,7 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Repositories
         //get
         Task<List<Manga>> GetMangaAllAsync();
         Task<List<Manga>> GetMangaByNameAsync(string name);
+        Task<List<Manga>> GetMostMangaByNameAsync(string name);
 
         //insert
         Task<Manga> InsertMangaAsync(Manga manga);

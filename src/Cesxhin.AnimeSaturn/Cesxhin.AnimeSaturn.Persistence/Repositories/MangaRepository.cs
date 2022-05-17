@@ -8,7 +8,6 @@ using RepoDb;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Persistence.Repositories
@@ -78,6 +77,23 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 catch (Exception ex)
                 {
                     _logger.Error($"Failed GetMangaByNameAsync, details error: {ex.Message}");
+                    return null;
+                }
+            }
+        }
+
+        public async Task<List<Manga>> GetMostMangaByNameAsync(string name)
+        {
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    var rs = await connection.ExecuteQueryAsync<Manga>("SELECT * FROM manga WHERE lower(name) like '%" + name.ToLower() + "%'");
+                    return ConvertGeneric<Manga>.ConvertIEnurableToListCollection(rs);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Failed GetMostMangaByNameAsync, details error: {ex.Message}");
                     return null;
                 }
             }

@@ -360,7 +360,11 @@ export default {
                             this.episodes = rs.data
                         });
                     }else if(this.typeView === "manga"){
-
+                        //get api internal
+                        this.$axios.get(`${this.protocol}://${this.host}:${this.port}/chapter/name/${this.name}`)
+                            .then(rs => {
+                            this.episodes = rs.data
+                        });
                     }
                 }
                 setTimeout(() => {

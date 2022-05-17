@@ -2,10 +2,7 @@
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using Cesxhin.AnimeSaturn.Domain.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Services
@@ -17,27 +14,55 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         {
             _chapterRepository = chapterRepository;
         }
-        public async Task<List<ChapterDTO>> InsertChaptersAsync(List<ChapterDTO> chapters)
+
+        public async Task<ChapterDTO> GetChapterByIDAsync(string id)
         {
-            List<Chapter> insertChapters = new();
-            List<ChapterDTO> outChapters = new();
-
-            foreach (var chapter in chapters)
+            var listChapter = await _chapterRepository.GetChapterByIDAsync(id);
+            foreach (var chapter in listChapter)
             {
-                insertChapters.Add(Chapter.ChapterDTOToChapter(chapter));
+                return ChapterDTO.ChapterToChapterDTO(chapter);
             }
+            return null;
+        }
 
-            var rs = await _chapterRepository.InsertChaptersAsync(insertChapters);
+        public async Task<IEnumerable<ChapterDTO>> GetChaptersByNameAsync(string name)
+        {
+            List<ChapterDTO> chapters = new();
+            var listChapter = await _chapterRepository.GetChaptersByNameAsync(name);
 
-            if(rs == null)
+            if (listChapter == null)
                 return null;
 
-            foreach(var chapter in rs)
+            foreach (var chapter in listChapter)
             {
-                outChapters.Add(ChapterDTO.ChapterToChapterDTO(chapter));
+                chapters.Add(ChapterDTO.ChapterToChapterDTO(chapter));
             }
 
-            return outChapters;
+            if (chapters.Count <= 0)
+                return null;
+
+            return chapters;
+        }
+
+        public async Task<ChapterDTO> InsertChapterAsync(ChapterDTO chapter)
+        {
+            var chapterResult = await _chapterRepository.InsertChapterAsync(Chapter.ChapterDTOToChapter(chapter));
+
+            if (chapterResult == null)
+                return null;
+
+            return ChapterDTO.ChapterToChapterDTO(chapterResult);
+        }
+
+        public async Task<List<ChapterDTO>> InsertChaptersAsync(List<ChapterDTO> chapters)
+        {
+            List<ChapterDTO> resultChapters = new();
+            foreach (var chapter in chapters)
+            {
+                var chapterResult = await _chapterRepository.InsertChapterAsync(Chapter.ChapterDTOToChapter(chapter));
+                resultChapters.Add(ChapterDTO.ChapterToChapterDTO(chapterResult));
+            }
+            return resultChapters;
         }
 
         public async Task<ChapterDTO> ResetStatusDownloadChaptersByIdAsync(ChapterDTO chapter)
@@ -48,6 +73,16 @@ namespace Cesxhin.AnimeSaturn.Application.Services
                 return null;
 
             return ChapterDTO.ChapterToChapterDTO(rs);
+        }
+
+        public async Task<ChapterDTO> UpdateStateDownloadAsync(ChapterDTO chapter)
+        {
+            var chapterResult = await _chapterRepository.UpdateStateDownloadAsync(Chapter.ChapterDTOToChapter(chapter));
+
+            if (chapterResult == null)
+                return null;
+
+            return ChapterDTO.ChapterToChapterDTO(chapterResult);
         }
     }
 }

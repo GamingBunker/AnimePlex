@@ -77,7 +77,10 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 var listAnime = await _animeService.GetAnimeAllAsync();
                 var listManga = await _mangaService.GetMangaAllAsync();
 
-                listGeneric.AddRange(listAnime);
+                if(listAnime != null)
+                    listGeneric.AddRange(listAnime);
+
+                if(listManga != null)
                 listGeneric.AddRange(listManga);
 
                 if (listGeneric.Count <= 0)

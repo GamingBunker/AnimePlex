@@ -1,8 +1,5 @@
 ﻿using Cesxhin.AnimeSaturn.Domain.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Interfaces.Repositories
@@ -10,12 +7,18 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Repositories
     public interface IChapterRepository
     {
         //get
-        Task<List<Chapter>> GetChaptersByNameManga(string nameManga);
+        Task<IEnumerable<Chapter>> GetChapterByIDAsync(string id);
+        Task<IEnumerable<Chapter>> GetChaptersByNameAsync(string nameManga);
 
         //insert
-        Task<List<Chapter>> InsertChaptersAsync(List<Chapter> chapters);
+        Task<Chapter> InsertChapterAsync(Chapter chapters);
 
         //update
+        Task<Chapter> UpdateStateDownloadAsync(Chapter chapter);
+
+        //reset
         Task<Chapter> ResetStatusDownloadChaptersByIdAsync(Chapter chapter);
+
+        
     }
 }

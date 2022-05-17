@@ -10,7 +10,8 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
     public class GenericMangaDTO
     {
         //Manga
-        public Manga Manga { get; set; }
-        public List<Chapter> Chapters { get; set; }
+        public MangaDTO Manga { get; set; }
+        public List<ChapterDTO> Chapters { get; set; }
+        public List<ChapterRegisterDTO> ChapterRegister { get; set; }
     }
 }

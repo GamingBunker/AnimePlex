@@ -9,7 +9,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
     {
         [Identity]
         [Map("id")]
-        public int ID { get; set; }
+        public string ID { get; set; }
 
         [Map("namemanga")]
         public string NameManga { get; set; }

@@ -5,7 +5,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
 {
     public class ChapterDTO
     {
-        public int ID { get; set; }
+        public string ID { get; set; }
         public string NameManga { get; set; }
         public int CurrentVolume { get; set; }
         public float CurrentChapter { get; set; }

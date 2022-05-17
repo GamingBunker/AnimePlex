@@ -156,6 +156,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     var numberCurrentChapter = float.Parse(currentChapter.Split(new char[] { ' ', '\n' })[1]);
                     chaptersList.Add(new ChapterDTO
                     {
+                        ID = $"{manga.Name}-v{numberVolume}-c{numberCurrentChapter}",
                         UrlPage = link,
                         NameManga = manga.Name,
                         CurrentChapter = numberCurrentChapter,
