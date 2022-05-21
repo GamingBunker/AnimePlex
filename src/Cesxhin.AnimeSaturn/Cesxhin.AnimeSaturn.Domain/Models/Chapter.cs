@@ -20,8 +20,8 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         [Map("currentchapter")]
         public float CurrentChapter { get; set; }
 
-        [Map("pages")]
-        public List<byte[]> Pages { get; set; }
+        [Map("numbermaximage")]
+        public int NumberMaxImage { get; set; }
 
         [Map("urlpage")]
         public string UrlPage { get; set; }
@@ -38,12 +38,12 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
             {
                 ID = chapter.ID,
                 CurrentChapter = chapter.CurrentChapter,
-                Pages = chapter.Pages,
                 UrlPage = chapter.UrlPage,
                 CurrentVolume = chapter.CurrentVolume,
                 NameManga = chapter.NameManga,
                 StateDownload = chapter.StateDownload,
-                PercentualDownload = chapter.PercentualDownload
+                PercentualDownload = chapter.PercentualDownload,
+                NumberMaxImage = chapter.NumberMaxImage
             };
         }
     }

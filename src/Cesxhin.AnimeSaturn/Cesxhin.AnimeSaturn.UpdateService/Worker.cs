@@ -1,4 +1,4 @@
-using Cesxhin.AnimeSaturn.Application.AnimeManager.Interfaces;
+using Cesxhin.AnimeSaturn.Application.CheckManager.Interfaces;
 using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Microsoft.Extensions.Hosting;
 using NLog;
@@ -17,9 +17,9 @@ namespace Cesxhin.AnimeSaturn.UpdateService
         private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH") ?? "120000");
 
         //service
-        private readonly IUpdateAnime _updateAnime;
+        private readonly IUpdate _updateAnime;
 
-        public Worker(IUpdateAnime updateAnime)
+        public Worker(IUpdate updateAnime)
         {
             _updateAnime = updateAnime;
         }

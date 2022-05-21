@@ -154,17 +154,59 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                         .InnerText;
 
                     var numberCurrentChapter = float.Parse(currentChapter.Split(new char[] { ' ', '\n' })[1]);
+
+                    var numberMaxImages = GetNumberMaxImage(link);
+
                     chaptersList.Add(new ChapterDTO
                     {
                         ID = $"{manga.Name}-v{numberVolume}-c{numberCurrentChapter}",
                         UrlPage = link,
                         NameManga = manga.Name,
                         CurrentChapter = numberCurrentChapter,
-                        CurrentVolume = numberVolume
+                        CurrentVolume = numberVolume,
+                        NumberMaxImage = numberMaxImages
                     });
                 }
             }
             return chaptersList;
+        }
+
+        private static int GetNumberMaxImage(string urlPage)
+        {
+            var doc = GetMangaHtml(urlPage);
+            var select = doc.DocumentNode
+                .SelectNodes("//div/div/div/div/div/select[@class='page custom-select']")
+                .First();
+
+            var maxPage = select
+                .SelectNodes("option")
+                .Last()
+                .Attributes["value"].Value;
+
+            return int.Parse(maxPage);
+        }
+
+        public static byte[] GetImagePage(string urlPage, int page)
+        {   
+            //get image
+            var webClient = new WebClient();
+
+            var doc = GetMangaHtml(urlPage + "/" + page);
+
+            var imgUrl = doc.DocumentNode
+                .SelectNodes("//div/div/img")
+                .First()
+                .Attributes["src"].Value;
+
+            try
+            {
+                return webClient.DownloadData(imgUrl);
+            }
+            catch
+            {
+                _logger.Error($"Error download image from this url {imgUrl}");
+                return null;
+            }
         }
 
         public static List<GenericUrl> GetMangaUrl(string name)

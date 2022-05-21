@@ -25,9 +25,9 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
         private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH") ?? "1200000");
 
         //services
-        private readonly IUpgradeAnime _upgradeAnime;
+        private readonly IUpgrade _upgradeAnime;
 
-        public Worker(IUpgradeAnime upgradeAnime)
+        public Worker(IUpgrade upgradeAnime)
         {
             _upgradeAnime = upgradeAnime;
         }

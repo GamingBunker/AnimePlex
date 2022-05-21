@@ -1,10 +1,6 @@
 ﻿using Cesxhin.AnimeSaturn.Domain.DTO;
 using RepoDb.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Domain.Models
 {
@@ -16,10 +12,10 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         public string ChapterId { get; set; }
 
         [Map("chapterpath")]
-        public string ChapterPath { get; set; }
+        public string[] ChapterPath { get; set; }
 
         [Map("chapterhash")]
-        public string ChapterHash { get; set; }
+        public string[] ChapterHash { get; set; }
 
         public static ChapterRegister ChapterRegisterDTOToChapterRegister(ChapterRegisterDTO anime)
         {

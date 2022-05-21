@@ -6,8 +6,8 @@ using Cesxhin.AnimeSaturn.Application.Generic;
 using NLog;
 using Cesxhin.AnimeSaturn.Application.CronJob;
 using Quartz;
-using Cesxhin.AnimeSaturn.Application.AnimeManager;
-using Cesxhin.AnimeSaturn.Application.AnimeManager.Interfaces;
+using Cesxhin.AnimeSaturn.Application.CheckManager.Interfaces;
+using Cesxhin.AnimeSaturn.Application.CheckManager;
 
 namespace Cesxhin.AnimeSaturn.UpdateService
 {
@@ -20,7 +20,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureServices(async (hostContext, services) =>
+                .ConfigureServices((hostContext, services) =>
                 {
                     //rabbit
                     services.AddMassTransit(
@@ -60,7 +60,7 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                     services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
                     //services
-                    services.AddSingleton<IUpdateAnime, UpdateAnime>();
+                    services.AddSingleton<IUpdate, UpdateManga>();
 
                     services.AddHostedService<Worker>();
                 });

@@ -400,14 +400,23 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 return Conflict();
 
             var listChapterRegister = new List<ChapterRegisterDTO>();
+            List<string> chapterPaths = new();
 
             foreach (var chapter in chapters)
             {
+
+                for(int i=0; i<=chapter.NumberMaxImage; i++)
+                {
+                    chapterPaths.Add($"{_folder}/{chapter.NameManga}/Volume {chapter.CurrentVolume}/Chapter {chapter.CurrentChapter}/{chapter.NameManga} s{chapter.CurrentVolume}c{chapter.CurrentChapter}n{i}.png");
+                }
+
                 listChapterRegister.Add(new ChapterRegisterDTO
                 {
                     ChapterId = chapter.ID,
-                    ChapterPath = $"{_folder}/{chapter.NameManga}/Volume {chapter.CurrentVolume}/{chapter.NameManga} s{chapter.CurrentVolume}c{chapter.CurrentChapter}.png"
+                    ChapterPath = chapterPaths.ToArray()
                 });
+
+                chapterPaths.Clear();
             }
 
             //insert episodesRegisters
@@ -457,7 +466,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         }
 
 
-        [HttpDelete("/manga/{name}")]
+        [HttpDelete("/manga/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MangaDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

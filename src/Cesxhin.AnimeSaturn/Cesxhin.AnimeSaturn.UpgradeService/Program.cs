@@ -57,7 +57,7 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                     services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
                     //services
-                    services.AddSingleton<IUpgradeAnime, UpgradeAnime>();
+                    services.AddSingleton<IUpgrade, UpgradeAnime>();
 
                     services.AddHostedService<Worker>();
                 });

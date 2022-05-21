@@ -9,7 +9,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string NameManga { get; set; }
         public int CurrentVolume { get; set; }
         public float CurrentChapter { get; set; }
-        public List<byte[]> Pages { get; set; }
+        public int NumberMaxImage { get; set; }
         public string UrlPage { get; set; }
         public string StateDownload { get; set; }
         public int PercentualDownload { get; set; }
@@ -20,12 +20,12 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
             {
                 ID = chapter.ID,
                 CurrentChapter = chapter.CurrentChapter,
-                Pages = chapter.Pages,
                 UrlPage = chapter.UrlPage,
                 CurrentVolume = chapter.CurrentVolume,
                 NameManga = chapter.NameManga,
                 PercentualDownload = chapter.PercentualDownload,
-                StateDownload = chapter.StateDownload
+                StateDownload = chapter.StateDownload,
+                NumberMaxImage = chapter.NumberMaxImage
             };
         }
     }

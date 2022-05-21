@@ -1,4 +1,4 @@
-﻿using Cesxhin.AnimeSaturn.Application.AnimeManager.Interfaces;
+﻿using Cesxhin.AnimeSaturn.Application.CheckManager.Interfaces;
 using Cesxhin.AnimeSaturn.Application.Exceptions;
 using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Cesxhin.AnimeSaturn.Application.AnimeManager
 {
-    public class UpgradeAnime : IUpgradeAnime
+    public class UpgradeAnime : IUpgrade
     {
         //log
         private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());

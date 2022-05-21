@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Consumers
 {
-    public class DownloadConsumer : IConsumer<EpisodeDTO>
+    public class DownloadAnimeConsumer : IConsumer<EpisodeDTO>
     {
         //const
         const int LIMIT_TIMEOUT = 10;

@@ -1,4 +1,4 @@
-﻿using Cesxhin.AnimeSaturn.Application.AnimeManager.Interfaces;
+﻿using Cesxhin.AnimeSaturn.Application.CheckManager.Interfaces;
 using Cesxhin.AnimeSaturn.Application.Exceptions;
 using Cesxhin.AnimeSaturn.Application.Generic;
 using Cesxhin.AnimeSaturn.Application.NlogManager;
@@ -12,7 +12,7 @@ using System.IO;
 
 namespace Cesxhin.AnimeSaturn.Application.AnimeManager
 {
-    public class UpdateAnime : IUpdateAnime
+    public class UpdateAnime : IUpdate
     {
         //interface
         private readonly IBus _publishEndpoint;
