@@ -62,19 +62,85 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             //check duplication messages
             if (chapterVerify != null && chapterVerify.StateDownload == "pending")
             {
-                for(int i=0; i<chapter.NumberMaxImage; i++)
-                {
-                    var imgBytes = HtmlMangaMangaWorld.GetImagePage(chapter.UrlPage, i+1);
+                _logger.Info($"Start download manga {chapter.NameManga} of volume {chapter.CurrentVolume} chapter {chapter.CurrentChapter}");
 
+                //create empty file
+                for (int i = 0; i <= chapter.NumberMaxImage; i++)
+                {
+                    //check directory
                     var pathWithoutFile = Path.GetDirectoryName(chapterRegister.ChapterPath[i]);
                     if (Directory.Exists(pathWithoutFile) == false)
                         Directory.CreateDirectory(pathWithoutFile);
 
+                    File.WriteAllBytes(chapterRegister.ChapterPath[i], new byte[0]);
+                }
+
+
+                //set start download
+                chapter.StateDownload = "downloading";
+                SendStatusDownloadAPIAsync(chapter, chapterApi);
+
+                //start
+                for (int i=0; i<= chapter.NumberMaxImage; i++)
+                {
+                    var imgBytes = HtmlMangaMangaWorld.GetImagePage(chapter.UrlPage, i+1);
+
                     File.WriteAllBytes(chapterRegister.ChapterPath[i], imgBytes);
+
+                    //send status
+                    chapter.PercentualDownload = (100*i)/chapter.NumberMaxImage;
+                    SendStatusDownloadAPIAsync(chapter, chapterApi);
+
                 }
             }
+
+            //end download
+            chapter.PercentualDownload = 100;
+            chapter.StateDownload = "completed";
+            SendStatusDownloadAPIAsync(chapter, chapterApi);
+
+            //get hash and update
+            _logger.Info($"start calculate hash of chapter id: {chapter.ID}");
+            List<string> listHash = new();
+            for (int i = 0; i <= chapter.NumberMaxImage; i++)
+            {
+                listHash.Add(Hash.GetHash(chapterRegister.ChapterPath[i]));
+            }
+            _logger.Info($"end calculate hash of episode id: {chapter.ID}");
+
+            chapterRegister.ChapterHash = listHash.ToArray();
+
+            try
+            {
+                chapterRegisterApi.PutOne("/chapter/register", chapterRegister).GetAwaiter().GetResult();
+            }
+            catch (ApiNotFoundException ex)
+            {
+                _logger.Error($"Not found episodeRegister id: {chapterRegister.ChapterId}, details error: {ex.Message}");
+            }
+            catch (ApiGenericException ex)
+            {
+                _logger.Fatal($"Error generic put episodeRegister, details error: {ex.Message}");
+            }
+
             _logger.Info($"Done download manga {chapter.NameManga} of volume {chapter.CurrentVolume} chapter {chapter.CurrentChapter}");
             return Task.CompletedTask;
+        }
+
+        private void SendStatusDownloadAPIAsync(ChapterDTO chapter, Api<ChapterDTO> chapterApi)
+        {
+            try
+            {
+                chapterApi.PutOne("/manga/statusDownload", chapter).GetAwaiter().GetResult();
+            }
+            catch (ApiNotFoundException ex)
+            {
+                _logger.Error($"Not found episode id: {chapter.ID}, details: {ex.Message}");
+            }
+            catch (ApiGenericException ex)
+            {
+                _logger.Error($"Error generic api, details: {ex.Message}");
+            }
         }
     }
 }
