@@ -102,7 +102,7 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
                     foreach (string file in Directory.EnumerateFiles(_folder, "*.png", SearchOption.AllDirectories))
                     {
                         newHash = Hash.GetHash(file);
-                        if (chapterRegister.ChapterHash != null && newHash == chapterRegister.ChapterHash[i])
+                        if (newHash == chapterRegister.ChapterHash[i])
                         {
                             _logger.Info($"I found file (chapter id: {chapter.ID}) that was move, now update information");
 

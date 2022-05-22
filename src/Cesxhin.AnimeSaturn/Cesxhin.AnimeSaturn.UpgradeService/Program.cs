@@ -1,5 +1,5 @@
-using Cesxhin.AnimeSaturn.Application.AnimeManager;
-using Cesxhin.AnimeSaturn.Application.AnimeManager.Interfaces;
+using Cesxhin.AnimeSaturn.Application.CheckManager;
+using Cesxhin.AnimeSaturn.Application.CheckManager.Interfaces;
 using Cesxhin.AnimeSaturn.Application.CronJob;
 using Cesxhin.AnimeSaturn.Application.Generic;
 using MassTransit;
@@ -57,7 +57,7 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
                     services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
                     //services
-                    services.AddSingleton<IUpgrade, UpgradeAnime>();
+                    services.AddSingleton<IUpgrade, UpgradeManga>();
 
                     services.AddHostedService<Worker>();
                 });

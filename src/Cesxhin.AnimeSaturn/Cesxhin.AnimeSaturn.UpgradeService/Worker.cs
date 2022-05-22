@@ -1,16 +1,8 @@
-﻿using Cesxhin.AnimeSaturn.Application.AnimeManager.Interfaces;
-using Cesxhin.AnimeSaturn.Application.Exceptions;
-using Cesxhin.AnimeSaturn.Application.Generic;
-using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
+﻿using Cesxhin.AnimeSaturn.Application.CheckManager.Interfaces;
 using Cesxhin.AnimeSaturn.Application.NlogManager;
-using Cesxhin.AnimeSaturn.Domain.DTO;
-using MassTransit;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,11 +17,11 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
         private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH") ?? "1200000");
 
         //services
-        private readonly IUpgrade _upgradeAnime;
+        private readonly IUpgrade _upgrade;
 
-        public Worker(IUpgrade upgradeAnime)
+        public Worker(IUpgrade upgrade)
         {
-            _upgradeAnime = upgradeAnime;
+            _upgrade = upgrade;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -38,7 +30,7 @@ namespace Cesxhin.AnimeSaturn.UpgradeService
             {
                 try
                 {
-                    _upgradeAnime.ExecuteUpgrade();
+                    _upgrade.ExecuteUpgrade();
                 }catch (Exception ex)
                 {
                     _logger.Fatal($"Error upgradeAnime, details error: {ex}");

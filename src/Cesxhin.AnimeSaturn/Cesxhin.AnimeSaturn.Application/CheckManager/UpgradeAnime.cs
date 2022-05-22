@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Cesxhin.AnimeSaturn.Application.AnimeManager
+namespace Cesxhin.AnimeSaturn.Application.CheckManager
 {
     public class UpgradeAnime : IUpgrade
     {
