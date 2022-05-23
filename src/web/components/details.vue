@@ -369,6 +369,7 @@ export default {
             .then(rs => {
                 if(rs.status == 200){
                     this.Close();
+                    $nuxt.$emit("searchall");
                 }
             })
             .catch(error => {

@@ -65,7 +65,6 @@ namespace Cesxhin.AnimeSaturn.Api
                         });
                 });
             });
-            services.AddMassTransitHostedService();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

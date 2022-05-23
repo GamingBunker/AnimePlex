@@ -184,9 +184,9 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             //get page
             HtmlDocument doc = new HtmlWeb().Load(urlPage);
 
-            string numberSeasonString = Regex.Match(name, @"\d+").Value;
+            /*string numberSeasonString = Regex.Match(name, @"\d+").Value; <-- problem set number season
             if (numberSeasonString.Length > 0)
-                numberSeason = int.Parse(numberSeasonString);
+                numberSeason = int.Parse(numberSeasonString);*/
 
             int rangeAnime = 0;
             try

@@ -41,7 +41,6 @@ namespace Cesxhin.AnimeSaturn.NotifyService
 
                         });
                     });
-                    services.AddMassTransitHostedService();
 
                     //setup nlog
                     var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";
