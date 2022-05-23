@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Consumers
 {
-    public class DownloadConsumer : IConsumer<EpisodeDTO>
+    public class DownloadAnimeConsumer : IConsumer<EpisodeDTO>
     {
         //const
         const int LIMIT_TIMEOUT = 10;
@@ -396,7 +396,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         {
             try
             {
-                episodeApi.PutOne("/statusDownload", episode).GetAwaiter().GetResult();
+                episodeApi.PutOne("/anime/statusDownload", episode).GetAwaiter().GetResult();
             }catch (ApiNotFoundException ex)
             {
                 _logger.Error($"Not found episode id: {episode.ID}, details: {ex.Message}");

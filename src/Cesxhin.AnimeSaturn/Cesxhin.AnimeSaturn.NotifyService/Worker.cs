@@ -10,7 +10,7 @@ namespace Cesxhin.AnimeSaturn.NotifyService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(60000, stoppingToken);
+                await Task.Delay(1200000, stoppingToken);
             }
         }
     }

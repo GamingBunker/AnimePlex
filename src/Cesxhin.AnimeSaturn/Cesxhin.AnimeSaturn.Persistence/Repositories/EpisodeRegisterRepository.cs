@@ -31,7 +31,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"Failed GetAnimeAllAsync, details error: {ex.Message}");
+                    _logger.Error($"Failed GetEpisodeRegisterByEpisodeId, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -49,7 +49,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"Failed GetAnimeAllAsync, details error: {ex.Message}");
+                    _logger.Error($"Failed InsertEpisodeRegisterAsync, details error: {ex.Message}");
                     return null;
                 }
             }
@@ -71,7 +71,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"Failed GetAnimeAllAsync, details error: {ex.Message}");
+                    _logger.Error($"Failed UpdateEpisodeRegisterAsync, details error: {ex.Message}");
                     return null;
                 }
             }

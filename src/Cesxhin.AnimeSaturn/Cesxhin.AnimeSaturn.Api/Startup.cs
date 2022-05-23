@@ -34,11 +34,17 @@ namespace Cesxhin.AnimeSaturn.Api
             services.AddSingleton<IAnimeService, AnimeService>();
             services.AddSingleton<IEpisodeService, EpisodeService>();
             services.AddSingleton<IEpisodeRegisterService, EpisodeRegisterService>();
+            services.AddSingleton<IChapterRegisterService, ChapterRegisterService>();
+            services.AddSingleton<IChapterService, ChapterService>();
+            services.AddSingleton<IMangaService, MangaService>();
 
             //repositories
             services.AddSingleton<IAnimeRepository, AnimeRepository>();
             services.AddSingleton<IEpisodeRepository, EpisodeRepository>();
             services.AddSingleton<IEpisodeRegisterRepository, EpisodeRegisterRepository>();
+            services.AddSingleton<IChapterRegisterRepository, ChapterRegisterRepository>();
+            services.AddSingleton<IChapterRepository, ChapterRepository>();
+            services.AddSingleton<IMangaRepository, MangaRepository>();
 
             //init repoDb
             RepoDb.PostgreSqlBootstrap.Initialize();
@@ -59,7 +65,6 @@ namespace Cesxhin.AnimeSaturn.Api
                         });
                 });
             });
-            services.AddMassTransitHostedService();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

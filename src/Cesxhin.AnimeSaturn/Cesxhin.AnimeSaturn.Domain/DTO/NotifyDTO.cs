@@ -3,6 +3,6 @@
     public class NotifyDTO
     {
         public string Message { get; set; }
-        public byte[] Image { get; set; }
+        public string Image { get; set; }
     }
 }

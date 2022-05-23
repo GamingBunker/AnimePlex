@@ -6,7 +6,8 @@
         <div class="btn-group" role="group" style="height: 40px">
             <button @click="searchInternalAll()" class="btn btn-warning" type="button" style="width: 33%;"><i class="bi bi-card-list"></i></button>
             <button @click="searchInternal()" class="btn btn-light" type="button" style="width: 33%;"><i class="bi bi-search"></i></button>
-            <button @click="submitExternal()" class="btn btn-danger" type="button" style="background-color: blueviolet; border-color: blueviolet; width: 33%;"><img src="../assets/img/logo_animesaturn.png" width="50px" style="object-fit: cover; margin-top: -2px;"></button>
+            <button @click="submitExternalAnime()" class="btn btn-danger" type="button" style="background-color: blueviolet; border-color: blueviolet; width: 33%;"><img src="../assets/img/logo_animesaturn.png" width="50px" style="object-fit: cover; margin-top: -2px;"></button>
+            <button @click="submitExternalManga()" class="btn btn-danger" type="button" style="background-color: orange; border-color: orange; width: 33%;"><img src="../assets/img/MangaWorldLogo.svg" width="200px" style="object-fit: cover; margin-top: -2px;"></button>
         </div>
     </div>
 </template>
@@ -22,8 +23,11 @@
             searchInternal(){
                 $nuxt.$emit('search', this.value)
             },
-            submitExternal(){
-                $nuxt.$emit('searchExternal', this.value)
+            submitExternalAnime(){
+                $nuxt.$emit('searchExternalAnime', this.value)
+            },
+            submitExternalManga(){
+                $nuxt.$emit('searchExternalManga', this.value)
             },
             searchInternalAll(){
                 $nuxt.$emit('searchall', this.value)

@@ -21,6 +21,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             _episodeRegisterRepository = episodeRegisterRepository;
         }
 
+        //delete anime
         public async Task<string> DeleteAnimeAsync(string id)
         {
             //check all finish downloaded
@@ -66,9 +67,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //get all tables
-        public async Task<IEnumerable<GenericDTO>> GetAnimeAllWithAllAsync()
+        public async Task<IEnumerable<GenericAnimeDTO>> GetAnimeAllWithAllAsync()
         {
-            List<GenericDTO> listGenericDTO = new();
+            List<GenericAnimeDTO> listGenericDTO = new();
             List<EpisodeDTO> listEpisodeDTO = new();
             List<EpisodeRegisterDTO> listEpisodeRegisterDTO = new();
 
@@ -93,7 +94,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
                     listEpisodeDTO.Add(EpisodeDTO.EpisodeToEpisodeDTO(episode));
                 }
 
-                listGenericDTO.Add(new GenericDTO
+                listGenericDTO.Add(new GenericAnimeDTO
                 {
                     Anime = AnimeDTO.AnimeToAnimeDTO(anime),
                     Episodes = listEpisodeDTO,

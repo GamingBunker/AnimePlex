@@ -71,7 +71,7 @@
                 </template>
 
                 <!-- start information anime -->
-                <template v-if="date != 'NaN-NaN-NaN'">
+                <template v-if="date && date != 'NaN-NaN-NaN'">
                     <div>
                         <h6>Date release:</h6>
                         <p class="card-text">{{date}}</p>
@@ -92,10 +92,45 @@
                     </div>
                 <hr>
                 </template>
+                <template v-if="artist">
+                    <div>
+                        <h6>Astist:</h6>
+                        <p class="card-text">{{artist}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="author">
+                    <div>
+                        <h6>Author:</h6>
+                        <p class="card-text">{{author}}</p>
+                    </div>
+                <hr>
+                </template>
                 <template v-if="duration">
                     <div>
                         <h6>Duration:</h6>
                         <p class="card-text">{{duration}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="totalChapters">
+                    <div>
+                        <h6>Total Chapters:</h6>
+                        <p class="card-text">{{totalChapters}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="totalVolumes">
+                    <div>
+                        <h6>Total Volumes:</h6>
+                        <p class="card-text">{{totalVolumes}}</p>
+                    </div>
+                <hr>
+                </template>
+                <template v-if="type">
+                    <div>
+                        <h6>Type:</h6>
+                        <p class="card-text">{{type}}</p>
                     </div>
                 <hr>
                 </template>
@@ -127,43 +162,79 @@
                     </div>
                 </template>
                 <template v-if="showStatus">
-                    <div v-for="episode in episodes" :key="episode.id" style="margin: 10px 0px;">
-                        <div class="row">
-                            <div class="col">
-                                <span>Id: <b>{{episode.id}}</b></span>
+                    <template v-if="typeView == 'manga'">
+                        <div v-for="chapter in chapters" :key="chapter.id" style="margin: 10px 0px;">
+                            <div class="row">
+                                <div class="col">
+                                    <span>Id: <b>{{chapter.id}}</b></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <span>{{chapter.nameManga}}</span>
+                                    <br>
+                                    <span>volume: {{chapter.currentVolume}}  chapter: {{chapter.currentChapter}}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="progress" style="height: 20px; background-color: azure;">
+                                <template v-if="chapter.stateDownload == 'downloading'">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="'width: '+chapter.percentualDownload+'%'" :aria-valuenow="chapter.percentualDownload" aria-valuemin="0" aria-valuemax="100">{{chapter.percentualDownload}}%</div>
+                                </template>
+                                <template v-else-if="chapter.stateDownload == 'completed'">
+                                    <div class="progress-bar bg-success" role="progressbar" :style="'width: '+chapter.percentualDownload+'%'" :aria-valuenow="chapter.percentualDownload" aria-valuemin="0" aria-valuemax="100"><b>COMPLETED</b></div>
+                                </template>
+                                <template v-else-if="chapter.stateDownload == 'failed'">
+                                    <div class="progress-bar bg-danger" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>FAILED</b></div>
+                                </template>
+                                <template v-else-if="chapter.stateDownload == 'pending'">
+                                    <div class="progress-bar bg-warning" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>PENDING</b></div>
+                                </template>
+                                <template v-else>
+                                    <div class="progress-bar bg-info" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>NOT YET PROCESSED</b></div>
+                                </template>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <span>{{episode.animeId}} episode: {{episode.numberEpisodeCurrent}}</span>
+                    </template>
+                    <template v-else>
+                        <div v-for="episode in episodes" :key="episode.id" style="margin: 10px 0px;">
+                            <div class="row">
+                                <div class="col">
+                                    <span>Id: <b>{{episode.id}}</b></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <span>{{episode.animeId}} episode: {{episode.numberEpisodeCurrent}}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="progress" style="height: 20px; background-color: azure;">
+                                <template v-if="episode.stateDownload == 'downloading'">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100">{{episode.percentualDownload}}%</div>
+                                </template>
+                                <template v-else-if="episode.stateDownload == 'completed'">
+                                    <div class="progress-bar bg-success" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100"><b>COMPLETED</b></div>
+                                </template>
+                                <template v-else-if="episode.stateDownload == 'failed'">
+                                    <div class="progress-bar bg-danger" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>FAILED</b></div>
+                                </template>
+                                <template v-else-if="episode.stateDownload == 'pending'">
+                                    <div class="progress-bar bg-warning" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>PENDING</b></div>
+                                </template>
+                                <template v-else>
+                                    <div class="progress-bar bg-info" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>NOT YET PROCESSED</b></div>
+                                </template>
                             </div>
                         </div>
-                        
-                        <div class="progress" style="height: 20px; background-color: azure;">
-                            <template v-if="episode.stateDownload == 'downloading'">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100">{{episode.percentualDownload}}%</div>
-                            </template>
-                            <template v-else-if="episode.stateDownload == 'completed'">
-                                <div class="progress-bar bg-success" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100"><b>COMPLETED</b></div>
-                            </template>
-                            <template v-else-if="episode.stateDownload == 'failed'">
-                                <div class="progress-bar bg-danger" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>FAILED</b></div>
-                            </template>
-                            <template v-else-if="episode.stateDownload == 'pending'">
-                                <div class="progress-bar bg-warning" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>PENDING</b></div>
-                            </template>
-                            <template v-else>
-                                <div class="progress-bar bg-info" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>NOT YET PROCESSED</b></div>
-                            </template>
-                        </div>
-                    </div>
+                    </template>
                 </template>
             </div>
 
             <!-- cover -->
             <template v-if="!showStatus">
                 <template v-if="urlExternal == false || urlExternal == null">
-                    <img :src="'data:image/jpg;base64,'+ConvertBase64(image)" class="card-img-top">
+                    <img :src="'data:image/jpg;base64,'+image" class="card-img-top">
                 </template>
                 <template v-else>
                     <img :src="image" class="card-img-top">
@@ -180,6 +251,7 @@ export default {
             timer:1000,
             hide:"",
             episodes:[],
+            chapters:[],
             showStatus:false,
 
             loading: false,
@@ -197,19 +269,27 @@ export default {
         }
     },
     props:{
+        anime:String,
+        artist:String,
+        author:String,
+        dataRelease:String,
+        totalChapters:Number,
+        totalVolumes:Number,
+        type:String,
         name:String,
         description:String,
         date:String,
         vote:String,
         studio:String,
         image:String,
-        finish:Boolean,
+        status:Boolean,
         urlPage:String,
         duration:String,
         totalEpisode:Number,
         urlPageDownload:String,
         urlExternal:Boolean,
-        exists:Boolean
+        exists:Boolean,
+        typeView:String
     },
 
     methods: {
@@ -227,7 +307,14 @@ export default {
                 return
             }
             this.loading = true;
-            this.$axios.put(`${this.protocol}://${this.host}:${this.port}/animesaturn/redownload`, JSON.stringify(this.episodes),
+
+            var list = []
+            if(this.episodes.length <= 0)
+                list = this.chapters
+            else
+                list = this.episodes
+
+            this.$axios.put(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/redownload`, JSON.stringify(list),
                 {
                     headers: {
                         'Content-Type': 'application/json'
@@ -251,7 +338,7 @@ export default {
         Download(){
             //get api external
             this.loading = true;
-            this.$axios.post(`${this.protocol}://${this.host}:${this.port}/animesaturn/download`, JSON.stringify({Url: this.urlPageDownload}),
+            this.$axios.post(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/download`, JSON.stringify({Url: this.urlPageDownload}),
             {
                 headers: {
                     'Content-Type': 'application/json'
@@ -278,10 +365,11 @@ export default {
             })
         },
         Delete(){
-            this.$axios.delete(`${this.protocol}://${this.host}:${this.port}/anime/${this.name}`)
+            this.$axios.delete(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/${this.name}`)
             .then(rs => {
                 if(rs.status == 200){
                     this.Close();
+                    $nuxt.$emit("searchall");
                 }
             })
             .catch(error => {
@@ -309,11 +397,20 @@ export default {
             handler(){
                 if(this.urlPage != null)
                 {
-                    //get api internal
-                    this.$axios.get(`${this.protocol}://${this.host}:${this.port}/episode/name/${this.name}`)
-                        .then(rs => {
-                        this.episodes = rs.data
-                    });
+                    if(this.typeView === "anime")
+                    {
+                        //get api internal
+                        this.$axios.get(`${this.protocol}://${this.host}:${this.port}/episode/name/${this.name}`)
+                            .then(rs => {
+                            this.episodes = rs.data
+                        });
+                    }else if(this.typeView === "manga"){
+                        //get api internal
+                        this.$axios.get(`${this.protocol}://${this.host}:${this.port}/chapter/name/${this.name}`)
+                            .then(rs => {
+                            this.chapters = rs.data
+                        });
+                    }
                 }
                 setTimeout(() => {
                     this.hide = new Date();

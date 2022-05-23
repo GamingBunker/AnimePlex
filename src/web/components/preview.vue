@@ -30,7 +30,9 @@
         props:{
             name:String,
             image:String,
-            urlExternal:Boolean
+            urlExternal:Boolean,
+            positionCurrent:Number,
+            typeView:String
         },
         methods: {
             ConvertBase64(imgBase64){
@@ -38,7 +40,7 @@
                 return  buff.toString()
             },
             viewDetails(){
-                $nuxt.$emit('viewDetails', this.name)
+                $nuxt.$emit('viewDetails', this.positionCurrent, this.typeView)
             }
         }
     }

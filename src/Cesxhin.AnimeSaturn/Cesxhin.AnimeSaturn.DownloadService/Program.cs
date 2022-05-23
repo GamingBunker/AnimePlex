@@ -35,8 +35,18 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                                     credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT") ?? "guest");
                                     credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT") ?? "guest");
                                 });
+
                             cfg.ReceiveEndpoint("download-anime", e => {
-                                e.Consumer<DownloadConsumer>(cc =>
+                                e.Consumer<DownloadAnimeConsumer>(cc =>
+                                {
+                                    string limit = Environment.GetEnvironmentVariable("LIMIT_CONSUMER_RABBIT") ?? "3";
+
+                                    cc.UseConcurrentMessageLimit(int.Parse(limit));
+                                });
+                            });
+
+                            cfg.ReceiveEndpoint("download-manga", e => {
+                                e.Consumer<DownloadMangaConsumer>(cc =>
                                 {
                                     string limit = Environment.GetEnvironmentVariable("LIMIT_CONSUMER_RABBIT") ?? "3";
 
@@ -46,7 +56,6 @@ namespace Cesxhin.AnimeSaturn.DownloadService
 
                         });
                     });
-                    services.AddMassTransitHostedService();
 
                     //setup nlog
                     var level = Environment.GetEnvironmentVariable("LOG_LEVEL").ToLower() ?? "info";

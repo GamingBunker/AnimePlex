@@ -14,9 +14,10 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string DurationEpisode { get; set; }
         public int EpisodeTotal { get; set; }
         public DateTime DateRelease { get; set; }
-        public byte[] Image { get; set; }
+        public string Image { get; set; }
         public string UrlPage { get; set; }
 
+        //convert Anime to AnimeDTO
         public static AnimeDTO AnimeToAnimeDTO(Anime anime)
         {
             return new AnimeDTO

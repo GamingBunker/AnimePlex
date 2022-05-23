@@ -7,6 +7,7 @@ using MassTransit;
 using NLog;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Consumers
@@ -30,7 +31,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             {
                 if(notify.Image != null)
                 {
-                    Stream image = new MemoryStream(notify.Image);
+                    Stream image = new MemoryStream(Convert.FromBase64String(notify.Image));
                     discord.SendFileAsync(image, "Cover.png", notify.Message).GetAwaiter().GetResult();
                 }
                 else
