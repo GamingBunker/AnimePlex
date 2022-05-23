@@ -1,5 +1,8 @@
 <template>
   <div>
+    <!-- Problem img tag src 403-->
+    <meta name="referrer" content="no-referrer" />
+    
     <div style="position:absolute; margin: 10px;">
       <b-button v-b-toggle.sidebar-no-header style="background-color: #98ccd4; border:#98ccd4;"><i class="bi bi-caret-right"></i></b-button>
     </div>
@@ -43,7 +46,7 @@
         <!-- animation loading pages -->
         <div v-if="loading" class="d-flex flex-row flex-wrap justify-content-center"  style="padding-top: 60px;">
           <div v-for="number in 8" :key="number">
-            <PreviewAnimeLoading />
+            <PreviewLoading />
           </div>
         </div>
         
@@ -84,31 +87,52 @@
             </template>
           </nav>
 
-          <!-- list previewAnime -->
+          <!-- list Preview -->
           <div v-if="pages != null"  class="d-flex flex-row flex-wrap justify-content-center">
-            <div v-for="view in pages[numberPageCurrent]" :key="view.name">
-              <PreviewAnime :name="view.name" :image="view.image" :data="view" :urlExternal="urlExternal"/>
+            <div v-for="view in pages[numberPageCurrent]" :key="view.id">
+              <Preview :name="view.name" :image="view.image" :urlExternal="urlExternal" :typeView="view.typeView" :positionCurrent="pages[numberPageCurrent].findIndex((e) => e.id == view.id)"/>
             </div>
           </div>
         </div>
 
         <!-- details anime -->
         <div v-else class="row justify-content-center">
-          <DetailsAnime
-            :name="payload.name" 
-            :date="new Date(Date.parse(payload.dateRelease)).getDay()+'-'+new Date(Date.parse(payload.dateRelease)).getMonth()+'-'+new Date(Date.parse(payload.dateRelease)).getFullYear()" 
-            :description="payload.description" 
-            :image="payload.image" 
-            :status="payload.finish" 
-            :studio="payload.studio" 
-            :urlPage="payload.urlPage"
-            :duration="payload.durationEpisode"
-            :totalEpisode="payload.episodeTotal"
-            :vote="payload.vote"
-            :urlPageDownload="payload.urlPageDownload"
-            :urlExternal="urlExternal"
-            :exists="payload.exists"
-          />
+          <template v-if="payload.anime !== undefined">
+            <DetailsAnime
+              :anime="payload.anime"
+              :artist="payload.artist"
+              :author="payload.author"
+              :dataRelease="payload.dataRelease"
+              :description="payload.description"
+              :image="payload.image"
+              :name="payload.name"
+              :status="payload.status"
+              :totalChapters="payload.totalChapters"
+              :totalVolumes="payload.totalVolumes"
+              :type="payload.type"
+              :urlPage="payload.urlPage"
+              :typeView ="typeView"
+              :exists="payload.exists"
+            />
+          </template>
+          <template v-else>
+            <DetailsAnime
+              :name="payload.name" 
+              :date="new Date(Date.parse(payload.dateRelease)).getDay()+'-'+new Date(Date.parse(payload.dateRelease)).getMonth()+'-'+new Date(Date.parse(payload.dateRelease)).getFullYear()" 
+              :description="payload.description" 
+              :image="payload.image" 
+              :status="payload.finish" 
+              :studio="payload.studio" 
+              :urlPage="payload.urlPage"
+              :duration="payload.durationEpisode"
+              :totalEpisode="payload.episodeTotal"
+              :vote="payload.vote"
+              :urlPageDownload="payload.urlPageDownload"
+              :urlExternal="urlExternal"
+              :exists="payload.exists"
+              :typeView ="typeView"
+            />
+          </template>
         </div>
       </div>
     </div>
@@ -116,20 +140,21 @@
 </template>
 
 <script>
-import PreviewAnime from "../components/previewAnime.vue"
-import DetailsAnime from "../components/detailsAnime.vue";
+import Preview from "../components/preview.vue"
+import DetailsAnime from "../components/details.vue";
 import SearchComponent from "../components/searchComponent.vue";
-import PreviewAnimeLoading from "../components/previewAnimeLoading.vue";
+import PreviewLoading from "../components/previewLoading.vue";
 import SpaceDiskComponent from "../components/spaceDiskComponent.vue";
 import HealthServicesComponent from "../components/healthServicesComponent.vue";
 
 export default {
     name: "IndexPage",
-    components: { PreviewAnime, DetailsAnime, SearchComponent, PreviewAnimeLoading, SpaceDiskComponent, HealthServicesComponent },
+    components: { Preview, DetailsAnime, SearchComponent, PreviewLoading, SpaceDiskComponent, HealthServicesComponent },
     data() {
         return {
             searchView: true,
             urlExternal: false,
+            typeView: null,
             payload : {},
             loading: false,
             success: false,
@@ -137,19 +162,19 @@ export default {
             pages:null,
             numberPageTotal:-1,
             numberPageCurrent:0,
+            positionCurrent:0,
             
             host:this.$config.ipAPI,
             port:this.$config.portAPI,
             protocol:this.$config.protocolAPI,
-
             //validateCertificate:false
         };
     },
     created() {
       //get all api internal
-      this.$nuxt.$on("searchall", (name) => {
+      this.$nuxt.$on("searchall", () => {
           this.loading = true;
-          this.$axios.get(`${this.protocol}://${this.host}:${this.port}/anime`)
+          this.$axios.get(`${this.protocol}://${this.host}:${this.port}/all`)
             .then(rs => {
 
               //reset
@@ -204,10 +229,10 @@ export default {
           })
       });
 
-      //get api external
-      this.$nuxt.$on("searchExternal", (name) => {
+      //get api external anime
+      this.$nuxt.$on("searchExternalAnime", (name) => {
           this.loading = true;
-          this.$axios.get(`${this.protocol}://${this.host}:${this.port}/animesaturn/name/${name}`)
+          this.$axios.get(`${this.protocol}://${this.host}:${this.port}/anime/list/name/${name}`)
               .then(rs => {
 
               //reset
@@ -230,17 +255,45 @@ export default {
           })
           .then(() => {
             this.loading = false;
+            this.typeView = "anime";
+          })
+      });
+
+      //get api external manga
+      this.$nuxt.$on("searchExternalManga", (name) => {
+          this.loading = true;
+          this.$axios.get(`${this.protocol}://${this.host}:${this.port}/manga/list/name/${name}`)
+              .then(rs => {
+
+              //reset
+              this.pages = [];
+              this.numberPageTotal = -1;
+              this.numberPageCurrent = 0;
+
+              //array to pages
+              this.SetPages(rs.data);
+
+              //init
+              this.urlExternal = true;
+              this.searchView = true;
+          })
+          .catch(error => {
+            if(error.message.includes('404'))
+              this.pages = [];
+            //else
+              //this.validateCertificate = true
+          })
+          .then(() => {
+            this.loading = false;
+            this.typeView = "manga";
           })
       });
 
       //view details anime
-      this.$nuxt.$on("viewDetails", (name) => {
+      this.$nuxt.$on("viewDetails", (positionCurrent, typeView) => {
         this.searchView = false;
-        this.pages[this.numberPageCurrent].forEach(item => {
-          if(item.name == name){
-            this.payload = item
-          }
-        });
+        this.payload = this.pages[this.numberPageCurrent][positionCurrent];
+        this.typeView = typeView;
       })
 
       //close page detailsView
@@ -275,16 +328,24 @@ export default {
       },
       SetPages(array){
         var temp = []
+        var id = 0;
         //put array
         array.forEach(item => {
+          if(item.typeView !== undefined && item.typeView === "manga" || item.artist !== undefined)
+            item.typeView = "manga"
+          else
+            item.typeView = "anime"
+          
+          item.id = id;
           temp.push(item);
-
-          //push limit 10 item for pages
+          
+          //push limit 20 item for pages
           if(temp.length == 20){
             this.pages.push(temp)
             temp = []
             this.numberPageTotal = this.numberPageTotal + 1
           }
+          id++;
         });
 
         //push remain anime

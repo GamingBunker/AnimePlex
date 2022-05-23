@@ -1,17 +1,17 @@
-﻿using Cesxhin.AnimeSaturn.Application.Generic;
-using Cesxhin.AnimeSaturn.Application.Interfaces.Repositories;
+﻿using Cesxhin.AnimeSaturn.Application.Interfaces.Repositories;
 using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Domain.Models;
 using NLog;
 using Npgsql;
-using RepoDb;
 using System;
 using System.Collections.Generic;
+using RepoDb;
 using System.Threading.Tasks;
+using Cesxhin.AnimeSaturn.Application.Generic;
 
 namespace Cesxhin.AnimeSaturn.Persistence.Repositories
 {
-    public class EpisodeRegisterRepository : IEpisodeRegisterRepository
+    public class ChapterRegisterRepository : IChapterRegisterRepository
     {
         //log
         private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
@@ -19,54 +19,51 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
-        //get all episodesRegisters
-        public async Task<List<EpisodeRegister>> GetEpisodeRegisterByEpisodeId(string id)
+        public async Task<List<ChapterRegister>> GetChapterRegisterByChapterId(string id)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 try
                 {
-                    var rs = await connection.QueryAsync<EpisodeRegister>(e => e.EpisodeId == id);
-                    return ConvertGeneric<EpisodeRegister>.ConvertIEnurableToListCollection(rs);
+                    var rs = await connection.QueryAsync<ChapterRegister>(e => e.ChapterId == id);
+                    return ConvertGeneric<ChapterRegister>.ConvertIEnurableToListCollection(rs);
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"Failed GetEpisodeRegisterByEpisodeId, details error: {ex.Message}");
+                    _logger.Error($"Failed GetChapterRegisterByChapterId, details error: {ex.Message}");
                     return null;
                 }
             }
         }
 
-        //insert
-        public async Task<EpisodeRegister> InsertEpisodeRegisterAsync(EpisodeRegister episodeRegister)
+        public async Task<ChapterRegister> InsertChapterRegisterAsync(ChapterRegister chapterRegister)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 try
                 {
-                    await connection.InsertAsync(episodeRegister);
-                    return episodeRegister;
+                    await connection.InsertAsync(chapterRegister);
+                    return chapterRegister;
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"Failed InsertEpisodeRegisterAsync, details error: {ex.Message}");
+                    _logger.Error($"Failed InsertChapterRegisterAsync, details error: {ex.Message}");
                     return null;
                 }
             }
         }
 
-        //update
-        public async Task<EpisodeRegister> UpdateEpisodeRegisterAsync(EpisodeRegister episodeRegister)
+        public async Task<ChapterRegister> UpdateChapterRegisterAsync(ChapterRegister chapterRegister)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 try
                 {
-                    var rs = await connection.UpdateAsync(episodeRegister, e => e.EpisodeId == episodeRegister.EpisodeId);
+                    var rs = await connection.UpdateAsync(chapterRegister, e => e.ChapterId == chapterRegister.ChapterId);
 
                     //check update
-                    if(rs > 0)
-                        return episodeRegister;
+                    if (rs > 0)
+                        return chapterRegister;
                     return null;
                 }
                 catch (Exception ex)

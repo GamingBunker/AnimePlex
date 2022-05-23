@@ -26,6 +26,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public int startNumberBuffer { get; set; } = 0;
         public int endNumberBuffer { get; set; }
 
+        //convert Episode to EpisodeDTO
         public static EpisodeDTO EpisodeToEpisodeDTO(Episode episode)
         {
             return new EpisodeDTO

@@ -27,7 +27,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
             //set variable
             string durationEpisode = null, vote = null, description = null, surname = null, nameAnime = null, numberTotalEpisodes = null, date = null, studio = null;
             bool finish = false;
-            byte[] imageBytes = null;
+            string imageBase64=null;
 
             _logger.Info($"Start download page anime: {urlPage}");
 
@@ -141,7 +141,8 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 .Attributes["src"].Value;
             try
             {
-                imageBytes = webClient.DownloadData(imageUrl);
+                var imageBytes = webClient.DownloadData(imageUrl);
+                imageBase64 = Convert.ToBase64String(imageBytes);
             }
             catch
             {
@@ -166,7 +167,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 Finish = finish,
                 Description = description,
                 Name = RemoveSpecialCharacters(nameAnime),
-                Image = imageBytes,
+                Image = imageBase64,
                 Studio = studio,
                 UrlPage = urlPage
             };
@@ -354,7 +355,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
         }
 
         //get list anime external
-        public static List<AnimeUrl> GetAnimeUrl(string name)
+        public static List<GenericUrl> GetAnimeUrl(string name)
         {
             _logger.Info($"Start download lsit anime, search: {name}");
             //get page
@@ -372,7 +373,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 .SelectNodes("//ul/li/div")
                 .ToList();
 
-            List<AnimeUrl> animeUrl = new();
+            List<GenericUrl> animeUrl = new();
             foreach (var anime in animes)
             {
                 try
@@ -394,11 +395,12 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                         .First()
                         .Attributes["src"].Value;
 
-                    animeUrl.Add(new AnimeUrl
+                    animeUrl.Add(new GenericUrl
                     {
                         Name = RemoveSpecialCharacters(nameAnime),
                         Url = linkPage,
-                        UrlImage = linkCopertina
+                        UrlImage = linkCopertina,
+                        TypeView = "anime"
                     });
 
                 }

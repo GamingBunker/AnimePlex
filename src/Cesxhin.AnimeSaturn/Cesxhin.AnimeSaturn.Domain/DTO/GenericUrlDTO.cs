@@ -2,21 +2,23 @@
 
 namespace Cesxhin.AnimeSaturn.Domain.DTO
 {
-    public  class AnimeUrlDTO
+    public  class GenericUrlDTO
     {
         public string Name { get; set; }
         public string UrlPageDownload { get; set; }
         public string Image { get; set; }
-
+        public string TypeView { get; set; }
         public bool Exists { get; set; } = false;
 
-        public AnimeUrlDTO AnimeToAnimeUrlDTO(AnimeUrl anime)
+        //convert GenericUrl to GenericUrlDTO
+        public static GenericUrlDTO GenericUrlToGenericUrlDTO(GenericUrl anime)
         {
-            return new AnimeUrlDTO
+            return new GenericUrlDTO
             {
                 Name = anime.Name,
                 UrlPageDownload = anime.Url,
-                Image = anime.UrlImage
+                Image = anime.UrlImage,
+                TypeView = anime.TypeView
             };
         }
     }

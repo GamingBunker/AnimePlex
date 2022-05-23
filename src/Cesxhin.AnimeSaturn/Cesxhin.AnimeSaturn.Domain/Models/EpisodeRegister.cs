@@ -16,6 +16,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         [Map("episodehash")]
         public string EpisodeHash { get; set; }
 
+        //convert EpisodeRegister to EpisodeRegisterDTO
         public static EpisodeRegister EpisodeRegisterToEpisodeRegisterDTO(EpisodeRegisterDTO anime)
         {
             return new EpisodeRegister
