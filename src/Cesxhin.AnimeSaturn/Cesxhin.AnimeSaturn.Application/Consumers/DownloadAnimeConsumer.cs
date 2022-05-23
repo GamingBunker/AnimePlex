@@ -396,7 +396,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         {
             try
             {
-                episodeApi.PutOne("/statusDownload", episode).GetAwaiter().GetResult();
+                episodeApi.PutOne("/anime/statusDownload", episode).GetAwaiter().GetResult();
             }catch (ApiNotFoundException ex)
             {
                 _logger.Error($"Not found episode id: {episode.ID}, details: {ex.Message}");

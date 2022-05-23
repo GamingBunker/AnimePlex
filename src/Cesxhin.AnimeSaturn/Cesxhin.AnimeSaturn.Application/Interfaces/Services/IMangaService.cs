@@ -16,6 +16,6 @@ namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
         Task<MangaDTO> InsertMangaAsync(MangaDTO manga);
 
         //delete
-        Task<MangaDTO> DeleteMangaByNameAsync(string name);
+        Task<string> DeleteMangaByNameAsync(string name);
     }
 }

@@ -31,6 +31,9 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
         private readonly Api<EpisodeDTO> episodeApi = new();
         private readonly Api<EpisodeRegisterDTO> episodeRegisterApi = new();
 
+        //download api
+        private List<GenericAnimeDTO> listAnime = null;
+
         public UpdateAnime(IBus publicEndpoint)
         {
             _publishEndpoint = publicEndpoint;
@@ -38,9 +41,7 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
 
         public void ExecuteUpdate()
         {
-            //download api
-            List<GenericAnimeDTO> listAnime = null;
-            parallel.ClearList();
+            _logger.Info($"Start update anime");
 
             try
             {
@@ -74,6 +75,8 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
                 parallel.WhenCompleted();
                 parallel.ClearList();
             }
+
+            _logger.Info($"End update anime");
         }
 
         private object CheckEpisode(GenericAnimeDTO anime, EpisodeDTO episode, Api<EpisodeDTO> episodeApi, Api<EpisodeRegisterDTO> episodeRegisterApi)
@@ -147,7 +150,7 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
             try
             {
                 //set change status
-                await episodeApi.PutOne("/statusDownload", episode);
+                await episodeApi.PutOne("/anime/statusDownload", episode);
 
                 await _publishEndpoint.Publish(episode);
                 _logger.Info($"this file ({episode.AnimeId} episode: {episode.NumberEpisodeCurrent}) does not exists, sending message to DownloadService");

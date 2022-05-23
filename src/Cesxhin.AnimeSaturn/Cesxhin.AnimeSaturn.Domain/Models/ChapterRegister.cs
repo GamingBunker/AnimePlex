@@ -1,6 +1,5 @@
 ﻿using Cesxhin.AnimeSaturn.Domain.DTO;
 using RepoDb.Attributes;
-using System;
 
 namespace Cesxhin.AnimeSaturn.Domain.Models
 {
@@ -17,6 +16,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         [Map("chapterhash")]
         public string[] ChapterHash { get; set; }
 
+        //convert ChapterRegisterDTO to ChapterRegister
         public static ChapterRegister ChapterRegisterDTOToChapterRegister(ChapterRegisterDTO anime)
         {
             return new ChapterRegister

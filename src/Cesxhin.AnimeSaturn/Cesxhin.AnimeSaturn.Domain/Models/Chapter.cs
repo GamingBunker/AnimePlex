@@ -1,6 +1,5 @@
 ﻿using Cesxhin.AnimeSaturn.Domain.DTO;
 using RepoDb.Attributes;
-using System.Collections.Generic;
 
 namespace Cesxhin.AnimeSaturn.Domain.Models
 {
@@ -32,6 +31,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         [Map("percentualdownload")]
         public int PercentualDownload { get; set; }
 
+        //convert ChapterDTO to Chapter
         public static Chapter ChapterDTOToChapter(ChapterDTO chapter)
         {
             return new Chapter

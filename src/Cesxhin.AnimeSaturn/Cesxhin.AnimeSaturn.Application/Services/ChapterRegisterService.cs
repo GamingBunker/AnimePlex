@@ -17,6 +17,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             _chapterRegisterRepository = chapterRegisterRepository;
         }
 
+        //get chapterRegister by chapter id
         public async Task<ChapterRegisterDTO> GetChapterRegisterByChapterId(string id)
         {
             var listChapterRegisters = await _chapterRegisterRepository.GetChapterRegisterByChapterId(id);
@@ -27,12 +28,14 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return null;
         }
 
+        //insert chapterRegister
         public async Task<ChapterRegisterDTO> InsertChapterRegisterAsync(ChapterRegisterDTO chapterRegister)
         {
             var result = await _chapterRegisterRepository.InsertChapterRegisterAsync(ChapterRegister.ChapterRegisterDTOToChapterRegister(chapterRegister));
             return ChapterRegisterDTO.ChapterRegisterToChapterRegisterDTO(result);
         }
 
+        //insert list chapterRegister
         public async Task<List<ChapterRegisterDTO>> InsertChaptersRegistersAsync(List<ChapterRegisterDTO> chapterRegister)
         {
             List<ChapterRegisterDTO> resultChapters = new();
@@ -44,6 +47,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return resultChapters;
         }
 
+        //Update chapterRegister
         public async Task<ChapterRegisterDTO> UpdateChapterRegisterAsync(ChapterRegisterDTO chapterRegister)
         {
             var chapterResult = await _chapterRegisterRepository.UpdateChapterRegisterAsync(ChapterRegister.ChapterRegisterDTOToChapterRegister(chapterRegister));

@@ -2,16 +2,15 @@
 using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using Cesxhin.AnimeSaturn.Domain.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Services
 {
     public class MangaService : IMangaService
     {
+        //interfaces
         private readonly IMangaRepository _mangaRepository;
         private readonly IChapterRepository _chapterRepository;
         private readonly IChapterRegisterRepository _chapterRegisterRepository;
@@ -27,7 +26,8 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             _chapterRegisterRepository = chapterRegisterRepository;
         }
 
-        public async Task<MangaDTO> DeleteMangaByNameAsync(string name)
+        //delete manga
+        public async Task<string> DeleteMangaByNameAsync(string name)
         {
             var manga = await _mangaRepository.GetMangaByNameAsync(name);
 
@@ -40,7 +40,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             foreach (var chapter in chapters)
             {
                 if (!(chapter.StateDownload == "completed" || chapter.StateDownload == null))
-                    return null;
+                    return "-1";
             }
 
             var result = await _mangaRepository.DeleteMangaAsync(manga.First());
@@ -48,10 +48,11 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             if (result == null)
                 return null;
 
-            return MangaDTO.MangaToMangaDTO(result);
+            return "ok";
             
         }
 
+        //get all manga
         public async Task<IEnumerable<MangaDTO>> GetMangaAllAsync()
         {
             List<MangaDTO> resultManga = new();
@@ -67,6 +68,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return resultManga;
         }
 
+        //get all tables
         public async Task<IEnumerable<GenericMangaDTO>> GetMangaAllWithAllAsync()
         {
             List<GenericMangaDTO> listGenericDTO = new();
@@ -109,6 +111,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return listGenericDTO;
         }
 
+        //get manga by name
         public async Task<MangaDTO> GetMangaByNameAsync(string name)
         {
             var listManga = await _mangaRepository.GetMangaByNameAsync(name);
@@ -122,6 +125,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return null;
         }
 
+        //get list manga
         public async Task<IEnumerable<MangaDTO>> GetMostMangaByNameAsync(string name)
         {
             List<MangaDTO> mangaDTO = new();
@@ -139,6 +143,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return mangaDTO;
         }
 
+        //insert one manga
         public async Task<MangaDTO> InsertMangaAsync(MangaDTO manga)
         {
             var rs = await _mangaRepository.InsertMangaAsync(Manga.MangaDTOToManga(manga));

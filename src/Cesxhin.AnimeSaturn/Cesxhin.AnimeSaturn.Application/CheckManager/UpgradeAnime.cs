@@ -21,8 +21,19 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
         //variables
         private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
 
+        //list
+        private List<GenericAnimeDTO> listGenerics = new();
+        private List<EpisodeRegisterDTO> listEpisodeRegister;
+        private List<EpisodeRegisterDTO> blacklist;
+
+        //api
+        private readonly Api<GenericAnimeDTO> genericApi = new();
+        private readonly Api<EpisodeDTO> episodeApi = new();
+        private readonly Api<EpisodeRegisterDTO> episodeRegisterApi = new();
+
         //rabbit
         private readonly IBus _publishEndpoint;
+
 
         public UpgradeAnime(IBus publishEndpoint)
         {
@@ -31,15 +42,7 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
 
         public void ExecuteUpgrade()
         {
-            //list
-            List<GenericAnimeDTO> listGenerics = new();
-            List<EpisodeRegisterDTO> listEpisodeRegister;
-            List<EpisodeRegisterDTO> blacklist;
-
-            //api
-            Api<GenericAnimeDTO> genericApi = new();
-            Api<EpisodeDTO> episodeApi = new();
-            Api<EpisodeRegisterDTO> episodeRegisterApi = new();
+            _logger.Info($"Start upgrade anime");
 
             try
             {
@@ -154,6 +157,8 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
                 //clear resource
                 listEpisodesAdd.Clear();
             }
+
+            _logger.Info($"End upgrade anime");
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string EpisodePath { get; set; }
         public string EpisodeHash { get; set; }
 
+        //convert EpisodeRegister to EpisodeRegisterDTO
         public static EpisodeRegisterDTO EpisodeRegisterToEpisodeRegisterDTO(EpisodeRegister anime)
         {
             return new EpisodeRegisterDTO

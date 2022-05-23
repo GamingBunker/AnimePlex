@@ -108,7 +108,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //get list episode by name anime
+        //get episode by name anime
         [HttpGet("/episode/name/{name}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<EpisodeDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -130,7 +130,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //get one episode by id
+        //get episode by id
         [HttpGet("/episode/id/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -152,7 +152,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //get one episode by id
+        //get episodeRegister by id
         [HttpGet("/episode/register/episodeid/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeRegisterDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -266,7 +266,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //put metadata into db
+        //put episodeRegister into db
         [HttpPut("/episode/register")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeRegisterDTO))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -286,7 +286,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //put metadata into db
+        //put anime into db
         [HttpPost("/anime/download")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AnimeDTO))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -353,7 +353,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //put metadata into db
+        //reset state download of episodeRegister into db
         [HttpPut("/anime/redownload")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -415,7 +415,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //get all db
+        //get all db anime
         [HttpGet("/anime/all")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<GenericAnimeDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -473,7 +473,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-        //update status of someone episode
+        //update status episode
         [HttpPut("/anime/statusDownload")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EpisodeDTO))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

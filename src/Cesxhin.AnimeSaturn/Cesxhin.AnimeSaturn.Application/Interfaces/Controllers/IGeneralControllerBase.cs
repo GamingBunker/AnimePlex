@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 namespace Cesxhin.AnimeSaturn.Application.Interfaces.Controllers
 {
     public interface IGeneralControllerBase<I, O, R, D>
-    {        //get
+    {
+        //get
         public Task<IActionResult> GetInfoAll();
         public Task<IActionResult> GetInfoByName(string name);
         public Task<IActionResult> GetMostInfoByName(string name);

@@ -44,6 +44,7 @@ namespace Cesxhin.AnimeSaturn.Domain.Models
         [Map("urlpage")]
         public string UrlPage { get; set; }
 
+        //convert MangaDTO to Manga
         public static Manga MangaDTOToManga(MangaDTO manga)
         {
             return new Manga

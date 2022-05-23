@@ -17,6 +17,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string Image { get; set; }
         public string UrlPage { get; set; }
 
+        //convert Anime to AnimeDTO
         public static AnimeDTO AnimeToAnimeDTO(Anime anime)
         {
             return new AnimeDTO

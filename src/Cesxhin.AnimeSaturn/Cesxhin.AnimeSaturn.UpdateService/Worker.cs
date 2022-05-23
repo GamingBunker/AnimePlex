@@ -17,11 +17,11 @@ namespace Cesxhin.AnimeSaturn.UpdateService
         private readonly int _timeRefresh = int.Parse(Environment.GetEnvironmentVariable("TIME_REFRESH") ?? "120000");
 
         //service
-        private readonly IUpdate _updateAnime;
+        private readonly IUpdate _update;
 
-        public Worker(IUpdate updateAnime)
+        public Worker(IUpdate update)
         {
-            _updateAnime = updateAnime;
+            _update = update;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,10 +30,10 @@ namespace Cesxhin.AnimeSaturn.UpdateService
             {
                 try
                 {
-                    _updateAnime.ExecuteUpdate();
+                    _update.ExecuteUpdate();
                 }catch (Exception ex)
                 {
-                    _logger.Fatal($"Error updateAnime, details error: {ex}");
+                    _logger.Fatal($"Error update, details error: {ex}");
                 }
 
                 _logger.Info($"Worker running at: {DateTimeOffset.Now}");

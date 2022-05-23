@@ -9,8 +9,7 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Consumers
@@ -20,16 +19,19 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         //nlog
         private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
 
+        //Instance Parallel
+        private readonly ParallelManager<object> parallel = new();
+
+        //api
+        private readonly Api<ChapterDTO> chapterApi = new();
+        private readonly Api<ChapterRegisterDTO> chapterRegisterApi = new();
+
         public Task Consume(ConsumeContext<ChapterDTO> context)
         {
             //get body
             var chapter = context.Message;
 
-            //api
-            Api<ChapterDTO> chapterApi = new();
-            Api<ChapterRegisterDTO> chapterRegisterApi = new();
-
-            //register
+            //chapterRegister
             ChapterRegisterDTO chapterRegister = null;
             try
             {
@@ -44,7 +46,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 _logger.Fatal($"Impossible error generic get episodeRegister, details error: {ex.Message}");
             }
 
-            //episode
+            //chapter
             ChapterDTO chapterVerify = null;
             try
             {
@@ -75,29 +77,37 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     File.WriteAllBytes(chapterRegister.ChapterPath[i], new byte[0]);
                 }
 
-
                 //set start download
                 chapter.StateDownload = "downloading";
-                SendStatusDownloadAPIAsync(chapter, chapterApi);
+                SendStatusDownloadAPIAsync(chapter);
 
-                //start
-                for (int i=0; i<= chapter.NumberMaxImage; i++)
+                //set parallel
+                var tasks = new List<Func<object>>();
+
+                //step one check file
+                for(int i=0; i<= chapter.NumberMaxImage; i++)
                 {
-                    var imgBytes = HtmlMangaMangaWorld.GetImagePage(chapter.UrlPage, i+1);
-
-                    File.WriteAllBytes(chapterRegister.ChapterPath[i], imgBytes);
-
-                    //send status
-                    chapter.PercentualDownload = (100*i)/chapter.NumberMaxImage;
-                    SendStatusDownloadAPIAsync(chapter, chapterApi);
-
+                    var currentImage = i;
+                    var path = chapterRegister.ChapterPath[currentImage];
+                    tasks.Add(new Func<object>(() => Download(chapter, path, currentImage)));
                 }
+                parallel.AddTasks(tasks);
+                parallel.Start();
+
+                while (!parallel.CheckFinish())
+                {
+                    //send status download
+                    chapter.PercentualDownload = parallel.PercentualCompleted();
+                    SendStatusDownloadAPIAsync(chapter);
+                    Thread.Sleep(3000);
+                }
+                parallel.ClearList();
             }
 
             //end download
             chapter.PercentualDownload = 100;
             chapter.StateDownload = "completed";
-            SendStatusDownloadAPIAsync(chapter, chapterApi);
+            SendStatusDownloadAPIAsync(chapter);
 
             //get hash and update
             _logger.Info($"start calculate hash of chapter id: {chapter.ID}");
@@ -127,7 +137,16 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             return Task.CompletedTask;
         }
 
-        private void SendStatusDownloadAPIAsync(ChapterDTO chapter, Api<ChapterDTO> chapterApi)
+        private string Download(ChapterDTO chapter, string path, int currentImage)
+        {
+            var imgBytes = HtmlMangaMangaWorld.GetImagePage(chapter.UrlPage, currentImage + 1);
+
+            File.WriteAllBytes(path, imgBytes);
+
+            return "done";
+        }
+
+        private void SendStatusDownloadAPIAsync(ChapterDTO chapter)
         {
             try
             {

@@ -59,8 +59,13 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                     });
                     services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-                    //services
-                    services.AddSingleton<IUpdate, UpdateManga>();
+                    //select service between anime or manga
+                    var serviceSelect = Environment.GetEnvironmentVariable("SELECT_SERVICE") ?? "anime";
+
+                    if(serviceSelect.ToLower().Contains("anime"))
+                        services.AddTransient<IUpdate, UpdateAnime>();
+                    else
+                        services.AddTransient<IUpdate, UpdateManga>();
 
                     services.AddHostedService<Worker>();
                 });

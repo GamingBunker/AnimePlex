@@ -21,6 +21,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             _episodeRegisterRepository = episodeRegisterRepository;
         }
 
+        //delete anime
         public async Task<string> DeleteAnimeAsync(string id)
         {
             //check all finish downloaded

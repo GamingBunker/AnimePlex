@@ -31,6 +31,9 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
         private readonly Api<ChapterDTO> chapterApi = new();
         private readonly Api<ChapterRegisterDTO> chapterRegisterApi = new();
 
+        //download api
+        private List<GenericMangaDTO> listManga = null;
+
         public UpdateManga(IBus publicEndpoint)
         {
             _publishEndpoint = publicEndpoint;
@@ -38,9 +41,7 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
 
         public void ExecuteUpdate()
         {
-            //download api
-            List<GenericMangaDTO> listManga = null;
-            parallel.ClearList();
+            _logger.Info($"Start update manga");
 
             try
             {
@@ -74,6 +75,8 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
                 parallel.WhenCompleted();
                 parallel.ClearList();
             }
+
+            _logger.Info($"End update manga");
         }
 
         private object Checkchapter(GenericMangaDTO manga, ChapterDTO chapter, Api<ChapterDTO> chapterApi, Api<ChapterRegisterDTO> chapterRegisterApi)

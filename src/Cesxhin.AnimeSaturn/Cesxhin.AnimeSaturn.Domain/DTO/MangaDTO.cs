@@ -1,5 +1,4 @@
 ﻿using Cesxhin.AnimeSaturn.Domain.Models;
-using System;
 
 namespace Cesxhin.AnimeSaturn.Domain.DTO
 {
@@ -18,6 +17,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string Image { get; set; }
         public string UrlPage { get; set; }
 
+        //convert Manga to MangaDTO
         public static MangaDTO MangaToMangaDTO(Manga manga)
         {
             return new MangaDTO

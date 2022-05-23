@@ -128,19 +128,41 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
 
             _logger.Info($"Start download chapters manga: {urlPage}");
 
-            var volumes = doc.DocumentNode
-                .SelectNodes("//section/div/div/div/div/div[2]/div/div[3]/div[@class='volume-element pl-2']")
-                .ToArray();
+            HtmlNode[] volumes = null;
+            try
+            {
+                volumes = doc.DocumentNode
+                    .SelectNodes("//section/div/div/div/div/div[2]/div/div[3]/div[@class='volume-element pl-2']")
+                    .ToArray();
+            }
+            catch(ArgumentNullException ex)
+            {
+                _logger.Warn($"Not found volumes of {manga.Name}, try set volume 0 and get chapters");
+                volumes = doc.DocumentNode
+                    .SelectNodes("//section/div/div/div/div/div[2]/div/div[@class='chapters-wrapper py-2 pl-0']")
+                    .ToArray();
+            }
 
             foreach (var volume in volumes)
             {
-                var chapters = volume.SelectNodes("div[2]/div[@class='chapter']").ToArray();
+                HtmlNode[] chapters = null;
+                try
+                {
+                    chapters = volume.SelectNodes("div[2]/div[@class='chapter']").ToArray();
+                }
+                catch (ArgumentNullException ex)
+                {
+                    chapters = volume.SelectNodes("div[@class='chapter pl-2']").ToArray();
+                }
 
 
                 var numberCurrentVolume = volume
                     .SelectNodes("div")
                     .First().InnerText;
-                var numberVolume = int.Parse(numberCurrentVolume.Split(new char[] { ' ', '\n' })[1]);
+
+                int numberVolume = 0;
+                if (!numberCurrentVolume.Contains("Capitolo"))
+                    numberVolume = int.Parse(numberCurrentVolume.Split(new char[] { ' ', '\n' })[1]);
 
                 foreach (var chapter in chapters)
                 {

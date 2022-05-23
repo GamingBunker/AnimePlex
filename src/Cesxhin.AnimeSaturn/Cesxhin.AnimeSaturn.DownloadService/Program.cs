@@ -35,6 +35,7 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                                     credentials.Username(Environment.GetEnvironmentVariable("USERNAME_RABBIT") ?? "guest");
                                     credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT") ?? "guest");
                                 });
+
                             cfg.ReceiveEndpoint("download-anime", e => {
                                 e.Consumer<DownloadAnimeConsumer>(cc =>
                                 {

@@ -42,6 +42,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             _chapterRegisterService = chapterRegisterService;
         }
 
+        //get list all manga without filter
         [HttpGet("/manga")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MangaDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,6 +64,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //get manga by name
         [HttpGet("/manga/name/{name}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MangaDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -84,7 +86,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-
+        //get list manga by start name similar
         [HttpGet("/manga/names/{name}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<MangaDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -119,6 +121,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //get all db manga
         [HttpGet("/manga/all")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<GenericMangaDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -140,6 +143,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //get chapter by name anime
         [HttpGet("/chapter/name/{name}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<ChapterDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -161,6 +165,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //get chapter by id
         [HttpGet("/chapter/id/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ChapterDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -182,6 +187,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //get chapterRegister by id
         [HttpGet("/chapter/register/chapterid/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ChapterRegisterDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -203,6 +209,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //get list name by external db
         [HttpGet("/manga/list/name/{name}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GenericUrlDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -214,7 +221,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 var mangaUrls = HtmlMangaMangaWorld.GetMangaUrl(name);
                 if (mangaUrls != null || mangaUrls.Count >= 0)
                 {
-                    //list anime
+                    //list manga
                     List<GenericUrlDTO> list = new();
 
                     foreach (var mangaUrl in mangaUrls)
@@ -238,6 +245,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //insert manga
         [HttpPost("/manga")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MangaDTO))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -260,6 +268,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //insert chapter
         [HttpPost("/chapter")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ChapterDTO))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -282,6 +291,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //insert list chapters
         [HttpPost("/chapters")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(IEnumerable<ChapterDTO>))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -304,6 +314,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //insert list chaptersRegisters
         [HttpPost("/chapters/registers")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(IEnumerable<ChapterRegisterDTO>))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -326,6 +337,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //put chapterRegister into db
         [HttpPut("/chapter/register")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ChapterRegisterDTO))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -346,7 +358,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         }
 
 
-        //put metadata into db
+        //reset state download of chapterRegister into db
         [HttpPut("/manga/redownload")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -367,6 +379,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
+        //put manga into db
         [HttpPost("/manga/download")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MangaDTO))]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -445,6 +458,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             return Created("none", manga);
         }
 
+        //update status chapter
         [HttpPut("/manga/statusDownload")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ChapterDTO))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -465,9 +479,10 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
         }
 
-
+        //delete manga
         [HttpDelete("/manga/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MangaDTO))]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteInfo(string id)
@@ -479,8 +494,11 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 if (manga == null)
                     return NotFound();
 
+                if (manga == "-1")
+                    return Conflict();
+
                 //create message for notify
-                string message = $"🧮ApiService say: \nRemoved this Manga by DB and Plex: {manga.Name}\n";
+                string message = $"🧮ApiService say: \nRemoved this Manga by DB: {id}\n";
 
                 try
                 {

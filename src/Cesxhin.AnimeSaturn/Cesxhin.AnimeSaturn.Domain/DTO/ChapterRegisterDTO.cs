@@ -1,5 +1,4 @@
 ﻿using Cesxhin.AnimeSaturn.Domain.Models;
-using System;
 
 namespace Cesxhin.AnimeSaturn.Domain.DTO
 {
@@ -9,6 +8,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string[] ChapterPath { get; set; }
         public string[] ChapterHash { get; set; }
 
+        //convert ChapterRegister to ChapterRegisterDTO
         public static ChapterRegisterDTO ChapterRegisterToChapterRegisterDTO(ChapterRegister chapter)
         {
             return new ChapterRegisterDTO

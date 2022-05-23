@@ -1,5 +1,4 @@
 ﻿using Cesxhin.AnimeSaturn.Domain.Models;
-using System.Collections.Generic;
 
 namespace Cesxhin.AnimeSaturn.Domain.DTO
 {
@@ -14,6 +13,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string StateDownload { get; set; }
         public int PercentualDownload { get; set; }
 
+        //convert Chapter to ChapterDTO
         public static ChapterDTO ChapterToChapterDTO(Chapter chapter)
         {
             return new ChapterDTO

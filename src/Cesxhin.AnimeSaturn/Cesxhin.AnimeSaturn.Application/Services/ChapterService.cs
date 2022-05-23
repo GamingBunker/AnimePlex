@@ -9,12 +9,15 @@ namespace Cesxhin.AnimeSaturn.Application.Services
 {
     public class ChapterService : IChapterService
     {
+        //interfaces
         private readonly IChapterRepository _chapterRepository;
+
         public ChapterService(IChapterRepository chapterRepository)
         {
             _chapterRepository = chapterRepository;
         }
 
+        //get chapter by id
         public async Task<ChapterDTO> GetChapterByIDAsync(string id)
         {
             var listChapter = await _chapterRepository.GetChapterByIDAsync(id);
@@ -25,6 +28,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return null;
         }
 
+        //get chapters by name
         public async Task<IEnumerable<ChapterDTO>> GetChaptersByNameAsync(string name)
         {
             List<ChapterDTO> chapters = new();
@@ -44,6 +48,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return chapters;
         }
 
+        //insert one chapter
         public async Task<ChapterDTO> InsertChapterAsync(ChapterDTO chapter)
         {
             var chapterResult = await _chapterRepository.InsertChapterAsync(Chapter.ChapterDTOToChapter(chapter));
@@ -54,6 +59,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return ChapterDTO.ChapterToChapterDTO(chapterResult);
         }
 
+        //insert chapters
         public async Task<List<ChapterDTO>> InsertChaptersAsync(List<ChapterDTO> chapters)
         {
             List<ChapterDTO> resultChapters = new();
@@ -65,6 +71,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return resultChapters;
         }
 
+        //reset StatusDownload to null
         public async Task<ChapterDTO> ResetStatusDownloadChaptersByIdAsync(ChapterDTO chapter)
         {
             var rs = await _chapterRepository.ResetStatusDownloadChaptersByIdAsync(Chapter.ChapterDTOToChapter(chapter));
@@ -75,6 +82,7 @@ namespace Cesxhin.AnimeSaturn.Application.Services
             return ChapterDTO.ChapterToChapterDTO(rs);
         }
 
+        //update PercentualState
         public async Task<ChapterDTO> UpdateStateDownloadAsync(ChapterDTO chapter)
         {
             var chapterResult = await _chapterRepository.UpdateStateDownloadAsync(Chapter.ChapterDTOToChapter(chapter));

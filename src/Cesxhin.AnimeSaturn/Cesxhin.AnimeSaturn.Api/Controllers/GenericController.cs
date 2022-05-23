@@ -1,14 +1,9 @@
-﻿using Cesxhin.AnimeSaturn.Application.HtmlAgilityPack;
-using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
-using Cesxhin.AnimeSaturn.Application.NlogManager;
+﻿using Cesxhin.AnimeSaturn.Application.Interfaces.Services;
 using Cesxhin.AnimeSaturn.Domain.DTO;
-using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NLog;
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Api.Controllers
@@ -19,33 +14,15 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
     {
         //interfaces
         private readonly IAnimeService _animeService;
-        private readonly IEpisodeService _episodeService;
-        private readonly IEpisodeRegisterService _episodeRegisterService;
         private readonly IMangaService _mangaService;
-        private readonly IChapterService _chapterService;
-        private readonly IBus _publishEndpoint;
-
-        //log
-        private readonly NLogConsole _logger = new(LogManager.GetCurrentClassLogger());
-
-        //env
-        private readonly string _folder = Environment.GetEnvironmentVariable("BASE_PATH") ?? "/";
 
         public GenericController(
-            IAnimeService animeService, 
-            IEpisodeService episodeService, 
-            IEpisodeRegisterService episodeRegisterService, 
-            IBus publishEndpoint,
-            IMangaService mangaService,
-            IChapterService chapterService
+            IAnimeService animeService,
+            IMangaService mangaService
             )
         {
             _animeService = animeService;
-            _episodeService = episodeService;
-            _episodeRegisterService = episodeRegisterService;
-            _publishEndpoint = publishEndpoint;
             _mangaService = mangaService;
-            _chapterService = chapterService;
         }
 
         //check test
@@ -66,7 +43,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
         //get all db
         [HttpGet("/all")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<GenericAnimeDTO>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Tuple<GenericAnimeDTO, GenericMangaDTO>>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll()
