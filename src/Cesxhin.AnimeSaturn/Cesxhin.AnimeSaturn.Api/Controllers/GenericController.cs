@@ -160,7 +160,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 //set
                 List<HealthDTO> healthServiceDTOs = new();
 
-                string[] services = new string[5] { "DOWNLOAD", "UPGRADE", "API", "UPDATE", "NOTIFY" };
+                string[] services = new string[7] { "DOWNLOAD", "UPGRADE-ANIME", "UPGRADE-MANGA", "API", "UPDATE-ANIME", "UPDATE-MANGA", "NOTIFY" };
 
                 var lastCheck = "";
                 var intervalCheck = "";

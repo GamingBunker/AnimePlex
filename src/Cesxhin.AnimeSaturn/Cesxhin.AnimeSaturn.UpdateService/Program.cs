@@ -45,22 +45,22 @@ namespace Cesxhin.AnimeSaturn.UpdateService
                     LogLevel logLevel = NLogManager.GetLevel(level);
                     NLogManager.Configure(logLevel);
 
+                    //select service between anime or manga
+                    var serviceSelect = Environment.GetEnvironmentVariable("SELECT_SERVICE") ?? "anime";
+
                     //cronjob for check health
                     services.AddQuartz(q =>
                     {
                         q.UseMicrosoftDependencyInjectionJobFactory();
                         q.ScheduleJob<HealthJob>(trigger => trigger
                             .StartNow()
-                            .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("update"));
+                            .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("update-"+ serviceSelect));
 
                         q.ScheduleJob<SpaceDiskJob>(trigger => trigger
                             .StartNow()
                             .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)));
                     });
                     services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-
-                    //select service between anime or manga
-                    var serviceSelect = Environment.GetEnvironmentVariable("SELECT_SERVICE") ?? "anime";
 
                     if(serviceSelect.ToLower().Contains("anime"))
                         services.AddTransient<IUpdate, UpdateAnime>();
