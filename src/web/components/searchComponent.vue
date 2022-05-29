@@ -7,7 +7,7 @@
             <button @click="searchInternalAll()" class="btn btn-warning" type="button" style="width: 33%;"><i class="bi bi-card-list"></i></button>
             <button @click="searchInternal()" class="btn btn-light" type="button" style="width: 33%;"><i class="bi bi-search"></i></button>
             <button @click="submitExternalAnime()" class="btn btn-danger" type="button" style="background-color: blueviolet; border-color: blueviolet; width: 33%;"><img src="../assets/img/logo_animesaturn.png" width="50px" style="object-fit: cover; margin-top: -2px;"></button>
-            <button @click="submitExternalManga()" class="btn btn-danger" type="button" style="background-color: orange; border-color: orange; width: 33%;"><img src="../assets/img/MangaWorldLogo.svg" width="200px" style="object-fit: cover; margin-top: -2px;"></button>
+            <button @click="submitExternalManga()" class="btn btn-danger" type="button" style="background-color: orange; border-color: orange; width: 33%;"><img src="../assets/img/MangaWorldLogo.svg" width="100%" style="height: auto; object-fit: cover; margin-top: -2px;"></button>
         </div>
     </div>
 </template>

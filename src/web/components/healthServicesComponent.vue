@@ -1,7 +1,7 @@
 <template>
     <div>
         <span hidden>{{time}}</span>
-        <div class="card text-dark bg-light mb-3 d-flex flex-column" style="max-width: 18rem;">
+        <div class="card text-dark bg-light mb-3 d-flex flex-column" style="border-radius: 10px; max-width: 18rem; border: solid 1px gainsboro;">
             <div class="card-header">
                 Health Services
             </div>

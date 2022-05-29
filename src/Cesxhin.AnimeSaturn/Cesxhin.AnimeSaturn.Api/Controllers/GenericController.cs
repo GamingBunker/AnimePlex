@@ -58,7 +58,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                     listGeneric.AddRange(listAnime);
 
                 if(listManga != null)
-                listGeneric.AddRange(listManga);
+                    listGeneric.AddRange(listManga);
 
                 if (listGeneric.Count <= 0)
                     return NotFound();

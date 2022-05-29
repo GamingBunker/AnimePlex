@@ -52,6 +52,10 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
             {
                 _logger.Error($"not found, details: " + ex.Message);
             }
+            catch (ApiGenericException ex)
+            {
+                _logger.Fatal($"Error generic get all, details error: {ex.Message}");
+            }
 
             //step check on website if the anime is still active
             foreach (var list in listGenerics)
@@ -95,7 +99,14 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
                     _logger.Info($"There are new episodes ({listEpisodesAdd.Count}) of {anime.Name}");
 
                     //insert to db
-                    listEpisodesAdd = episodeApi.PostMore("/episodes", listEpisodesAdd).GetAwaiter().GetResult();
+                    try
+                    { 
+                        listEpisodesAdd = episodeApi.PostMore("/episodes", listEpisodesAdd).GetAwaiter().GetResult();
+                    }
+                    catch (ApiGenericException ex)
+                    {
+                        _logger.Fatal($"Error generic post episodes, details error: {ex.Message}");
+                    }
 
                     //create episodeRegister
                     listEpisodeRegister = new();
@@ -126,7 +137,14 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
                         });
                     }
 
-                    episodeRegisterApi.PostMore("/episodes/registers", listEpisodeRegister).GetAwaiter();
+                    try
+                    {
+                        episodeRegisterApi.PostMore("/episodes/registers", listEpisodeRegister).GetAwaiter();
+                    }
+                    catch (ApiGenericException ex)
+                    {
+                        _logger.Fatal($"Error generic post registers, details error: {ex.Message}");
+                    }
 
                     //create message for notify
                     string message = $"💽UpgradeService say: \nAdd new episode of {anime.Name}\n";
