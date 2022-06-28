@@ -95,25 +95,12 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var list = HtmlMangaMangaWorld.GetMangaUrl(name);
-                if (list != null)
-                {
-                    //list anime
-                    List<GenericUrlDTO> listManga = new();
+                var manga = await _mangaService.GetMostMangaByNameAsync(name);
 
-                    foreach (var manga in list)
-                    {
-                        var mangaDTO = GenericUrlDTO.GenericUrlToGenericUrlDTO(manga);
+                if (manga == null)
+                    return NotFound();
 
-                        var checkManga = await _mangaService.GetMangaByNameAsync(manga.Name);
-                        if (checkManga != null)
-                            mangaDTO.Exists = true;
-
-                        listManga.Add(mangaDTO);
-                    }
-                    return Ok(listManga);
-                }
-                return NotFound();
+                return Ok(manga);
             }
             catch
             {

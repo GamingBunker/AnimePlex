@@ -16,6 +16,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public DateTime DateRelease { get; set; }
         public string Image { get; set; }
         public string UrlPage { get; set; }
+        public string TypeView { get; } = "anime";
 
         //convert Anime to AnimeDTO
         public static AnimeDTO AnimeToAnimeDTO(Anime anime)

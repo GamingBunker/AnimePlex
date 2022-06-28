@@ -16,6 +16,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public int DateRelease { get; set; }
         public string Image { get; set; }
         public string UrlPage { get; set; }
+        public string TypeView { get; } = "manga";
 
         //convert Manga to MangaDTO
         public static MangaDTO MangaToMangaDTO(Manga manga)

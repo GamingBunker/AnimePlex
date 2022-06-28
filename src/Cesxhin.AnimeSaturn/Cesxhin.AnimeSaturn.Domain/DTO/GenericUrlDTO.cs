@@ -9,6 +9,7 @@ namespace Cesxhin.AnimeSaturn.Domain.DTO
         public string Image { get; set; }
         public string TypeView { get; set; }
         public bool Exists { get; set; } = false;
+        public bool UrlExternal { get; set; } = true;
 
         //convert GenericUrl to GenericUrlDTO
         public static GenericUrlDTO GenericUrlToGenericUrlDTO(GenericUrl anime)

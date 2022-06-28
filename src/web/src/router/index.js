@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import animeView from "../views/animeView.vue"
 import mangaView from "../views/mangaView.vue"
 import resourceView from "../views/resourceView.vue"
-
+import detailsView from "../views/detailsView.vue"
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -34,6 +34,11 @@ const router = createRouter({
       path: "/resource",
       name: "resource",
       component: resourceView
+    },
+    {
+      path: "/details",
+      name: "details",
+      component: detailsView
     }
   ]
 })
