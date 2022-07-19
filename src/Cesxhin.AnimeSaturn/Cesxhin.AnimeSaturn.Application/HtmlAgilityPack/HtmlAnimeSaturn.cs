@@ -359,7 +359,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
         {
             _logger.Info($"Start download lsit anime, search: {name}");
             //get page
-            HtmlDocument doc = new HtmlWeb().Load("https://www.animesaturn.it/animelist?search=" + name);
+            HtmlDocument doc = new HtmlWeb().Load("https://www.animesaturn.cc/animelist?search=" + name);
 
             //get number find elements
             string results = doc.DocumentNode
