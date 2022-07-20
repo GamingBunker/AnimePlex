@@ -19,7 +19,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
-        public async Task<int> DeleteAnimeAsync(string id)
+        public async Task<int> DeleteNameAsync(string id)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -36,7 +36,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         }
 
         //get all anime
-        public async Task<List<Anime>> GetAnimeAllAsync()
+        public async Task<List<Anime>> GetNameAllAsync()
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -54,7 +54,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         }
 
         //get anime by name
-        public async Task<List<Anime>> GetAnimeByNameAsync(string name)
+        public async Task<List<Anime>> GetNameByNameAsync(string name)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -72,7 +72,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         }
 
         //get
-        public async Task<List<Anime>> GetMostAnimeByNameAsync(string name)
+        public async Task<List<Anime>> GetMostNameByNameAsync(string name)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -90,7 +90,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         }
 
         //insert one anime
-        public async Task<Anime> InsertAnimeAsync(Anime anime)
+        public async Task<Anime> InsertNameAsync(Anime anime)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {

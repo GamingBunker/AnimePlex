@@ -135,7 +135,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                     .SelectNodes("//section/div/div/div/div/div[2]/div/div[3]/div[@class='volume-element pl-2']")
                     .ToArray();
             }
-            catch(ArgumentNullException ex)
+            catch(ArgumentNullException)
             {
                 _logger.Warn($"Not found volumes of {manga.Name}, try set volume 0 and get chapters");
                 volumes = doc.DocumentNode
@@ -150,7 +150,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 {
                     chapters = volume.SelectNodes("div[2]/div[@class='chapter']").ToArray();
                 }
-                catch (ArgumentNullException ex)
+                catch (ArgumentNullException)
                 {
                     chapters = volume.SelectNodes("div[@class='chapter pl-2']").ToArray();
                 }

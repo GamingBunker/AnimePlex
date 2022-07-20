@@ -18,9 +18,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //get episode by id
-        public async Task<EpisodeDTO> GetEpisodeByIDAsync(string id)
+        public async Task<EpisodeDTO> GetObjectByIDAsync(string id)
         {
-            var listEpisode = await _episodeRepository.GetEpisodeByIDAsync(id);
+            var listEpisode = await _episodeRepository.GetObjectsByIDAsync(id);
             foreach(var episode in listEpisode)
             {
                 return EpisodeDTO.EpisodeToEpisodeDTO(episode);
@@ -29,10 +29,10 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //get episodes by name
-        public async Task<IEnumerable<EpisodeDTO>> GetEpisodesByNameAsync(string name)
+        public async Task<IEnumerable<EpisodeDTO>> GetObjectsByNameAsync(string name)
         {
             List<EpisodeDTO> episodes = new();
-            var listEpisode = await _episodeRepository.GetEpisodesByNameAsync(name);
+            var listEpisode = await _episodeRepository.GetObjectsByNameAsync(name);
 
             if (listEpisode == null)
                 return null;
@@ -49,9 +49,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //insert one episode
-        public async Task<EpisodeDTO> InsertEpisodeAsync(EpisodeDTO episode)
+        public async Task<EpisodeDTO> InsertObjectAsync(EpisodeDTO episode)
         {
-            var episodeResult = await _episodeRepository.InsertEpisodeAsync(new Episode().EpisodeDTOToEpisode(episode));
+            var episodeResult = await _episodeRepository.InsertObjectAsync(new Episode().EpisodeDTOToEpisode(episode));
 
             if (episodeResult == null)
                 return null;
@@ -60,21 +60,21 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //insert episodes
-        public async Task<List<EpisodeDTO>> InsertEpisodesAsync(List<EpisodeDTO> episodes)
+        public async Task<List<EpisodeDTO>> InsertObjectsAsync(List<EpisodeDTO> episodes)
         {
             List<EpisodeDTO> resultEpisodes = new();
             foreach(var episode in episodes)
             {
-                var episodeResult = await _episodeRepository.InsertEpisodeAsync(new Episode().EpisodeDTOToEpisode(episode));
+                var episodeResult = await _episodeRepository.InsertObjectAsync(new Episode().EpisodeDTOToEpisode(episode));
                 resultEpisodes.Add(EpisodeDTO.EpisodeToEpisodeDTO(episodeResult));
             }
             return resultEpisodes;
         }
 
         //reset StatusDownload to null
-        public async Task<EpisodeDTO> ResetStatusDownloadEpisodesByIdAsync(EpisodeDTO episode)
+        public async Task<EpisodeDTO> ResetStatusDownloadObjectByIdAsync(EpisodeDTO episode)
         {
-            var episodeResult = await _episodeRepository.ResetStatusDownloadEpisodesByIdAsync(new Episode().EpisodeDTOToEpisode(episode));
+            var episodeResult = await _episodeRepository.ResetStatusDownloadObjectByIdAsync(new Episode().EpisodeDTOToEpisode(episode));
             return EpisodeDTO.EpisodeToEpisodeDTO(episodeResult);
         }
 

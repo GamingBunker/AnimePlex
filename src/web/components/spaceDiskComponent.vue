@@ -1,7 +1,7 @@
 <template>
     <div>
         <span hidden>{{time}}</span>
-            <div class="card text-dark bg-light mb-3" style="max-width: 18rem;">
+            <div class="card text-dark bg-light mb-3" style="border-radius: 10px; border: solid 1px gainsboro; max-width: 18rem;">
                 <div class="card-header">
                     Disk Space
                 </div>
