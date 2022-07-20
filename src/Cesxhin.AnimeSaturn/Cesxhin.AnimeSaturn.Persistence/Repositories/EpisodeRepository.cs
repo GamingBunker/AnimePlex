@@ -20,7 +20,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
         //get episode by id
-        public async Task<IEnumerable<Episode>> GetEpisodeByIDAsync(string id)
+        public async Task<IEnumerable<Episode>> GetObjectsByIDAsync(string id)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -38,7 +38,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         }
 
         //get episodes by name
-        public async Task<IEnumerable<Episode>> GetEpisodesByNameAsync(string name)
+        public async Task<IEnumerable<Episode>> GetObjectsByNameAsync(string name)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -63,7 +63,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         }
 
         //insert episode
-        public async Task<Episode> InsertEpisodeAsync(Episode episode)
+        public async Task<Episode> InsertObjectAsync(Episode episode)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -81,7 +81,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         }
 
         //reset StatusDownlod to null
-        public async Task<Episode> ResetStatusDownloadEpisodesByIdAsync(Episode episode)
+        public async Task<Episode> ResetStatusDownloadObjectByIdAsync(Episode episode)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {

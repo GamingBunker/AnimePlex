@@ -1,7 +1,6 @@
 ﻿using Cesxhin.AnimeSaturn.Application.Exceptions;
 using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Domain.DTO;
-using Cesxhin.AnimeSaturn.Domain.Models;
 using Discord.Webhook;
 using MassTransit;
 using NLog;

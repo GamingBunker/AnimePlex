@@ -4,19 +4,8 @@ using System.Threading.Tasks;
 
 namespace Cesxhin.AnimeSaturn.Application.Interfaces.Services
 {
-    public interface IAnimeService
+    public interface IAnimeService : IGeneralNameService<AnimeDTO, GenericAnimeDTO>
     {
-        //get
-        Task<IEnumerable<AnimeDTO>> GetAnimeAllAsync();
-        Task<AnimeDTO> GetAnimeByNameAsync(string name);
-        Task<IEnumerable<AnimeDTO>> GetMostAnimeByNameAsync(string name);
-        Task<IEnumerable<GenericAnimeDTO>> GetAnimeAllWithAllAsync();
-
-        //insert
-        Task<AnimeDTO> InsertAnimeAsync(AnimeDTO anime);
-
-        //delete
-        Task<string> DeleteAnimeAsync(string id);
 
     }
 }

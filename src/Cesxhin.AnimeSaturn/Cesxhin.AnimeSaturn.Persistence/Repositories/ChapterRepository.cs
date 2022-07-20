@@ -19,7 +19,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
-        public async Task<IEnumerable<Chapter>> GetChapterByIDAsync(string id)
+        public async Task<IEnumerable<Chapter>> GetObjectsByIDAsync(string id)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -36,7 +36,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             }
         }
 
-        public async Task<IEnumerable<Chapter>> GetChaptersByNameAsync(string nameManga)
+        public async Task<IEnumerable<Chapter>> GetObjectsByNameAsync(string nameManga)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -60,7 +60,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             }
         }
 
-        public async Task<Chapter> InsertChapterAsync(Chapter chapters)
+        public async Task<Chapter> InsertObjectAsync(Chapter chapters)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -77,7 +77,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             }
         }
 
-        public async Task<Chapter> ResetStatusDownloadChaptersByIdAsync(Chapter chapter)
+        public async Task<Chapter> ResetStatusDownloadObjectByIdAsync(Chapter chapter)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {

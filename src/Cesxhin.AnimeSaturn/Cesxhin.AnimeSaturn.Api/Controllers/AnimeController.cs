@@ -51,7 +51,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var listAnime = await _animeService.GetAnimeAllAsync();
+                var listAnime = await _animeService.GetNameAllAsync();
 
                 if (listAnime == null)
                     return NotFound();
@@ -73,7 +73,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var anime = await _animeService.GetAnimeByNameAsync(name);
+                var anime = await _animeService.GetNameByNameAsync(name);
 
                 if (anime == null)
                     return NotFound();
@@ -95,7 +95,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var anime = await _animeService.GetMostAnimeByNameAsync(name);
+                var anime = await _animeService.GetMostNameByNameAsync(name);
 
                 if (anime == null)
                     return NotFound();
@@ -117,7 +117,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var listEpisodes = await _episodeService.GetEpisodesByNameAsync(name);
+                var listEpisodes = await _episodeService.GetObjectsByNameAsync(name);
 
                 if (listEpisodes == null)
                     return NotFound();
@@ -139,7 +139,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var episode = await _episodeService.GetEpisodeByIDAsync(id);
+                var episode = await _episodeService.GetObjectByIDAsync(id);
 
                 if (episode == null)
                     return NotFound();
@@ -161,7 +161,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var episodeRegister = await _episodeRegisterService.GetEpisodeRegisterByEpisodeId(id);
+                var episodeRegister = await _episodeRegisterService.GetObjectRegisterByObjectId(id);
 
                 if (episodeRegister == null)
                     return NotFound();
@@ -184,7 +184,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //insert
-                var animeResult = await _animeService.InsertAnimeAsync(infoClass);
+                var animeResult = await _animeService.InsertNameAsync(infoClass);
 
                 if (animeResult == null)
                     return Conflict();
@@ -207,7 +207,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //insert
-                var episodeResult = await _episodeService.InsertEpisodeAsync(objectClass);
+                var episodeResult = await _episodeService.InsertObjectAsync(objectClass);
 
                 if (episodeResult == null)
                     return Conflict();
@@ -230,7 +230,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //insert
-                var episodeResult = await _episodeService.InsertEpisodesAsync(objectsClass);
+                var episodeResult = await _episodeService.InsertObjectsAsync(objectsClass);
 
                 if (episodeResult == null)
                     return Conflict();
@@ -253,7 +253,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //insert
-                var episodeResult = await _episodeRegisterService.InsertEpisodesRegistersAsync(objectsRegistersClass);
+                var episodeResult = await _episodeRegisterService.InsertObjectsRegistersAsync(objectsRegistersClass);
 
                 if (episodeResult == null)
                     return Conflict();
@@ -274,7 +274,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var rs = await _episodeRegisterService.UpdateEpisodeRegisterAsync(objectRegisterClass);
+                var rs = await _episodeRegisterService.UpdateObjectRegisterAsync(objectRegisterClass);
                 if (rs == null)
                     return NotFound();
 
@@ -300,13 +300,13 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 var episodes = HtmlAnimeSaturn.GetEpisodes(downloadClass.Url, anime.Name);
 
                 //insert anime
-                var animeResult = await _animeService.InsertAnimeAsync(anime);
+                var animeResult = await _animeService.InsertNameAsync(anime);
 
                 if (animeResult == null)
                     return Conflict();
 
                 //insert episodes
-                var episodeResult = await _episodeService.InsertEpisodesAsync(episodes);
+                var episodeResult = await _episodeService.InsertObjectsAsync(episodes);
 
                 if (episodeResult == null)
                     return Conflict();
@@ -323,7 +323,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 }
 
                 //insert episodesRegisters
-                var episodeRegisterResult = await _episodeRegisterService.InsertEpisodesRegistersAsync(listEpisodeRegister);
+                var episodeRegisterResult = await _episodeRegisterService.InsertObjectsRegistersAsync(listEpisodeRegister);
 
                 if (episodeResult == null)
                     return Conflict();
@@ -364,7 +364,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 foreach (var episode in objectsClass)
                 {
                     episode.StateDownload = null;
-                    await _episodeService.ResetStatusDownloadEpisodesByIdAsync(episode);
+                    await _episodeService.ResetStatusDownloadObjectByIdAsync(episode);
                 }
                 return Ok();
             }
@@ -384,7 +384,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //insert
-                var animeResult = await _animeService.DeleteAnimeAsync(id);
+                var animeResult = await _animeService.DeleteNameByIdAsync(id);
 
                 if (animeResult == null)
                     return NotFound();
@@ -424,7 +424,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var listAnime = await _animeService.GetAnimeAllWithAllAsync();
+                var listAnime = await _animeService.GetNameAllWithAllAsync();
 
                 if (listAnime == null)
                     return NotFound();
@@ -457,7 +457,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                         var animeUrlDTO = GenericUrlDTO.GenericUrlToGenericUrlDTO(animeUrl);
 
                         //check if already exists
-                        var anime = await _episodeService.GetEpisodesByNameAsync(animeUrlDTO.Name);
+                        var anime = await _episodeService.GetObjectsByNameAsync(animeUrlDTO.Name);
                         if (anime != null)
                             animeUrlDTO.Exists = true;
 

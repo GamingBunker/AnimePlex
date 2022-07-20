@@ -18,9 +18,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //get chapter by id
-        public async Task<ChapterDTO> GetChapterByIDAsync(string id)
+        public async Task<ChapterDTO> GetObjectByIDAsync(string id)
         {
-            var listChapter = await _chapterRepository.GetChapterByIDAsync(id);
+            var listChapter = await _chapterRepository.GetObjectsByIDAsync(id);
             foreach (var chapter in listChapter)
             {
                 return ChapterDTO.ChapterToChapterDTO(chapter);
@@ -29,10 +29,10 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //get chapters by name
-        public async Task<IEnumerable<ChapterDTO>> GetChaptersByNameAsync(string name)
+        public async Task<IEnumerable<ChapterDTO>> GetObjectsByNameAsync(string name)
         {
             List<ChapterDTO> chapters = new();
-            var listChapter = await _chapterRepository.GetChaptersByNameAsync(name);
+            var listChapter = await _chapterRepository.GetObjectsByNameAsync(name);
 
             if (listChapter == null)
                 return null;
@@ -49,9 +49,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //insert one chapter
-        public async Task<ChapterDTO> InsertChapterAsync(ChapterDTO chapter)
+        public async Task<ChapterDTO> InsertObjectAsync(ChapterDTO chapter)
         {
-            var chapterResult = await _chapterRepository.InsertChapterAsync(Chapter.ChapterDTOToChapter(chapter));
+            var chapterResult = await _chapterRepository.InsertObjectAsync(Chapter.ChapterDTOToChapter(chapter));
 
             if (chapterResult == null)
                 return null;
@@ -60,21 +60,21 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //insert chapters
-        public async Task<List<ChapterDTO>> InsertChaptersAsync(List<ChapterDTO> chapters)
+        public async Task<List<ChapterDTO>> InsertObjectsAsync(List<ChapterDTO> chapters)
         {
             List<ChapterDTO> resultChapters = new();
             foreach (var chapter in chapters)
             {
-                var chapterResult = await _chapterRepository.InsertChapterAsync(Chapter.ChapterDTOToChapter(chapter));
+                var chapterResult = await _chapterRepository.InsertObjectAsync(Chapter.ChapterDTOToChapter(chapter));
                 resultChapters.Add(ChapterDTO.ChapterToChapterDTO(chapterResult));
             }
             return resultChapters;
         }
 
         //reset StatusDownload to null
-        public async Task<ChapterDTO> ResetStatusDownloadChaptersByIdAsync(ChapterDTO chapter)
+        public async Task<ChapterDTO> ResetStatusDownloadObjectByIdAsync(ChapterDTO chapter)
         {
-            var rs = await _chapterRepository.ResetStatusDownloadChaptersByIdAsync(Chapter.ChapterDTOToChapter(chapter));
+            var rs = await _chapterRepository.ResetStatusDownloadObjectByIdAsync(Chapter.ChapterDTOToChapter(chapter));
 
             if (rs == null)
                 return null;

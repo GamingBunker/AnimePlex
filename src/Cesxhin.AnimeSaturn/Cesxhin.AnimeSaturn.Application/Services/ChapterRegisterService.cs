@@ -18,9 +18,9 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //get chapterRegister by chapter id
-        public async Task<ChapterRegisterDTO> GetChapterRegisterByChapterId(string id)
+        public async Task<ChapterRegisterDTO> GetObjectRegisterByObjectId(string id)
         {
-            var listChapterRegisters = await _chapterRegisterRepository.GetChapterRegisterByChapterId(id);
+            var listChapterRegisters = await _chapterRegisterRepository.GetObjectsRegisterByObjectId(id);
             foreach (var chapterRegister in listChapterRegisters)
             {
                 return ChapterRegisterDTO.ChapterRegisterToChapterRegisterDTO(chapterRegister);
@@ -29,28 +29,28 @@ namespace Cesxhin.AnimeSaturn.Application.Services
         }
 
         //insert chapterRegister
-        public async Task<ChapterRegisterDTO> InsertChapterRegisterAsync(ChapterRegisterDTO chapterRegister)
+        public async Task<ChapterRegisterDTO> InsertObjectRegisterAsync(ChapterRegisterDTO chapterRegister)
         {
-            var result = await _chapterRegisterRepository.InsertChapterRegisterAsync(ChapterRegister.ChapterRegisterDTOToChapterRegister(chapterRegister));
+            var result = await _chapterRegisterRepository.InsertObjectRegisterAsync(ChapterRegister.ChapterRegisterDTOToChapterRegister(chapterRegister));
             return ChapterRegisterDTO.ChapterRegisterToChapterRegisterDTO(result);
         }
 
         //insert list chapterRegister
-        public async Task<List<ChapterRegisterDTO>> InsertChaptersRegistersAsync(List<ChapterRegisterDTO> chapterRegister)
+        public async Task<List<ChapterRegisterDTO>> InsertObjectsRegistersAsync(List<ChapterRegisterDTO> chapterRegister)
         {
             List<ChapterRegisterDTO> resultChapters = new();
             foreach (var chapter in chapterRegister)
             {
-                var chapterResult = await _chapterRegisterRepository.InsertChapterRegisterAsync(ChapterRegister.ChapterRegisterDTOToChapterRegister(chapter));
+                var chapterResult = await _chapterRegisterRepository.InsertObjectRegisterAsync(ChapterRegister.ChapterRegisterDTOToChapterRegister(chapter));
                 resultChapters.Add(ChapterRegisterDTO.ChapterRegisterToChapterRegisterDTO(chapterResult));
             }
             return resultChapters;
         }
 
         //Update chapterRegister
-        public async Task<ChapterRegisterDTO> UpdateChapterRegisterAsync(ChapterRegisterDTO chapterRegister)
+        public async Task<ChapterRegisterDTO> UpdateObjectRegisterAsync(ChapterRegisterDTO chapterRegister)
         {
-            var chapterResult = await _chapterRegisterRepository.UpdateChapterRegisterAsync(ChapterRegister.ChapterRegisterDTOToChapterRegister(chapterRegister));
+            var chapterResult = await _chapterRegisterRepository.UpdateObjectRegisterAsync(ChapterRegister.ChapterRegisterDTOToChapterRegister(chapterRegister));
             if (chapterResult == null)
                 return null;
             return ChapterRegisterDTO.ChapterRegisterToChapterRegisterDTO(chapterResult);

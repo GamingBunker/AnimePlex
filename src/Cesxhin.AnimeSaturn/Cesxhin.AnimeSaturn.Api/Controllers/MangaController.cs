@@ -51,7 +51,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var listManga = await _mangaService.GetMangaAllAsync();
+                var listManga = await _mangaService.GetNameAllAsync();
 
                 if (listManga == null)
                     return NotFound();
@@ -73,7 +73,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var anime = await _mangaService.GetMangaByNameAsync(name);
+                var anime = await _mangaService.GetNameByNameAsync(name);
 
                 if (anime == null)
                     return NotFound();
@@ -105,7 +105,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                     {
                         var mangaDTO = GenericUrlDTO.GenericUrlToGenericUrlDTO(manga);
 
-                        var checkManga = await _mangaService.GetMangaByNameAsync(manga.Name);
+                        var checkManga = await _mangaService.GetNameByNameAsync(manga.Name);
                         if (checkManga != null)
                             mangaDTO.Exists = true;
 
@@ -130,7 +130,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var listManga = await _mangaService.GetMangaAllWithAllAsync();
+                var listManga = await _mangaService.GetNameAllWithAllAsync();
 
                 if (listManga == null)
                     return NotFound();
@@ -152,7 +152,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var listChapters = await _chapterService.GetChaptersByNameAsync(name);
+                var listChapters = await _chapterService.GetObjectsByNameAsync(name);
 
                 if (listChapters == null)
                     return NotFound();
@@ -174,7 +174,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var chapter = await _chapterService.GetChapterByIDAsync(id);
+                var chapter = await _chapterService.GetObjectByIDAsync(id);
 
                 if (chapter == null)
                     return NotFound();
@@ -196,7 +196,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var chapterRegister = await _chapterRegisterService.GetChapterRegisterByChapterId(id);
+                var chapterRegister = await _chapterRegisterService.GetObjectRegisterByObjectId(id);
 
                 if (chapterRegister == null)
                     return NotFound();
@@ -229,7 +229,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                         var mangaUrlDTO = GenericUrlDTO.GenericUrlToGenericUrlDTO(mangaUrl);
 
                         //check if already exists
-                        var manga = await _chapterService.GetChaptersByNameAsync(mangaUrlDTO.Name);
+                        var manga = await _chapterService.GetObjectsByNameAsync(mangaUrlDTO.Name);
                         if (manga != null)
                             mangaUrlDTO.Exists = true;
 
@@ -255,7 +255,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //insert
-                var mangaResult = await _mangaService.InsertMangaAsync(infoClass);
+                var mangaResult = await _mangaService.InsertNameAsync(infoClass);
 
                 if (mangaResult == null)
                     return Conflict();
@@ -278,7 +278,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //insert
-                var chapterResult = await _chapterService.InsertChapterAsync(objectClass);
+                var chapterResult = await _chapterService.InsertObjectAsync(objectClass);
 
                 if (chapterResult == null)
                     return Conflict();
@@ -301,7 +301,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //insert
-                var chaptersResult = await _chapterService.InsertChaptersAsync(objectsClass);
+                var chaptersResult = await _chapterService.InsertObjectsAsync(objectsClass);
 
                 if (chaptersResult == null)
                     return Conflict();
@@ -324,7 +324,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             try
             {
                 //insert
-                var chapterResult = await _chapterRegisterService.InsertChaptersRegistersAsync(objectsRegistersClass);
+                var chapterResult = await _chapterRegisterService.InsertObjectsRegistersAsync(objectsRegistersClass);
 
                 if (chapterResult == null)
                     return Conflict();
@@ -345,7 +345,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var chapterRegisterResult = await _chapterRegisterService.UpdateChapterRegisterAsync(objectRegisterClass);
+                var chapterRegisterResult = await _chapterRegisterService.UpdateObjectRegisterAsync(objectRegisterClass);
                 if (chapterRegisterResult == null)
                     return NotFound();
 
@@ -369,7 +369,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 foreach (var chapter in objectsClass)
                 {
                     chapter.StateDownload = null;
-                    await _chapterService.ResetStatusDownloadChaptersByIdAsync(chapter);
+                    await _chapterService.ResetStatusDownloadObjectByIdAsync(chapter);
                 }
                 return Ok();
             }
@@ -395,7 +395,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             var manga = HtmlMangaMangaWorld.GetManga(html, urlPage);
 
             //insert manga
-            manga = await _mangaService.InsertMangaAsync(manga);
+            manga = await _mangaService.InsertNameAsync(manga);
 
             if (manga == null)
                 return Conflict();
@@ -407,7 +407,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 return Conflict();
 
             //insert chapters
-            var listChapters = await _chapterService.InsertChaptersAsync(chapters);
+            var listChapters = await _chapterService.InsertObjectsAsync(chapters);
 
             if (listChapters == null)
                 return Conflict();
@@ -433,7 +433,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
             }
 
             //insert episodesRegisters
-            var episodeRegisterResult = await _chapterRegisterService.InsertChaptersRegistersAsync(listChapterRegister);
+            var episodeRegisterResult = await _chapterRegisterService.InsertObjectsRegistersAsync(listChapterRegister);
 
             if (episodeRegisterResult == null)
                 return Conflict();
@@ -489,7 +489,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         {
             try
             {
-                var manga = await _mangaService.DeleteMangaByNameAsync(id);
+                var manga = await _mangaService.DeleteNameByIdAsync(id);
 
                 if (manga == null)
                     return NotFound();

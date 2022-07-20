@@ -20,29 +20,24 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
         //env
         readonly string _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION");
 
-        public async Task<Manga> DeleteMangaAsync(Manga manga)
+        public async Task<int> DeleteNameAsync(string name)
         {
 
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 try
                 {
-                    var rs = await connection.DeleteAsync(manga);
-
-                    if (rs > 0)
-                        return manga;
-                    else
-                        return null;
+                    return await connection.DeleteAsync<Manga>(e => e.Name == name);
                 }
                 catch (Exception ex)
                 {
                     _logger.Error($"Failed DeleteMangaAsync, details error: {ex.Message}");
-                    return null;
+                    return 0;
                 }
             }
         }
 
-        public async Task<List<Manga>> GetMangaAllAsync()
+        public async Task<List<Manga>> GetNameAllAsync()
         {
 
             using (var connection = new NpgsqlConnection(_connectionString))
@@ -60,7 +55,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             }
         }
 
-        public async Task<List<Manga>> GetMangaByNameAsync(string name)
+        public async Task<List<Manga>> GetNameByNameAsync(string name)
         {
 
             using (var connection = new NpgsqlConnection(_connectionString))
@@ -82,7 +77,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             }
         }
 
-        public async Task<List<Manga>> GetMostMangaByNameAsync(string name)
+        public async Task<List<Manga>> GetMostNameByNameAsync(string name)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -99,7 +94,7 @@ namespace Cesxhin.AnimeSaturn.Persistence.Repositories
             }
         }
 
-        public async Task<Manga> InsertMangaAsync(Manga manga)
+        public async Task<Manga> InsertNameAsync(Manga manga)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
