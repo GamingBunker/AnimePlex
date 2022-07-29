@@ -36,6 +36,9 @@
         },
         methods: {
             ConvertBase64(imgBase64){
+                if(imgBase64 == null)
+                    return null
+                
                 var buff = new Buffer(imgBase64);
                 return  buff.toString()
             },

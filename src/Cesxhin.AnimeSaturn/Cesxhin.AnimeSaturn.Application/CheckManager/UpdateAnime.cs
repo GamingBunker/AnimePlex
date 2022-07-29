@@ -95,7 +95,7 @@ namespace Cesxhin.AnimeSaturn.Application.CheckManager
             {
                 ConfirmStartDownloadAnime(episode, episodeApi);
             }
-            else if ((!File.Exists(episodeRegister.EpisodePath) && episode.StateDownload != "pending"))
+            else if (episode.StateDownload == "completed")
             {
                 var found = false;
                 string newHash;

@@ -4,12 +4,15 @@ using Cesxhin.AnimeSaturn.Application.NlogManager;
 using Cesxhin.AnimeSaturn.Application.Parallel;
 using Cesxhin.AnimeSaturn.Domain.DTO;
 using Cesxhin.AnimeSaturn.Domain.Models;
+using FFMpegCore;
+using FFMpegCore.Enums;
 using MassTransit;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +29,9 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
         //parallel
         private readonly ParallelManager<EpisodeBuffer> parallel = new();
+
+        //temp
+        private string pathTemp = Environment.GetEnvironmentVariable("PATH_TEMP");
 
 
         public Task Consume(ConsumeContext<EpisodeDTO> context)
@@ -118,7 +124,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     //url stream
                     try
                     {
-                        Download(episode, filePath);
+                        Download(episode, filePath, context);
                     }catch (Exception ex)
                     {
                         _logger.Fatal($"Error download with url stream, details error: {ex.Message}");
@@ -127,7 +133,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
 
                 //get hash and update
                 _logger.Info($"start calculate hash of episode id: {episode.ID}");
-                string hash = Hash.GetHash(episodeRegister.EpisodePath);
+                string hash = Generic.Hash.GetHash(episodeRegister.EpisodePath);
                 _logger.Info($"end calculate hash of episode id: {episode.ID}");
 
                 episodeRegister.EpisodeHash = hash;
@@ -151,7 +157,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         }
 
         //download url with files stream
-        private void Download(EpisodeDTO episode, string filePath)
+        private async void Download(EpisodeDTO episode, string filePath, ConsumeContext<EpisodeDTO> context)
         {
             //timeout if not response one resource and close with status failed
             int timeoutFile = 0;
@@ -172,66 +178,82 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 try
                 {
                     //create file and save to end operation
-                    using (var fs = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
+                    List<EpisodeBuffer> buffer = new();
+                    List<Func<EpisodeBuffer>> tasks = new();
+
+                    _logger.Info($"start download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
+
+                    //change by pending to downloading
+                    episode.StateDownload = "downloading";
+                    SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+
+                    for (int numberFrame = episode.startNumberBuffer; numberFrame < episode.endNumberBuffer; numberFrame++)
                     {
-                        List<EpisodeBuffer> buffer = new();
-                        List<Func<EpisodeBuffer>> tasks = new();
-
-                        _logger.Info($"start download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
-
-                        //change by pending to downloading
-                        episode.StateDownload = "downloading";
-                        SendStatusDownloadAPIAsync(episode, episodeDTOApi);
-
-                        for (int numberFrame = episode.startNumberBuffer; numberFrame < episode.endNumberBuffer; numberFrame++)
-                        {
-                            var numberFrameSave = numberFrame;
-                            tasks.Add(new Func<EpisodeBuffer>(() => { return DownloadBuffParallel(episode, numberFrameSave, filePath, episodeDTOApi); }));
-                        }
-
-                        parallel.AddTasks(tasks);
-                        parallel.Start();
-
-                        while (!parallel.CheckFinish())
-                        {
-                            //send status download
-                            episode.PercentualDownload = parallel.PercentualCompleted();
-                            SendStatusDownloadAPIAsync(episode, episodeDTOApi);
-                            Thread.Sleep(3000);
-                        }
-
-                        buffer = parallel.GetResultAndClear();
-
-                        if(buffer == null)
-                        {
-                            //send end download
-                            episode.StateDownload = "failed";
-                            episode.PercentualDownload = 0;
-                            SendStatusDownloadAPIAsync(episode, episodeDTOApi);
-
-                            _logger.Error($"failed download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
-                            return;
-                        }
-
-                        _logger.Info($"end download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
-
-                        _logger.Info($"start join most buffer {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
-
-                        //order by id
-                        buffer.Sort(delegate (EpisodeBuffer e1, EpisodeBuffer e2) { return e1.Id.CompareTo(e2.Id); });
-
-                        foreach (var singleBuffer in buffer)
-                        {
-                            fs.Write(singleBuffer.Data);
-                        }
-
-                        _logger.Info($"end join most buffer {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
-
-                        //send end download
-                        episode.StateDownload = "completed";
-                        episode.PercentualDownload = 100;
-                        SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+                        var numberFrameSave = numberFrame;
+                        tasks.Add(new Func<EpisodeBuffer>(() => { return DownloadBuffParallel(episode, numberFrameSave, filePath, episodeDTOApi); }));
                     }
+
+                    parallel.AddTasks(tasks);
+                    parallel.Start();
+
+                    while (!parallel.CheckFinish())
+                    {
+                        //send status download
+                        episode.PercentualDownload = parallel.PercentualCompleted();
+                        SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+                        Thread.Sleep(3000);
+                    }
+
+                    buffer = parallel.GetResultAndClear();
+
+                    buffer.Sort(delegate (EpisodeBuffer p1, EpisodeBuffer p2) { return p1.Id.CompareTo(p2.Id); });
+
+                    if (buffer == null)
+                    {
+                        //send end download
+                        episode.StateDownload = "failed";
+                        episode.PercentualDownload = 0;
+                        SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+
+                        _logger.Error($"failed download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
+                        return;
+                    }
+
+                    List<string> paths = new();
+
+                    foreach (var singleBuffer in buffer)
+                    {
+                        using (var fsBuffer = new FileStream(singleBuffer.Path, FileMode.OpenOrCreate, FileAccess.Write))
+                        {
+                            fsBuffer.Write(singleBuffer.Data);
+                            paths.Add(singleBuffer.Path);
+                        }
+                    }
+
+                    _logger.Info($"end download {episode.AnimeId} s{episode.NumberSeasonCurrent}-e{episode.NumberEpisodeCurrent}");
+
+                    //send end download
+                    episode.StateDownload = "wait conversion";
+                    episode.PercentualDownload = 100;
+                    SendStatusDownloadAPIAsync(episode, episodeDTOApi);
+
+                    //send message to ConversionService;
+                    try
+                    {
+                        var conversionDTO = new ConversionDTO
+                        {
+                            ID = episode.ID,
+                            Paths = paths,
+                            FilePath = filePath
+                        };
+
+                        await context.Publish(conversionDTO);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"Cannot send message rabbit, details: {ex.Message}");
+                    }
+
                     return;
                 }
                 catch (IOException ex)
@@ -285,6 +307,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                         {
                             Id = numberFrame,
                             Data = data,
+                            Path = $"{pathTemp}/{episode.ID}-{episode.Resolution}-{numberFrame.ToString("D3")}.ts",
                         };
                     }
                     catch (Exception ex)

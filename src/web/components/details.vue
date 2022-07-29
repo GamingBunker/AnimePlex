@@ -150,6 +150,16 @@
                 </template>
                 <!-- end information -->
 
+                <!-- start room -->
+                <template v-if="episodes.length > 0">
+                    <div v-for="episode in episodes" :key="episode.id">
+                        <template v-if="episode.percentualDownload == 100">
+                            <NuxtLink :to="'/room/'+episode.id+'?type=anime'" type="button" class="btn btn-primary">{{episode.id}}</NuxtLink>
+                        </template>
+                    </div>
+                </template>
+                <!-- end room -->
+
                 <!-- show episodes and status download -->
                 <template v-if="!urlPageDownload">
                     <div class="d-grid gap-2">
@@ -176,7 +186,6 @@
                                     <span>volume: {{chapter.currentVolume}}  chapter: {{chapter.currentChapter}}</span>
                                 </div>
                             </div>
-                            
                             <div class="progress" style="height: 20px; background-color: azure;">
                                 <template v-if="chapter.stateDownload == 'downloading'">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="'width: '+chapter.percentualDownload+'%'" :aria-valuenow="chapter.percentualDownload" aria-valuemin="0" aria-valuemax="100">{{chapter.percentualDownload}}%</div>
@@ -213,6 +222,9 @@
                                 <template v-if="episode.stateDownload == 'downloading'">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100">{{episode.percentualDownload}}%</div>
                                 </template>
+                                <template v-else-if="episode.stateDownload == 'conversioning'">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>CONVERSIONING</b></div>
+                                </template>
                                 <template v-else-if="episode.stateDownload == 'completed'">
                                     <div class="progress-bar bg-success" role="progressbar" :style="'width: '+episode.percentualDownload+'%'" :aria-valuenow="episode.percentualDownload" aria-valuemin="0" aria-valuemax="100"><b>COMPLETED</b></div>
                                 </template>
@@ -221,6 +233,9 @@
                                 </template>
                                 <template v-else-if="episode.stateDownload == 'pending'">
                                     <div class="progress-bar bg-warning" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>PENDING</b></div>
+                                </template>
+                                <template v-else-if="episode.stateDownload === 'wait conversion'">
+                                    <div class="progress-bar bg-secondary" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>WAIT CONVERSION</b></div>
                                 </template>
                                 <template v-else>
                                     <div class="progress-bar bg-info" role="progressbar" :style="'width: 100%'" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><b>NOT YET PROCESSED</b></div>
@@ -245,170 +260,160 @@
 </template>
 
 <script>
-export default {
-    data(){
-        return{
-            timer:1000,
-            hide:"",
-            episodes:[],
-            chapters:[],
-            showStatus:false,
 
+export default {
+    data() {
+        return {
+            timer: 1000,
+            hide: "",
+            episodes: [],
+            chapters: [],
+            showStatus: false,
             loading: false,
             conflict: false,
-            success:false,
-            
-            host:this.$config.ipAPI,
-            port:this.$config.portAPI,
-            protocol:this.$config.protocolAPI,
-
-            sure:false,
-            message:"",
-
+            success: false,
+            host: this.$config.ipAPI,
+            port: this.$config.portAPI,
+            protocol: this.$config.protocolAPI,
+            sure: false,
+            message: "",
             backgroundColor: null
-        }
+        };
     },
-    props:{
-        anime:String,
-        artist:String,
-        author:String,
-        dataRelease:String,
-        totalChapters:Number,
-        totalVolumes:Number,
-        type:String,
-        name:String,
-        description:String,
-        date:String,
-        vote:String,
-        studio:String,
-        image:String,
-        status:Boolean,
-        urlPage:String,
-        duration:String,
-        totalEpisode:Number,
-        urlPageDownload:String,
-        urlExternal:Boolean,
-        exists:Boolean,
-        typeView:String
+    props: {
+        anime: String,
+        artist: String,
+        author: String,
+        dataRelease: String,
+        totalChapters: Number,
+        totalVolumes: Number,
+        type: String,
+        name: String,
+        description: String,
+        date: String,
+        vote: String,
+        studio: String,
+        image: String,
+        status: Boolean,
+        urlPage: String,
+        duration: String,
+        totalEpisode: Number,
+        urlPageDownload: String,
+        urlExternal: Boolean,
+        exists: Boolean,
+        typeView: String
     },
-
     methods: {
-        ConvertBase64(imgBase64){
+        ConvertBase64(imgBase64) {
             var buff = new Buffer(imgBase64);
-            return  buff.toString();
+            return buff.toString();
         },
-        Close(){
-            $nuxt.$emit('close', this.urlExternal);
+        Close() {
+            $nuxt.$emit("close", this.urlExternal);
         },
-        ReDownload(){
-            if(this.sure == false)
-            {
+        ReDownload() {
+            if (this.sure == false) {
                 this.sure = true;
-                return
+                return;
             }
             this.loading = true;
-
-            var list = []
-            if(this.episodes.length <= 0)
-                list = this.chapters
+            var list = [];
+            if (this.episodes.length <= 0)
+                list = this.chapters;
             else
-                list = this.episodes
-
-            this.$axios.put(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/redownload`, JSON.stringify(list),
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+                list = this.episodes;
+            this.$axios.put(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/redownload`, JSON.stringify(list), {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
                 .then(rs => {
-                    if(rs.status != 200){
-                        console.log('error reset');
-                    }
-                })
+                if (rs.status != 200) {
+                    console.log("error reset");
+                }
+            })
                 .catch(error => {
-                    if(error.message.includes('500')){
-                        console.log('error internal server api');
-                    }
-                })
+                if (error.message.includes("500")) {
+                    console.log("error internal server api");
+                }
+            })
                 .then(() => {
-                    this.loading = false;
-                    this.sure = false;
-                })
+                this.loading = false;
+                this.sure = false;
+            });
         },
-        Download(){
+        Download() {
             //get api external
             this.loading = true;
-            this.$axios.post(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/download`, JSON.stringify({Url: this.urlPageDownload}),
-            {
+            this.$axios.post(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/download`, JSON.stringify({ Url: this.urlPageDownload }), {
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json"
                 }
             })
-            .then(rs => {
-                if(rs.status == 201){
+                .then(rs => {
+                if (rs.status == 201) {
                     this.success = true;
-                    this.message = "Success download information! Soon the downloads will start."
-                    this.Close()
+                    this.message = "Success download information! Soon the downloads will start.";
+                    this.Close();
                     $nuxt.$emit("reloadViewDetails", rs.data);
-                }else{
-                    console.log('error download');
+                }
+                else {
+                    console.log("error download");
                 }
             })
-            .catch(error => {
-                if(error.message.includes('409')){
+                .catch(error => {
+                if (error.message.includes("409")) {
                     this.conflict = true;
                     this.message = "This anime already exists!";
                 }
             })
-            .then(() => {
+                .then(() => {
                 this.loading = false;
-            })
+            });
         },
-        Delete(){
+        Delete() {
             this.$axios.delete(`${this.protocol}://${this.host}:${this.port}/${this.typeView}/${this.name}`)
-            .then(rs => {
-                if(rs.status == 200){
+                .then(rs => {
+                if (rs.status == 200) {
                     this.Close();
                     $nuxt.$emit("searchall");
                 }
             })
-            .catch(error => {
-                if(error.message.includes('409')){
+                .catch(error => {
+                if (error.message.includes("409")) {
                     this.conflict = true;
-                    this.message = "you can't delete this anime becouse there are episodes that are downloading"
+                    this.message = "you can't delete this anime becouse there are episodes that are downloading";
                 }
-            })
+            });
         },
-        closeAlert(){
+        closeAlert() {
             this.conflict = false;
             this.success = false;
-            this.message = ""
+            this.message = "";
         },
-        showStatusDownload(){
+        showStatusDownload() {
             this.showStatus = true;
         },
-        hideStatusDownload(){
+        hideStatusDownload() {
             this.showStatus = false;
         }
     },
-
-    watch:{
-        hide:{
-            handler(){
-                if(this.urlPage != null)
-                {
-                    if(this.typeView === "anime")
-                    {
+    watch: {
+        hide: {
+            handler() {
+                if (this.urlPage != null) {
+                    if (this.typeView === "anime") {
                         //get api internal
                         this.$axios.get(`${this.protocol}://${this.host}:${this.port}/episode/name/${this.name}`)
                             .then(rs => {
-                            this.episodes = rs.data
+                            this.episodes = rs.data;
                         });
-                    }else if(this.typeView === "manga"){
+                    }
+                    else if (this.typeView === "manga") {
                         //get api internal
                         this.$axios.get(`${this.protocol}://${this.host}:${this.port}/chapter/name/${this.name}`)
                             .then(rs => {
-                            this.chapters = rs.data
+                            this.chapters = rs.data;
                         });
                     }
                 }
@@ -418,11 +423,11 @@ export default {
             },
             immediate: true
         },
-        sure:{
-            handler(){
+        sure: {
+            handler() {
                 setTimeout(() => {
-                    if(this.sure == true)
-                        this.sure = false
+                    if (this.sure == true)
+                        this.sure = false;
                 }, 1000);
             }
         }
