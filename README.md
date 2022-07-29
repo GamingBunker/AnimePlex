@@ -10,6 +10,7 @@ Il progetto si suddivide in 4 progetti:
 - 📨Notify Service (C#)
 - 💾Update Service (C#)
 - 💽Upgrade Service (C#)
+- 💱Conversion Service (C#)
 - 🌐Web Server([Nuxtjs](https://nuxtjs.org/))
 
 Servizi utilizzati:
@@ -24,6 +25,7 @@ Servizi utilizzati:
 | 📨Notify Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-notifyservice) |
 | 💾Update Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-updateservice) |
 | 💽Upgrade Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-upgradeservice) |
+| 💱Conversion Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-conversionservice) |
 | 🌐Web Client | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-web) |
 
 ## 🌐Web Server
@@ -182,4 +184,33 @@ example:
     
     #---general---
     DOTNET_ENVIRONMENT: Development [require]
+```
+
+## 💱Conversion Service
+Questo progetto verrà utilizzato per convertire file ts in mp4 da poter riprodurre in streaming
+### Information general:
+- `require` volume mounted on Docker
+### Variabili globali richiesti:
+```sh
+example:
+    #--- rabbit ---
+    USERNAME_RABBIT: "guest" #guest [default]
+    PASSWORD_RABBIT: "guest" #guest [default]
+    ADDRESS_RABBIT: "localhost" #localhost [default]
+    LIMIT_CONSUMER_RABBIT: "5" #3 [default]
+    
+    #--- API ---
+    ADDRESS_API: "localhost" #localhost [default]
+    PORT_API: "33333" #3000 [default]
+    PROTOCOL_API: "http" or "https" #http [default]
+    
+    #--- Logger ---
+    LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
+    
+    #--- General ---
+    DOTNET_ENVIRONMENT: Development [require]
+    LIMIT_THREAD_PARALLEL: "500" #5 [default]
+    PATH_TEMP: "/folder/temp" [require]
+    PATH_FFMPEG: "/folder/bin" #/usr/local/bin/ffmpeg [default]
 ```
