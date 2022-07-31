@@ -153,8 +153,8 @@
                 <!-- start room -->
                 <template v-if="episodes.length > 0">
                     <div v-for="episode in episodes" :key="episode.id">
-                        <template v-if="episode.percentualDownload == 100">
-                            <NuxtLink :to="'/room/'+episode.id+'?type=anime'" type="button" class="btn btn-primary">{{episode.id}}</NuxtLink>
+                        <template v-if="episode.stateDownload == 'completed'">
+                            <NuxtLink :to="'/room?type=anime&episode='+episode.id" type="button" class="btn btn-primary">{{episode.id}}</NuxtLink>
                         </template>
                     </div>
                 </template>

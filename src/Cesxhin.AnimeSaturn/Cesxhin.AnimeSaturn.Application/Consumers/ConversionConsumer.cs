@@ -51,7 +51,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     return null;
                 }
 
-                var fileTemp = pathTemp + "/joined.ts";
+                var fileTemp = $"{pathTemp}/joined-{Path.GetFileName(message.FilePath)}.ts";
 
                 if (!File.Exists(fileTemp))
                 {
@@ -85,12 +85,12 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 var tempMp4 = $"{pathTemp}/{Path.GetFileName(message.FilePath)}";
                 var process = FFMpegArguments
                     .FromFileInput(fileTemp)
-                    .OutputToFile(tempMp4, false, options => options
+                    .OutputToFile(tempMp4, true, options => options
                         .WithVideoCodec(VideoCodec.LibX264)
                         .WithAudioCodec(AudioCodec.Aac))
                     .ProcessSynchronously();
 
-                File.Move(tempMp4, message.FilePath);
+                File.Move(tempMp4, message.FilePath, true);
 
                 //delete old file
                 File.Delete(fileTemp);

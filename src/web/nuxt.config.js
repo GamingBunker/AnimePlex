@@ -61,7 +61,8 @@ export default {
   publicRuntimeConfig: {
     ipAPI: process.env.HOST_API || "localhost",
     portAPI: process.env.PORT_API || "5000",
-    protocolAPI: process.env.PROTOCOL_API || "http"
+    protocolAPI: process.env.PROTOCOL_API || "http",
 
+    ipWebSocket: process.env.HOST_WS || "ws://192.168.20.10:1234/room"
   }
 }
