@@ -82,14 +82,14 @@ require('dotenv').config();
                 })
 
                 alertNewMember(data.idRoom);
-            }else if(action == 'updateTime'){
+            }else if(action == 'updateTime' || action == 'currentTime'){
                 rooms.map(room => {
                     if(room.id_room == data.idRoom){
                         room.t = data.time
                     }
                 })
-
-                alertNewMember(data.idRoom);
+                if(action == 'updateTime')
+                    alertNewMember(data.idRoom);
             }
         })
 
@@ -206,6 +206,14 @@ require('dotenv').config();
             const ws = [...clients].find(([key, val]) => val == client_id)[0]
             ws.send(JSON.stringify({action:"ping"}))
         });
+    });
+
+    //schedule
+    schedule.scheduleJob('*/1 * * * * *', function(){
+        rooms.forEach(room =>{
+            const ws = [...clients].find(([key, val]) => val == room.clients[0].id)[0]
+            ws.send(JSON.stringify({action:"currentTime"}))
+        })
     });
 })().catch((err) => {
     console.log(`ERROR: ${err}`)

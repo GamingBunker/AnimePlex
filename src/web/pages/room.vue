@@ -10,7 +10,7 @@
         <div class="d-flex justify-content-center" style="margin: 10px;">
             <div class="card" style="width: 110px;">
                 <div style="margin-top: 25%; margin: auto;">
-                    <a :href="'http://192.168.20.10:3000/room?idroom='+idRoom">Share room</a>
+                    <a :href="'http://192.168.20.10:3000/room?idroom='+idRoom" target="_blank">Share room</a>
                 </div>
             </div>
             <div v-for="user in users">
@@ -73,6 +73,7 @@ import userComponentVue from '../components/userComponent.vue';
                 var data = JSON.parse(event.data)
                 if(data.action == 'registration'){
                     this.currentUser = data.nickname
+
                 }else if(data.action == 'UpdateRoom'){
                     this.idRoom = data.room.id_room
                     this.users = data.room.clients
@@ -82,6 +83,8 @@ import userComponentVue from '../components/userComponent.vue';
                     this.idRoom = data.id
                     this.currentUser = data.nickname
                     this.episode = data.episode
+                }else if(data.action == 'currentTime'){
+                    this.$nuxt.$emit('currentTime')
                 }
             });
 
@@ -110,6 +113,13 @@ import userComponentVue from '../components/userComponent.vue';
             this.$nuxt.$on('time', (stateTime)=>{
                 this.sendMessage('updateTime', {time: stateTime, idRoom: this.idRoom})
                 console.log('request updatePause');
+            });
+
+            this.$nuxt.$on('currentTime', ()=>{
+                var vid = document.getElementById("my-video");
+
+                this.sendMessage('currentTime', {time: vid.currentTime, idRoom: this.idRoom})
+                console.log('request currentTime');
             });
 
             //event
