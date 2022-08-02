@@ -21,4 +21,7 @@ RUN dotnet publish "Cesxhin.AnimeSaturn.ConversionService.csproj" -c Release -o 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+ENTRYPOINT ["apt", "update"]
+ENTRYPOINT ["apt", "install", "-y", "ffmpeg"]
 ENTRYPOINT ["dotnet", "Cesxhin.AnimeSaturn.ConversionService.dll"]

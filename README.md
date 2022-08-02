@@ -84,7 +84,6 @@ example:
     WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
-    ASPNETCORE_ENVIRONMENT: Development [require]
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #/ [default]
     LIMIT_THREAD_PARALLEL: "8" #5 [default]
 ```
@@ -111,7 +110,6 @@ example:
     WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
-    DOTNET_ENVIRONMENT: Development [require]
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #/ [default]
     TIME_REFRESH: "60000" <-- milliseconds #120000 [default] 2 minutes
     LIMIT_THREAD_PARALLEL: "8" #5 [default]
@@ -140,7 +138,6 @@ example:
     WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
-    DOTNET_ENVIRONMENT: Development [require]
     BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #http [default]
     TIME_REFRESH: "60000" <-- milliseconds #1200000 [default] 20 minutes
     LIMIT_THREAD_PARALLEL: "8" #5 [default]
@@ -170,9 +167,9 @@ example:
     WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
-    DOTNET_ENVIRONMENT: Development [require]
     LIMIT_THREAD_PARALLEL: "500" #5 [default]
     PATH_TEMP: "/tmp/folder" #D:\\TestAnime\\temp [default]
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #/ [default]
 ```
 
 ## 📨Notify Service
@@ -196,9 +193,6 @@ example:
     #---logger---
     LOG_LEVEL: "Debug|Info|Error" #Info [default]
     WEBHOOK_DISCORD_DEBUG: "url" [not require]
-    
-    #---general---
-    DOTNET_ENVIRONMENT: Development [require]
 ```
 
 ## 💱Conversion Service
@@ -224,20 +218,21 @@ example:
     WEBHOOK_DISCORD_DEBUG: "url" [not require]
     
     #--- General ---
-    DOTNET_ENVIRONMENT: Development [require]
-    LIMIT_THREAD_PARALLEL: "500" #5 [default]
     PATH_TEMP: "/folder/temp" [require]
     PATH_FFMPEG: "/folder/bin" #/usr/local/bin/ffmpeg [default]
+    BASE_PATH: "/folder/anime" or "D:\\\\Directory\Anime" #/ [default]
 ```
 
 ## 🏠Room server (Hapi)
 questo progetto viene gestito le sessioni di streaming e le interazioni dei video degli altri, per esempio se viene messo in pausa tutte le persone che sono presenti in quella stanza viene messo in pausa il video.
+### Information general:
+- `not` require volume mounted on Docker
 ### Variabili globali richiesti:
 ```sh
 example:
     #--- General ---
     HOST: "localhost" #0.0.0.0 [default]
-    PORT: "33333" #12345 [default]
+    PORT: "33333" #1234 [default]
     PATH_URL: "/path" #/room [default]
 ```
 ## 📁Path server (Nodejs)
