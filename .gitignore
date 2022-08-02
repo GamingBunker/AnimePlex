@@ -415,7 +415,7 @@ yarn-error.log
 # End of https://www.toptal.com/developers/gitignore/api/nuxtjs,vuejs
 
 ### Custom ###
-src/web/.env
+.env
 launchSettings.json
 # End
 

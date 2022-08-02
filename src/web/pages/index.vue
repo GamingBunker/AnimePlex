@@ -358,13 +358,7 @@ export default {
 }
 </script>
 
-<style>
-
-body{
-  background-image: url("../assets/img/background.jpg");
-  background-size: contain;
-  background-attachment: fixed;
-}
+<style scoped>
 
 .card
 {
@@ -381,4 +375,11 @@ body{
   border-bottom-left-radius: 25px;
 }
 
+</style>
+<style>
+body{
+  background-image: url("../assets/img/background.jpg");
+  background-size: contain;
+  background-attachment: fixed;
+}
 </style>

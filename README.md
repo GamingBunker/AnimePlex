@@ -4,12 +4,15 @@
 Scarica le serie tv/film dal sito [AnimeSaturn](https://www.animesaturn.it/) e mette nella cartella Plex.
 
 ## La struttura del progetto
-Il progetto si suddivide in 4 progetti:
+Il progetto si suddivide in 9 progetti:
 - 🧮Api Service (C#)
 - 📩Download Service (C#)
 - 📨Notify Service (C#)
 - 💾Update Service (C#)
 - 💽Upgrade Service (C#)
+- 💱Conversion Service (C#)
+- 🏠Room server (Hapi)
+- 📁Path server (Nodejs)
 - 🌐Web Server([Nuxtjs](https://nuxtjs.org/))
 
 Servizi utilizzati:
@@ -24,6 +27,8 @@ Servizi utilizzati:
 | 📨Notify Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-notifyservice) |
 | 💾Update Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-updateservice) |
 | 💽Upgrade Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-upgradeservice) |
+| 💱Conversion Service | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-conversionservice) |
+| 🏠Room server (Hapi) | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-roomserver) |
 | 🌐Web Client | [Link](https://hub.docker.com/r/kju7pwd2/animeplex-web) |
 
 ## 🌐Web Server
@@ -39,6 +44,17 @@ example:
     HOST_API: "localhost" #localhost [default]
     PORT_API : "33333" #5000 [default]
     PROTOCOL_API: "https" or "http" #http [default]
+    
+    #--- WebSocket ---
+    HOST_WS: "ws://localhost:1111/path" #ws://localhost:1234/room [default]
+    
+    #--- Path ---
+    BASE_PATH: "/path" #"/" [default]
+    HOST_HTTP_SERVER: "localhost" #localhost [default]
+    PORT_HTTP_SERVER: "33333" #8080 [default]
+    
+    #--- Share link ---
+    SHARE_ROOM: "localhost:33333" #localhost:3000 [default]
 ```
 
 ## 🧮Api Service
@@ -156,6 +172,7 @@ example:
     #--- General ---
     DOTNET_ENVIRONMENT: Development [require]
     LIMIT_THREAD_PARALLEL: "500" #5 [default]
+    PATH_TEMP: "/tmp/folder" #D:\\TestAnime\\temp [default]
 ```
 
 ## 📨Notify Service
@@ -183,3 +200,49 @@ example:
     #---general---
     DOTNET_ENVIRONMENT: Development [require]
 ```
+
+## 💱Conversion Service
+Questo progetto verrà utilizzato per convertire file ts in mp4 da poter riprodurre in streaming
+### Information general:
+- `require` volume mounted on Docker
+### Variabili globali richiesti:
+```sh
+example:
+    #--- rabbit ---
+    USERNAME_RABBIT: "guest" #guest [default]
+    PASSWORD_RABBIT: "guest" #guest [default]
+    ADDRESS_RABBIT: "localhost" #localhost [default]
+    LIMIT_CONSUMER_RABBIT: "5" #3 [default]
+    
+    #--- API ---
+    ADDRESS_API: "localhost" #localhost [default]
+    PORT_API: "33333" #3000 [default]
+    PROTOCOL_API: "http" or "https" #http [default]
+    
+    #--- Logger ---
+    LOG_LEVEL: "Debug|Info|Error" #Info [default]
+    WEBHOOK_DISCORD_DEBUG: "url" [not require]
+    
+    #--- General ---
+    DOTNET_ENVIRONMENT: Development [require]
+    LIMIT_THREAD_PARALLEL: "500" #5 [default]
+    PATH_TEMP: "/folder/temp" [require]
+    PATH_FFMPEG: "/folder/bin" #/usr/local/bin/ffmpeg [default]
+```
+
+## 🏠Room server (Hapi)
+questo progetto viene gestito le sessioni di streaming e le interazioni dei video degli altri, per esempio se viene messo in pausa tutte le persone che sono presenti in quella stanza viene messo in pausa il video.
+### Variabili globali richiesti:
+```sh
+example:
+    #--- General ---
+    HOST: "localhost" #0.0.0.0 [default]
+    PORT: "33333" #12345 [default]
+    PATH_URL: "/path" #/room [default]
+```
+## 📁Path server (Nodejs)
+Questo servizio serve ad esporre i file video per web.
+### Information general:
+Creare un container che contiene una lts di linux.
+Installare `nodejs` e `npm`, infine installare il pacchetto ftp: `npm install --global http-server`
+Avviare con `http-server '/root/anime'` come avvio della macchina
