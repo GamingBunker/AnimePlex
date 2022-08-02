@@ -31,7 +31,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         private readonly ParallelManager<EpisodeBuffer> parallel = new();
 
         //temp
-        private string pathTemp = Environment.GetEnvironmentVariable("PATH_TEMP");
+        private string pathTemp = Environment.GetEnvironmentVariable("PATH_TEMP") ?? "D:\\TestAnime\\temp";
 
 
         public Task Consume(ConsumeContext<EpisodeDTO> context)

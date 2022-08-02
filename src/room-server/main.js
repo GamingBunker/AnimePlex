@@ -10,9 +10,9 @@ require('dotenv').config();
     //const server = new HAPI.Server({ address: "localhost", port: 12345 })
     //socket
     const wss = new WebSocket.Server({
-        port: process.env.PORT,
-        host: process.env.HOST,
-        path: process.env.PATH_URL
+        port: process.env.PORT || 12345,
+        host: process.env.HOST || "0.0.0.0",
+        path: process.env.PATH_URL || "/room"
     });
     console.log("Settings:")
     console.log("Host: "+wss.options.host);

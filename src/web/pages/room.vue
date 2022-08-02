@@ -11,7 +11,7 @@
         <div class="d-flex justify-content-center" style="margin: 10px;">
             <div class="card" style="width: 110px;">
                 <div style="margin-top: 25%; margin: auto;">
-                    <a :href="'http://192.168.20.10:3000/room?idroom='+idRoom" target="_blank">Share room</a>
+                    <a :href="`http://${this.shareRoom}/room?idroom=${this.idRoom}`" target="_blank">Share room</a>
                 </div>
             </div>
             <div v-for="user in users">
@@ -43,6 +43,7 @@ import userComponentVue from '../components/userComponent.vue';
                 hostHttpServer: this.$config.ipHttpServer,
                 portHttpServer: this.$config.portHttpServer,
                 basePath: this.$config.basePath,
+                shareRoom: this.$config.shareRoom,
 
                 ws:null,
 

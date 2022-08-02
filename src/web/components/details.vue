@@ -155,7 +155,7 @@
                     <h6>Episodes:</h6>
                     <div v-for="episode in episodes" :key="episode.id">
                         <template v-if="episode.stateDownload == 'completed'">
-                            <NuxtLink :to="'/room?type=anime&episode='+episode.id" type="button" class="btn btn-primary" style="margin-bottom: 3px;">{{episode.id}}</NuxtLink>
+                            <NuxtLink :to="'/room?type=anime&episode='+episode.id" type="button" class="btn btn-success" style="margin-bottom: 3px;">{{episode.id}}</NuxtLink>
                         </template>
                         <template v-else>
                             <button class="btn btn-secondary" style="margin-bottom: 3px;" disabled>{{episode.id}}</button>

@@ -63,9 +63,12 @@ export default {
     portAPI: process.env.PORT_API || "5000",
     protocolAPI: process.env.PROTOCOL_API || "http",
 
-    ipWebSocket: process.env.HOST_WS || "ws://192.168.20.10:1234/room",
+    ipWebSocket: process.env.HOST_WS || "ws://localhost:1234/room",
     basePath: process.env.BASE_PATH || "/",
+
     ipHttpServer: process.env.HOST_HTTP_SERVER || "localhost",
-    portHttpServer: process.env.PORT_HTTP_SERVER || "8080"
+    portHttpServer: process.env.PORT_HTTP_SERVER || "8080",
+
+    shareRoom: process.env.SHARE_ROOM || 'localhost:3000'
   }
 }
