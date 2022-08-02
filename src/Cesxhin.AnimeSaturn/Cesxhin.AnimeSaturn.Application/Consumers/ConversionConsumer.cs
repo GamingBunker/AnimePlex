@@ -27,8 +27,10 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 var message = context.Message;
 
                 Api<EpisodeDTO> episodeApi = new();
+                Api<EpisodeRegisterDTO> episodeRegisterApi = new();
 
                 EpisodeDTO episode = null;
+                EpisodeRegisterDTO episodeRegister = null;
                 //episode
                 try
                 {
@@ -44,8 +46,22 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 
                 }
 
+                //episodeRegister
+                try
+                {
+                    episodeRegister = episodeRegisterApi.GetOne($"/episode/register/episodeid/{episode.ID}").GetAwaiter().GetResult();
+                }
+                catch (ApiNotFoundException ex)
+                {
+                    _logger.Error($"Not found episodeRegister, details error: {ex.Message}");
+                }
+                catch (ApiGenericException ex)
+                {
+                    _logger.Fatal($"Impossible error generic get episodeRegister, details error: {ex.Message}");
+                }
+
                 //check
-                if(episode == null)
+                if (episode == null)
                 {
                     _logger.Fatal($"Get episode ID: {message.ID} not exitis");
                     return null;
@@ -87,7 +103,9 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     .FromFileInput(fileTemp)
                     .OutputToFile(tempMp4, true, options => options
                         .WithVideoCodec(VideoCodec.LibX264)
-                        .WithAudioCodec(AudioCodec.Aac))
+                        .WithAudioCodec(AudioCodec.Aac)
+                        .WithVideoFilters(filterOptions => filterOptions
+                            .Scale(VideoSize.FullHd)))
                     .ProcessSynchronously();
 
                 File.Move(tempMp4, message.FilePath, true);
@@ -95,6 +113,27 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 //delete old file
                 File.Delete(fileTemp);
 
+
+
+                //get hash and update
+                _logger.Info($"start calculate hash of episode id: {episode.ID}");
+                string hash = Hash.GetHash(episodeRegister.EpisodePath);
+                _logger.Info($"end calculate hash of episode id: {episode.ID}");
+
+                episodeRegister.EpisodeHash = hash;
+
+                try
+                {
+                    episodeRegisterApi.PutOne("/episode/register", episodeRegister).GetAwaiter().GetResult();
+                }
+                catch (ApiNotFoundException ex)
+                {
+                    _logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId}, details error: {ex.Message}");
+                }
+                catch (ApiGenericException ex)
+                {
+                    _logger.Fatal($"Error generic put episodeRegister, details error: {ex.Message}");
+                }
 
                 //send status api
                 episode.StateDownload = "completed";

@@ -211,8 +211,11 @@ require('dotenv').config();
     //schedule
     schedule.scheduleJob('*/1 * * * * *', function(){
         rooms.forEach(room =>{
-            const ws = [...clients].find(([key, val]) => val == room.clients[0].id)[0]
-            ws.send(JSON.stringify({action:"currentTime"}))
+            if(room.clients.length > 0)
+            {
+                const ws = [...clients].find(([key, val]) => val == room.clients[0].id)[0]
+                ws.send(JSON.stringify({action:"currentTime"}))
+            }
         })
     });
 })().catch((err) => {

@@ -23,11 +23,15 @@
         mounted(){
             if(this.current == true)
                 this.background = 'greenyellow'
+        },
+        updated(){
+            if(this.current == true)
+                this.background = 'greenyellow'
         }
     }
 </script>
 
-<style>
+<style scoped>
 .card-body{
     font-size: x-small;
 }

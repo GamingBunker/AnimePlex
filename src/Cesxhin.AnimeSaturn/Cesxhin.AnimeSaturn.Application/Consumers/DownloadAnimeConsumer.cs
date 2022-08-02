@@ -79,7 +79,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
             {
                 //paths
                 var directoryPath = Path.GetDirectoryName(episodeRegister.EpisodePath);
-                var filePath = episodeRegister.EpisodePath;
+                var filePathTemp = $"{pathTemp}/{Path.GetFileName(episodeRegister.EpisodePath)}";
 
                 //check directory
                 if (!Directory.Exists(directoryPath))
@@ -92,8 +92,8 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     using (var client = new MyWebClient())
                     {
                         //task
-                        client.DownloadProgressChanged += client_DownloadProgressChanged(filePath, episode);
-                        client.DownloadFileCompleted += client_DownloadFileCompleted(filePath, episode);
+                        client.DownloadProgressChanged += client_DownloadProgressChanged(filePathTemp, episode);
+                        client.DownloadFileCompleted += client_DownloadFileCompleted(filePathTemp, episode);
 
                         //add referer for download, also recive error 403 forbidden
 
@@ -107,7 +107,9 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                             client.Timeout = 60000; //? check
 
                             //start download
-                            client.DownloadFileTaskAsync(new Uri(episode.UrlVideo), filePath).ConfigureAwait(false).GetAwaiter().GetResult();
+                            client.DownloadFileTaskAsync(new Uri(episode.UrlVideo), filePathTemp).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                            File.Move(filePathTemp, episodeRegister.EpisodePath, true);
                         }
                         catch (ApiNotFoundException ex)
                         {
@@ -118,37 +120,42 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                             _logger.Fatal($"Error download with url easy, details error: {ex.Message}");
                         }
                     }
+                    
+                    //get hash and update
+                    _logger.Info($"start calculate hash of episode id: {episode.ID}");
+                    string hash = Hash.GetHash(episodeRegister.EpisodePath);
+                    _logger.Info($"end calculate hash of episode id: {episode.ID}");
+
+                    episodeRegister.EpisodeHash = hash;
+
+                    try
+                    {
+                        episodeRegisterApi.PutOne("/episode/register", episodeRegister).GetAwaiter().GetResult();
+                    }
+                    catch (ApiNotFoundException ex)
+                    {
+                        _logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId}, details error: {ex.Message}");
+                    }
+                    catch (ApiGenericException ex)
+                    {
+                        _logger.Fatal($"Error generic put episodeRegister, details error: {ex.Message}");
+                    }
+
+                    //download finish download
+                    episode.StateDownload = "completed";
+                    episode.PercentualDownload = 100;
+                    SendStatusDownloadAPIAsync(episode, episodeApi);
                 }
                 else
                 {
                     //url stream
                     try
                     {
-                        Download(episode, filePath, context);
+                        Download(episode, filePathTemp, episodeRegister.EpisodePath, context);
                     }catch (Exception ex)
                     {
                         _logger.Fatal($"Error download with url stream, details error: {ex.Message}");
                     }
-                }
-
-                //get hash and update
-                _logger.Info($"start calculate hash of episode id: {episode.ID}");
-                string hash = Generic.Hash.GetHash(episodeRegister.EpisodePath);
-                _logger.Info($"end calculate hash of episode id: {episode.ID}");
-
-                episodeRegister.EpisodeHash = hash;
-
-                try
-                {
-                    episodeRegisterApi.PutOne("/episode/register", episodeRegister).GetAwaiter().GetResult();
-                }
-                catch (ApiNotFoundException ex)
-                {
-                    _logger.Error($"Not found episodeRegister id: {episodeRegister.EpisodeId}, details error: {ex.Message}");
-                }
-                catch (ApiGenericException ex)
-                {
-                    _logger.Fatal($"Error generic put episodeRegister, details error: {ex.Message}");
                 }
             }
 
@@ -157,7 +164,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
         }
 
         //download url with files stream
-        private async void Download(EpisodeDTO episode, string filePath, ConsumeContext<EpisodeDTO> context)
+        private async void Download(EpisodeDTO episode, string filePathTemp, string filePath, ConsumeContext<EpisodeDTO> context)
         {
             //timeout if not response one resource and close with status failed
             int timeoutFile = 0;
@@ -173,7 +180,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     episode.StateDownload = "failed";
                     SendStatusDownloadAPIAsync(episode, episodeDTOApi);
 
-                    throw new Exception($"{filePath} impossible open file, contact administrator please");
+                    throw new Exception($"{filePathTemp} impossible open file, contact administrator please");
                 }
                 try
                 {
@@ -190,7 +197,7 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     for (int numberFrame = episode.startNumberBuffer; numberFrame < episode.endNumberBuffer; numberFrame++)
                     {
                         var numberFrameSave = numberFrame;
-                        tasks.Add(new Func<EpisodeBuffer>(() => { return DownloadBuffParallel(episode, numberFrameSave, filePath, episodeDTOApi); }));
+                        tasks.Add(new Func<EpisodeBuffer>(() => { return DownloadBuffParallel(episode, numberFrameSave, filePathTemp, episodeDTOApi); }));
                     }
 
                     parallel.AddTasks(tasks);
@@ -258,12 +265,12 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                 }
                 catch (IOException ex)
                 {
-                    _logger.Error($"{filePath} can't open, details: {ex.Message}");
+                    _logger.Error($"{filePathTemp} can't open, details: {ex.Message}");
                     timeoutFile++;
                 }
                 catch (Exception ex)
                 {
-                    _logger.Fatal($"{filePath} can't open, details: {ex.Message}");
+                    _logger.Fatal($"{filePathTemp} can't open, details: {ex.Message}");
                 }
             }
         }
@@ -399,11 +406,6 @@ namespace Cesxhin.AnimeSaturn.Application.Consumers
                     else
                     {
                         _logger.Info($"Download completed! {filePath}");
-
-                        //download finish download
-                        episode.StateDownload = "completed";
-                        episode.PercentualDownload = 100;
-                        SendStatusDownloadAPIAsync(episode, episodeDTO);
                     }
                 };
                 return new AsyncCompletedEventHandler(action);

@@ -1,5 +1,6 @@
 <template>
     <div class="container d-flex flex-column justify-content-center" style="margin-top: 100px;">
+        <a class="btn btn-primary" href="/" style="margin: 3px 0px;">Go to Home</a>
         {{load()}}
         <video id="my-video" width="100%" controls>
             <template v-if="episode != null && data != null">
@@ -38,6 +39,10 @@ import userComponentVue from '../components/userComponent.vue';
                 host: this.$config.ipAPI,
                 port: this.$config.portAPI,
                 protocol: this.$config.protocolAPI,
+
+                hostHttpServer: this.$config.ipHttpServer,
+                portHttpServer: this.$config.portHttpServer,
+                basePath: this.$config.basePath,
 
                 ws:null,
 
@@ -166,11 +171,18 @@ import userComponentVue from '../components/userComponent.vue';
             },
             getUrl(url){
                 
-                url = url.replace(/\\/g, '\/');
+                if(url.includes(':'))
+                {
+                    url = url.replace(/\\/g, '\\\\');
+                }
 
-                var src = url.split('video');
-                
-                return require('../video'+src[1])
+                console.log(url);
+
+                url = url.replace(this.basePath, '')
+
+                console.log(url);
+
+                return `http://${this.hostHttpServer}:${this.portHttpServer}/${url}`;
             }
         },
         watch:{
