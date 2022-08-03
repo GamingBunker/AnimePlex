@@ -22,6 +22,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-ENTRYPOINT ["apt", "update"]
-ENTRYPOINT ["apt", "install", "-y", "ffmpeg"]
+RUN apt update \
+    apt install -y ffmepg
+
 ENTRYPOINT ["dotnet", "Cesxhin.AnimeSaturn.ConversionService.dll"]
