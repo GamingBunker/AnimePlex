@@ -20,6 +20,8 @@ services:
         POSTGRES_PASSWORD: toortoor!1234
     ports:
       - 5432:5432
+    volumes:
+      - ./init/database-anime.sql:/docker-entrypoint-initdb.d/init.sql
     hostname: postgres
     networks:
       - default
@@ -54,7 +56,7 @@ services:
     restart: unless-stopped
     container_name: room-server
     ports:
-      - 5002:8080
+      - 5001:1234
     hostname: room-server
     networks:
       - default 
@@ -64,11 +66,11 @@ services:
     restart: unless-stopped
     container_name: apiService
     environment:
-      DATABASE_CONNECTION: User ID=root;Password=toortoor!1234;Host=postgres;Port=5432;Database=animeManga;
+      DATABASE_CONNECTION: User ID=root;Password=toortoor!1234;Host=postgres;Port=5432;Database=animemanga;
       ADDRESS_RABBIT: rabbit
       BASE_PATH: "/public"
       PORT_API: 80
-      LOG_LEVEL: "Info",
+      LOG_LEVEL: "Info"
       LIMIT_THREAD_PARALLEL: "50"
     ports:
       - 5000:80
@@ -92,7 +94,7 @@ services:
       PORT_HTTP_SERVER: "5002"
       SHARE_ROOM: "<you-ip>:6000"
     ports:
-      - 6000:80
+      - 3000:3000
     depends_on:
       - api
       - ftp
@@ -108,7 +110,7 @@ services:
     environment:
       ADDRESS_RABBIT: "rabbit"
       BASE_PATH: "/public"
-      ADDRESS_API: "api"
+      ADDRESS_API: "<ip api>"
       PORT_API: "5000"
       LOG_LEVEL: "Info"
       SELECT_SERVICE: "anime"
@@ -125,7 +127,7 @@ services:
     environment:
       ADDRESS_RABBIT: "rabbit"
       BASE_PATH: "/public"
-      ADDRESS_API: "api"
+      ADDRESS_API: "<ip api>"
       PORT_API: "5000"
       LOG_LEVEL: "Info"
       SELECT_SERVICE: "manga"
@@ -141,7 +143,7 @@ services:
       container_name: upgradeService-anime
       environment:
         BASE_PATH: "/public"
-        ADDRESS_API: "api"
+        ADDRESS_API: "<ip api>"
         ADDRESS_RABBIT: "rabbit"
         PORT_API: "5000"
         LOG_LEVEL: "Info"
@@ -156,7 +158,7 @@ services:
       container_name: upgradeService-manga
       environment:
         BASE_PATH: "/public"
-        ADDRESS_API: "api"
+        ADDRESS_API: "<ip api>"
         ADDRESS_RABBIT: "rabbit"
         PORT_API: "5000"
         LOG_LEVEL: "Info"
@@ -171,7 +173,7 @@ services:
     container_name: downloadService
     environment:
       ADDRESS_RABBIT: "rabbit"
-      ADDRESS_API: "api"
+      ADDRESS_API: "<ip api>"
       PORT_API: "5000"
       LOG_LEVEL: "Info"
       LIMIT_THREAD_PARALLEL: "500"
@@ -193,7 +195,7 @@ services:
     container_name: notifyservice
     environment:
       ADDRESS_RABBIT: "rabbit"
-      ADDRESS_API: "api"
+      ADDRESS_API: "<ip api>"
       PORT_API: "5000"
       LOG_LEVEL: "Info"
       WEBHOOK_DISCORD: "<url>"
@@ -205,9 +207,10 @@ services:
     image: kju7pwd2/animeplex-conversionservice:dev
     restart: unless-stopped
     container_name: conversionservice
+    command: bash -c "apt update && apt install -y ffmpeg"
     environment:
       ADDRESS_RABBIT: "rabbit"
-      ADDRESS_API: "api"
+      ADDRESS_API: "<ip api>"
       PORT_API: "5000"
       LOG_LEVEL: "Info"
       LIMIT_CONSUMER_RABBIT: "1"

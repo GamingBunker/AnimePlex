@@ -1,5 +1,5 @@
-CREATE DATABASE animePlex;
-
+CREATE DATABASE animemanga OWNER root;
+\connect animemanga;
 /*anime*/
 CREATE TABLE anime
 (

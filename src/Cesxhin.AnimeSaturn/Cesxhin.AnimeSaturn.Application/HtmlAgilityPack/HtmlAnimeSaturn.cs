@@ -265,7 +265,7 @@ namespace Cesxhin.AnimeSaturn.Application.HtmlAgilityPack
                 HtmlDocument docVideo = new HtmlWeb().Load(urlVideo);
 
                 url = docVideo.DocumentNode
-                    .SelectNodes("//center/div[2]/div/div/div/div/video/source")
+                    .SelectNodes("//div[@id='video-player']/video/source")
                     .First()
                     .Attributes["src"].Value;
                 _logger.Debug($"Done download url with file: {urlPage}");
