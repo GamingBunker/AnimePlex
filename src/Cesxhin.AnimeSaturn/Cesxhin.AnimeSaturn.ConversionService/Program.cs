@@ -1,15 +1,15 @@
+using Cesxhin.AnimeSaturn.Application.Consumers;
+using Cesxhin.AnimeSaturn.Application.CronJob;
+using Cesxhin.AnimeSaturn.Application.Generic;
+using FFMpegCore;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MassTransit;
-using Cesxhin.AnimeSaturn.Application.Consumers;
-using System;
 using NLog;
-using Cesxhin.AnimeSaturn.Application.Generic;
 using Quartz;
-using Cesxhin.AnimeSaturn.Application.CronJob;
-using FFMpegCore;
+using System;
 
-namespace Cesxhin.AnimeSaturn.DownloadService
+namespace Cesxhin.AnimeSaturn.ConversionService
 {
     public class Program
     {
@@ -37,17 +37,8 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                                     credentials.Password(Environment.GetEnvironmentVariable("PASSWORD_RABBIT") ?? "guest");
                                 });
 
-                            cfg.ReceiveEndpoint("download-anime", e => {
-                                e.Consumer<DownloadAnimeConsumer>(cc =>
-                                {
-                                    string limit = Environment.GetEnvironmentVariable("LIMIT_CONSUMER_RABBIT") ?? "3";
-
-                                    cc.UseConcurrentMessageLimit(int.Parse(limit));
-                                });
-                            });
-
-                            cfg.ReceiveEndpoint("download-manga", e => {
-                                e.Consumer<DownloadMangaConsumer>(cc =>
+                            cfg.ReceiveEndpoint("conversion", e => {
+                                e.Consumer<ConversionConsumer>(cc =>
                                 {
                                     string limit = Environment.GetEnvironmentVariable("LIMIT_CONSUMER_RABBIT") ?? "3";
 
@@ -69,9 +60,12 @@ namespace Cesxhin.AnimeSaturn.DownloadService
                         q.UseMicrosoftDependencyInjectionJobFactory();
                         q.ScheduleJob<HealthJob>(trigger => trigger
                             .StartNow()
-                            .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("download"));
+                            .WithDailyTimeIntervalSchedule(x => x.WithIntervalInSeconds(60)), job => job.WithIdentity("conversion"));
                     });
                     services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+                    //set ffmpeg
+                    GlobalFFOptions.Configure(options => options.BinaryFolder = Environment.GetEnvironmentVariable("PATH_FFMPEG").ToLower() ?? "./bin");
 
                     services.AddHostedService<Worker>();
                 });

@@ -52,7 +52,7 @@ services:
       - default 
 
   room-server:
-    image: kju7pwd2/animeplex-roomserver
+    image: kju7pwd2/animeplex-roomserver:dev
     restart: unless-stopped
     container_name: room-server
     ports:
@@ -62,7 +62,7 @@ services:
       - default 
 
   api:
-    image: kju7pwd2/animeplex-api
+    image: kju7pwd2/animeplex-api:dev
     restart: unless-stopped
     container_name: apiService
     environment:
@@ -82,7 +82,7 @@ services:
       - default
 
   web:
-    image: kju7pwd2/animeplex-web
+    image: kju7pwd2/animeplex-web:dev
     restart: unless-stopped
     container_name: WebAnimeSaturn
     environment:
@@ -104,7 +104,7 @@ services:
       - default
   
   updateservice-anime:
-    image: kju7pwd2/animeplex-updateservice
+    image: kju7pwd2/animeplex-updateservice:dev
     restart: unless-stopped
     container_name: updateService-anime
     environment:
@@ -121,7 +121,7 @@ services:
       - rabbit
 
   updateservice-manga:
-    image: kju7pwd2/animeplex-updateservice
+    image: kju7pwd2/animeplex-updateservice:dev
     restart: unless-stopped
     container_name: updateService-manga
     environment:
@@ -138,7 +138,7 @@ services:
       - rabbit
 
   upgradeservice-anime:
-      image: kju7pwd2/animeplex-upgradeservice
+      image: kju7pwd2/animeplex-upgradeservice:dev
       restart: unless-stopped
       container_name: upgradeService-anime
       environment:
@@ -153,7 +153,7 @@ services:
         - rabbit
 
   upgradeservice-manga:
-      image: kju7pwd2/animeplex-upgradeservice
+      image: kju7pwd2/animeplex-upgradeservice:dev
       restart: unless-stopped
       container_name: upgradeService-manga
       environment:
@@ -168,7 +168,7 @@ services:
         - rabbit
 
   downloadservice:
-    image: kju7pwd2/animeplex-downloadservice
+    image: kju7pwd2/animeplex-downloadservice:dev
     restart: unless-stopped
     container_name: downloadService
     environment:
@@ -190,7 +190,7 @@ services:
       - default
 
   notifyservice:
-    image: kju7pwd2/animeplex-notifyservice
+    image: kju7pwd2/animeplex-notifyservice:dev
     restart: unless-stopped
     container_name: notifyservice
     environment:
@@ -204,7 +204,7 @@ services:
       - api
 
   conversionservice:
-    image: kju7pwd2/animeplex-conversionservice
+    image: kju7pwd2/animeplex-conversionservice:dev
     restart: unless-stopped
     container_name: conversionservice
     command: bash -c "apt update && apt install -y ffmpeg"

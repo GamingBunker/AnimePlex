@@ -134,13 +134,13 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
         [HttpPut("/health")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> SetHealtService(HealthDTO disk)
+        public async Task<IActionResult> SetHealtService(HealthDTO health)
         {
             try
             {
-                Environment.SetEnvironmentVariable($"HEALT_SERVICE_{disk.NameService.ToUpper()}_LAST_CHECK", disk.LastCheck.ToString());
-                Environment.SetEnvironmentVariable($"HEALT_SERVICE_{disk.NameService.ToUpper()}_INTERVAL", disk.Interval.ToString());
-                return Ok(disk);
+                Environment.SetEnvironmentVariable($"HEALT_SERVICE_{health.NameService.ToUpper()}_LAST_CHECK", health.LastCheck.ToString());
+                Environment.SetEnvironmentVariable($"HEALT_SERVICE_{health.NameService.ToUpper()}_INTERVAL", health.Interval.ToString());
+                return Ok(health);
             }
             catch
             {
@@ -150,7 +150,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
 
         //get data check disk free space
         [HttpGet("/health")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DiskSpaceDTO>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<HealthDTO>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetHealtService()
@@ -160,7 +160,7 @@ namespace Cesxhin.AnimeSaturn.Api.Controllers
                 //set
                 List<HealthDTO> healthServiceDTOs = new();
 
-                string[] services = new string[7] { "DOWNLOAD", "UPGRADE-ANIME", "UPGRADE-MANGA", "API", "UPDATE-ANIME", "UPDATE-MANGA", "NOTIFY" };
+                string[] services = new string[8] { "DOWNLOAD", "UPGRADE-ANIME", "UPGRADE-MANGA", "API", "UPDATE-ANIME", "UPDATE-MANGA", "NOTIFY", "CONVERSION" };
 
                 var lastCheck = "";
                 var intervalCheck = "";

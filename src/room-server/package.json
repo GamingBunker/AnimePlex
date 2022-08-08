@@ -1,0 +1,21 @@
+{
+  "name": "chat-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/basic": "^6.0.0",
+    "@hapi/hapi": "^20.2.1",
+    "dotenv": "^16.0.0",
+    "hapi-plugin-websocket": "^2.3.7",
+    "node-schedule": "^2.1.0",
+    "uuid": "^8.3.2",
+    "ws": "^8.5.0"
+  }
+}
