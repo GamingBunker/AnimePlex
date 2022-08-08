@@ -5,15 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Released]
-## [2.0.0] - 03-08-2022
+## [2.0.0] - 08-08-2022
 ### Added
 - room virtual for watch video with friends
 - ConversionSerivce for convert file ts to mp4 for streaming
 - Websocket for change information for streaming
 - Http-server for expose files video for streaming
+- docker-compose-unstable (get image beta)
 
 ### Fixed
 - resolve bug for get url mp4 by html
+
+### Changed
+- file docker-compose
 
 ## [1.0.1] - 20-07-2022
 ### Fixed

@@ -241,3 +241,5 @@ Questo servizio serve ad esporre i file video per web.
 Creare un container che contiene una lts di linux.
 Installare `nodejs` e `npm`, infine installare il pacchetto ftp: `npm install --global http-server`
 Avviare con `http-server '/root/anime'` come avvio della macchina
+
+Oppure si può usare questa immagine: `danjellz/http-server`, la cartella che viene esposta è la seguente: `/public`
