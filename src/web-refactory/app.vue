@@ -5,7 +5,6 @@
 </template>
 <script>
 import {useAsyncData, useFetch} from "nuxt/app";
-
 export default {
   data(){
     return{

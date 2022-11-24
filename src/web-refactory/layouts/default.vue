@@ -8,40 +8,78 @@
         <v-list
           density="compact"
           class="list-items"
+          :selected="select"
           nav
         >
           <v-list-item
-            title="All local DB"
-            prepend-icon="$database"
-            value="test"
-          />
-          <v-list-item
-              title="Search local DB"
-              prepend-icon="$search"
-              value="test1"
-          />
-          <v-list-item
-              title="Search on AnimeSaturn"
-              prepend-icon="$planet"
-              value="test2"
-          />
-          <v-list-item
-              title="Search on MangaWorld"
-              prepend-icon="$book"
-              value="test3"
-          />
+            v-for="item in items"
+            :key="item.id"
+            :value="item"
+            @click="setTypeComponent(item.id)"
+          >
+            <template
+                v-slot:prepend
+            >
+              <v-icon>{{item.icon}}</v-icon>
+            </template>
+
+            <v-list-item-title v-text="item.text" />
+            <v-list-item-action
+
+            />
+          </v-list-item>
         </v-list>
       </v-navigation-drawer>
-    <v-main
-    >
+    <v-main>
       <NuxtPage />
     </v-main>
   </v-app>
 </template>
-
 <script>
+import lodash from "../mixins/lodash";
+import {useStore} from "../store";
 export default {
-  name: "index"
+  name: "index",
+  mixins:[
+    lodash
+  ],
+  setup(){
+    const store = useStore();
+
+    return {store}
+  },
+  data(){
+    return{
+      items:[
+        {
+          id:'all',
+          text:'All local DB',
+          icon:'$database'
+        },
+        {
+          id:'search-local',
+          text:'Search local DB',
+          icon:'$search'
+        },
+        {
+          id:'search-animesaturn',
+          text:'Search on AnimeSaturn',
+          icon:'$planet'
+        },
+        {
+          id:'search-mangaworld',
+          text:'Search on MangaWorld',
+          icon:'$book'
+        },
+      ],
+      select:[]
+    }
+  },
+  methods:{
+    setTypeComponent(id){
+      this.store.setCurrentSelectSearch(id);
+    }
+  }
 }
 </script>
 

@@ -15,9 +15,12 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/vue-fontawesome": "^3.0.2",
     "@nuxtjs/axios": "^5.13.6",
+    "@nuxtjs/composition-api": "^0.33.1",
+    "@pinia/nuxt": "^0.4.5",
     "h3": "^1.0.1",
+    "lodash": "^4.17.21",
     "nuxt-icons": "^3.0.0",
-    "pina": "^0.20.2204228",
+    "pinia": "^2.0.26",
     "sass": "^1.56.1",
     "vuetify": "^3.0.1"
   }
