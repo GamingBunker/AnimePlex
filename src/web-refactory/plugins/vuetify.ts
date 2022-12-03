@@ -21,6 +21,7 @@ export default defineNuxtPlugin(nuxtApp => {
             themes: {
                 light: {
                     colors:{
+                        primary: '#90cbd3',
                         info: colors.teal.lighten1,
                         warning: colors.amber.base,
                         error: '#F3565D',
@@ -35,7 +36,9 @@ export default defineNuxtPlugin(nuxtApp => {
                 database:'fa-database',
                 search:'fa-search',
                 planet: 'fa-earth-europe',
-                book: 'fa-book'
+                book: 'fa-book',
+                x:'xmark',
+                arrowLeft:'arrow-left'
             },
             sets: {
                 fa

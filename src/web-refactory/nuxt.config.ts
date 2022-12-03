@@ -6,7 +6,8 @@ export default defineNuxtConfig({
     ],
     css: [
         'vuetify/lib/styles/main.sass',
-        '@fortawesome/fontawesome-svg-core/styles.css'
+        '@fortawesome/fontawesome-svg-core/styles.css',
+        '~/assets/css/index.scss'
     ],
     build: {
         transpile: ['vuetify'],

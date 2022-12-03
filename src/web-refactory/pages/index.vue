@@ -18,13 +18,8 @@ export default {
 </script>
 
 <style scoped>
-body{
-  background-image: url("assets/images/background.jpg") !important;
-  background-size: contain;
-  background-attachment: fixed;
-}
 #main{
-  background-image: url("assets/images/background.jpg");
+  background-image: url("/images/background.jpg");
   background-repeat: repeat-y;
   background-size: contain;
 }

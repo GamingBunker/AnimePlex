@@ -4,6 +4,7 @@
         expand-on-hover
         color="#363636"
         rail
+        permanent
       >
         <v-list
           density="compact"
