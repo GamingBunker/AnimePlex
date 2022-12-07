@@ -28,25 +28,38 @@
           @click:append-inner="clickSearch()"
       />
     </div>
-    <div
-      class="d-flex flex-wrap justify-center"
-    >
-      <template
-        v-if="isLoading"
+    <div>
+      <div
+          v-if="isLoading"
+          class="d-flex flex-wrap justify-center"
       >
         <previewCardLoading
-          v-for="index in 9"
-          :key="index"
+            v-for="index in 9"
+            :key="index"
         />
-      </template>
+      </div>
       <template
           v-else-if="!checkNull(data)"
       >
-        <previewCard
-            v-for="item in data"
-            :key="item.name"
-            :item="item"
-        />
+        <div class="d-flex flex-column">
+          <div>
+            <v-pagination
+                v-model="page"
+                class="my-4"
+                color="white"
+                :length="pages.length + 1"
+                prev-icon="arrow-left"
+                next-icon="arrow-right"
+            />
+          </div>
+          <div class="d-flex flex-row flex-wrap justify-center">
+            <previewCard
+                v-for="item in pages[page - 1]"
+                :key="item.name"
+                :item="item"
+            />
+          </div>
+        </div>
       </template>
     </div>
   </div>
@@ -54,48 +67,59 @@
 <script>
 import lodash from '/mixins/lodash'
 import {useStore} from "../store";
-import {useAsyncData, useFetch} from "nuxt/app";
 
 import previewCard from "./previewCard";
 import previewCardLoading from "./previewCardLoading"
 import axios from "axios";
+import _ from 'lodash'
 
 export default {
   name: "searchComponent",
-  components:{
+  components: {
     previewCard,
     previewCardLoading
   },
-  setup(){
+  setup() {
     const store = useStore();
     return {store}
   },
-  props:[
+  props: [
     'typeSearch'
   ],
-  mixins:[
+  mixins: [
     lodash
   ],
-  data(){
-    return{
-      data:null,
-      isLoading:false,
-      search:''
+  data() {
+    return {
+      data: [],
+      pages: [],
+      isLoading: false,
+      search: '',
+      page: null
     }
   },
-  computed:{
-    getCurrentSelectSearch(){
+  watch: {
+    data() {
+      this.setPages();
+    }
+  },
+  computed: {
+    getCurrentSelectSearch() {
       const type = this.store.getCurrentSelectSearch;
+
       this.data = null;
-      switch (type){
+      this.pages = null;
+      this.page = null;
+
+      switch (type) {
         case 'all':
           this.getAll();
       }
 
       return type;
     },
-    getPathImages(){
-      switch (this.getCurrentSelectSearch){
+    getPathImages() {
+      switch (this.getCurrentSelectSearch) {
         case null:
         case 'all':
         case "search-local":
@@ -106,8 +130,8 @@ export default {
           return "/images/MangaWorldLogo.svg";
       }
     },
-    getStyleBanner(){
-      switch (this.getCurrentSelectSearch){
+    getStyleBanner() {
+      switch (this.getCurrentSelectSearch) {
         case null:
         case 'all':
         case "search-local":
@@ -119,18 +143,30 @@ export default {
       }
     }
   },
-  methods:{
-    getAll(){
-      this.isLoading = true;
-      useAsyncData('getAll', async () => {
-        const {data} = await useFetch('/api/all');
-        this.data = data;
+  methods: {
+    setPages() {
+      let data = [];
+      let pages = [];
+      if (!_.isNil(this.data)) {
+        for (const item of this.data) {
+          if (pages.length > 11) {
+            data.push(pages)
+            pages = [];
+          }
+          pages.push(item);
+        }
+
+        if (pages.length > 0)
+          data.push(pages)
+
+        this.pages = data;
+        this.page = this.pages.length > 0 ? 1 : 0;
         this.isLoading = false;
-      })
+      }
     },
-    clickSearch(){
+    clickSearch() {
       this.isLoading = true;
-      switch (this.getCurrentSelectSearch){
+      switch (this.getCurrentSelectSearch) {
         case "search-local":
           this.searchLocal();
           break;
@@ -142,27 +178,65 @@ export default {
           break;
       }
     },
-    async searchLocal(){
-      const {data} = await axios('/api/search-local', { search: this.search })
-      this.data = data;
-      this.isLoading = false;
+    getAll() {
+      this.isLoading = true;
+      axios('/api/all')
+          .then(res => {
+            const {data} = res;
+            this.data = data;
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          .finally(() => {
+            this.isLoading = false;
+          })
     },
-    async searchAnime(){
-      const {data} = axios('/api/search-animesaturn', { search: this.search })
-      this.data = data;
-      this.isLoading = false;
+    searchLocal() {
+      axios(`/api/search-local?search=${this.search}`)
+          .then(res => {
+            const {data} = res;
+            this.data = data;
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          .finally(() => {
+            this.isLoading = false;
+          })
     },
-    async searchManga(){
-      const {data} = axios('/api/search-mangaworld', { search: this.search })
-      this.data = data;
-      this.isLoading = false;
+    searchAnime() {
+      axios(`/api/search-animesaturn?search=${this.search}`)
+          .then(res => {
+            const {data} = res;
+            this.data = data;
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          .finally(() => {
+            this.isLoading = false;
+          })
     },
+    searchManga() {
+      axios(`/api/search-mangaworld?search=${this.search}`)
+          .then(res => {
+            const {data} = res;
+            this.data = data;
+          })
+          .catch(err => {
+            console.log(err)
+          })
+          .finally(() => {
+            this.isLoading = false;
+          })
+    }
   }
 }
 </script>
 
 <style scoped>
-.logo{
+.logo {
   height: 220px;
   width: 100%;
   object-fit: contain;
