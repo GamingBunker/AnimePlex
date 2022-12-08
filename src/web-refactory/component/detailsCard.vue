@@ -9,15 +9,63 @@
         <v-btn
             color="primary"
             @click="$emit('closeDialog')"
-            class="my-1"
+            class="my-1 mr-1"
         >
           <v-icon
-            color="white"
+              color="white"
           >
             $arrowLeft
           </v-icon>
         </v-btn>
+        <template
+            v-if="!checkNull(this.item.urlPageDownload)"
+        >
+          <v-btn
+              color="warning"
+              @click="download()"
+          >
+            <template
+              v-if="isLoadingDownload"
+            >
+              <v-progress-circular
+                  indeterminate
+                  size="25"
+              />
+            </template>
+            <template
+              v-else
+            >
+              <v-icon>
+                $download
+              </v-icon>
+            </template>
+          </v-btn>
+        </template>
+        <template v-else>
+          <v-btn
+              color="warning"
+              class="mr-1"
+          >
+            <v-icon>
+              $redownload
+            </v-icon>
+          </v-btn>
+          <v-btn
+              color="error"
+          >
+            <v-icon>
+              $trash
+            </v-icon>
+          </v-btn>
+        </template>
       </v-card-item>
+      <template v-if="error">
+        <alert
+          type="error"
+          :text="error"
+          class="ma-2"
+        />
+      </template>
       <v-card-title class="px-0">
         <v-img
             :src="getImage"
@@ -27,7 +75,7 @@
         >
         </v-img>
         <div class="card-title">
-          {{item.name}}
+          {{ item.name }}
         </div>
       </v-card-title>
       <v-card-text>
@@ -36,7 +84,7 @@
             :item="item"
         />
         <statusDownloadAnime
-          :item="item"
+            :item="item"
         />
       </v-card-text>
     </v-card>
@@ -50,31 +98,39 @@ import _ from 'lodash'
 
 import descriptionAnime from "./descriptionAnime";
 import statusDownloadAnime from "./statusDownloadAnime";
+import alert from "./alert";
+
+import lodash from '/mixins/lodash'
 
 export default {
   name: "detailsCard",
   components: {
     descriptionAnime,
-    statusDownloadAnime
+    statusDownloadAnime,
+    alert
   },
   props: [
     'item'
   ],
+  mixins: [
+    lodash
+  ],
   data() {
     return {
       activator: true,
-      type:'',
+      type: '',
+      isLoadingDownload:false,
+      error:null
     }
   },
   mounted() {
-    if(!_.isNil(this.item.episodeTotal))
-      this.type='anime';
+    if (!_.isNil(this.item.episodeTotal) || (!_.isNil(this.item.typeView) && this.item.typeView === 'anime'))
+      this.type = 'anime';
     else
-      this.type='manga';
+      this.type = 'manga';
   },
   computed: {
     getImage() {
-      console.log(this.item)
       if (!_.isNil(this.item.image) && this.item.image.indexOf('/9j/') !== -1)
         return 'data:image/jpg;base64,' + this.ConvertBase64(this.item.image);
 
@@ -89,20 +145,36 @@ export default {
       let buff = Buffer.from(imgBase64);
       return buff.toString()
     },
+    download(){
+      this.isLoadingDownload = true;
+      this.error = null;
+
+      axios.post(`/api/anime/download?url=${this.item.urlPageDownload}`)
+          .then((res) => {
+            const {data} = res;
+            this.$emit('updateData', data);
+          })
+          .catch(() => {
+            this.isLoadingDownload = false;
+            this.error = 'Impossible send request for download this anime'
+          })
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.hide-img{
+.hide-img {
   -webkit-filter: blur(5px);
   -moz-filter: blur(5px);
   -o-filter: blur(5px);
   -ms-filter: blur(5px);
 }
-.card-title{
-  position: absolute;
-  top: 100px;
+
+.card-title {
+  overflow-wrap: break-word !important;
+  position: relative;
+  top: -65px;
   left: 15px;
   color: white;
   font-weight: bold;

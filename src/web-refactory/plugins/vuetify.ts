@@ -22,6 +22,7 @@ export default defineNuxtPlugin(nuxtApp => {
                 light: {
                     colors:{
                         primary: '#90cbd3',
+                        secondary: '#202020',
                         info: colors.teal.lighten1,
                         warning: colors.amber.base,
                         error: '#F3565D',
@@ -38,7 +39,14 @@ export default defineNuxtPlugin(nuxtApp => {
                 planet: 'fa-earth-europe',
                 book: 'fa-book',
                 x:'xmark',
-                arrowLeft:'arrow-left'
+                arrowLeft:'arrow-left',
+                link: 'fa-link',
+                download: 'fa-download',
+                redownload: 'fa-rotate-left',
+                trash: 'fa-trash-can',
+                sortUp: 'fa-angle-up',
+                sortDown: 'fa-angle-down',
+                error: 'fa-circle-exclamation'
             },
             sets: {
                 fa

@@ -14,7 +14,7 @@
     </v-card-title>
     <v-card-actions>
       <v-btn
-        class="primary"
+        :class="getStatusDetails"
         block
         @click="details()"
       >
@@ -24,8 +24,9 @@
   </v-card>
   <component
     :is="activeModal"
-    :item="item"
+    :item="checkNull(data)? item : data"
     @closeDialog="closeDialog"
+    @updateData="updateData"
   />
 </template>
 
@@ -33,6 +34,12 @@
 import { Buffer } from 'buffer'
 
 import detailsCard from "./detailsCard";
+
+import _ from 'lodash'
+
+import api from '/mixins/api'
+import lodash from '/mixins/lodash'
+import axios from "axios";
 export default {
   name:"previewCard",
   components:{
@@ -41,9 +48,22 @@ export default {
   props: [
       'item'
   ],
+  mixins:[
+    api,
+      lodash
+  ],
   data(){
     return{
-      activeModal:null
+      activeModal:null,
+      data:null
+    }
+  },
+  computed:{
+    getStatusDetails(){
+      if(!_.isNil(this.item.exists) && this.item.exists === true){
+        return 'success'
+      }
+      return 'primary'
     }
   },
   methods: {
@@ -55,10 +75,25 @@ export default {
       return buff.toString()
     },
     details(){
-      this.activeModal = 'detailsCard'
+      if(!_.isNil(this.item.exists) && this.item.exists === true){
+        if(this.item.typeView === 'anime')
+        {
+          axios(`/api/anime/get?search=${this.item.name}`)
+              .then(res => {
+                this.data = res.data[0];
+              })
+              .finally(() => {
+                this.activeModal = 'detailsCard'
+              })
+        }
+      }else
+        this.activeModal = 'detailsCard'
     },
     closeDialog(){
       this.activeModal = null
+    },
+    updateData(data){
+      this.data = data;
     }
   }
 }

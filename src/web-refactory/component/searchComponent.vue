@@ -66,11 +66,13 @@
 </template>
 <script>
 import lodash from '/mixins/lodash'
+import api from '/mixins/api'
+
 import {useStore} from "../store";
 
 import previewCard from "./previewCard";
 import previewCardLoading from "./previewCardLoading"
-import axios from "axios";
+
 import _ from 'lodash'
 
 export default {
@@ -87,7 +89,8 @@ export default {
     'typeSearch'
   ],
   mixins: [
-    lodash
+    lodash,
+    api
   ],
   data() {
     return {
@@ -177,59 +180,6 @@ export default {
           this.searchManga();
           break;
       }
-    },
-    getAll() {
-      this.isLoading = true;
-      axios('/api/all')
-          .then(res => {
-            const {data} = res;
-            this.data = data;
-          })
-          .catch(err => {
-            console.log(err)
-          })
-          .finally(() => {
-            this.isLoading = false;
-          })
-    },
-    searchLocal() {
-      axios(`/api/search-local?search=${this.search}`)
-          .then(res => {
-            const {data} = res;
-            this.data = data;
-          })
-          .catch(err => {
-            console.log(err)
-          })
-          .finally(() => {
-            this.isLoading = false;
-          })
-    },
-    searchAnime() {
-      axios(`/api/search-animesaturn?search=${this.search}`)
-          .then(res => {
-            const {data} = res;
-            this.data = data;
-          })
-          .catch(err => {
-            console.log(err)
-          })
-          .finally(() => {
-            this.isLoading = false;
-          })
-    },
-    searchManga() {
-      axios(`/api/search-mangaworld?search=${this.search}`)
-          .then(res => {
-            const {data} = res;
-            this.data = data;
-          })
-          .catch(err => {
-            console.log(err)
-          })
-          .finally(() => {
-            this.isLoading = false;
-          })
     }
   }
 }

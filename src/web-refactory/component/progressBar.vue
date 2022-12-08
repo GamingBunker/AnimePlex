@@ -1,11 +1,18 @@
 <template>
   <v-progress-linear
       v-model="item.percentualDownload"
+      :striped="item.percentualDownload < 100"
       :color="getStatus"
       height="25"
+      striped
   >
     <template v-slot:default="{ value }">
-      <strong>{{ this.item.stateDownload.toUpperCase() }}</strong>
+      <template v-if="this.item.stateDownload.toUpperCase() === 'DOWNLOADING'">
+        <strong>{{ this.item.percentualDownload }} %</strong>
+      </template>
+      <template v-else>
+        <strong style="color: white">{{ this.item.stateDownload.toUpperCase() }}</strong>
+      </template>
     </template>
   </v-progress-linear>
 </template>
@@ -13,14 +20,14 @@
 <script>
 export default {
   name: "progressBar",
-  props:[
-      'item',
-      'type'
+  props: [
+    'item',
+    'type'
   ],
-  computed:{
-    getStatus(){
-      if(this.type === 'anime'){
-        switch(this.item.stateDownload){
+  computed: {
+    getStatus() {
+      if (this.type === 'anime') {
+        switch (this.item.stateDownload) {
           case 'downloading':
             return 'primary';
           case 'conversioning':
