@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import progressBar from "./progressBarAnime";
+import progressBar from "./progressBar";
 import alert from "./alert";
 
 import lodash from "../mixins/lodash";

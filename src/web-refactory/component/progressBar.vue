@@ -24,7 +24,7 @@
 import lodash from '/mixins/lodash'
 
 export default {
-  name: "progressBarAnime",
+  name: "progressBar",
   props: [
     'item',
     'type'
