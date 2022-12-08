@@ -1,11 +1,13 @@
 <template>
   <v-dialog
       v-model="activator"
-      width="500"
+      width="1000"
       persistent
   >
     <v-card>
-      <v-card-item>
+      <v-card-item
+        class="pa-2 secondary"
+      >
         <v-btn
             color="primary"
             @click="close()"
@@ -101,7 +103,12 @@
             v-if="type === 'anime'"
             :item="item"
         />
-        <statusDownloadAnime
+        <descriptionManga
+            v-if="type === 'manga'"
+            :item="item"
+        />
+        <statusDownload
+            :type="type"
             :item="item"
         />
       </v-card-text>
@@ -115,7 +122,8 @@ import {Buffer} from "buffer";
 import _ from 'lodash'
 
 import descriptionAnime from "./descriptionAnime";
-import statusDownloadAnime from "./statusDownloadAnime";
+import statusDownload from "./statusDownload";
+import descriptionManga from "./descriptionManga";
 import alert from "./alert";
 
 import lodash from '/mixins/lodash'
@@ -124,7 +132,8 @@ export default {
   name: "detailsCard",
   components: {
     descriptionAnime,
-    statusDownloadAnime,
+    descriptionManga,
+    statusDownload,
     alert
   },
   props: [
@@ -169,28 +178,28 @@ export default {
       this.isLoadingDownload = true;
       this.error = null;
 
-      axios.post(`/api/anime/download?url=${this.item.urlPageDownload}`)
+      axios.post(`/api/${this.type}/download?url=${this.item.urlPageDownload}`)
           .then((res) => {
             const {data} = res;
             this.$emit('updateData', data);
           })
           .catch(() => {
             this.isLoadingDownload = false;
-            this.error = 'Impossible send request for download this anime'
+            this.error = `Impossible send request for download this ${this.type}`
           })
     },
     reDownload(){
       this.isLoadingReDownload = true;
       this.error = null;
 
-      axios(`/api/anime-episode?name=${this.item.name}`)
+      axios(`/api/${this.type}/${this.type === 'anime'? 'episode' : 'chapter'}?name=${this.item.name}`)
           .then(res => {
             const {data} = res;
 
-            axios.put(`/api/anime/redownload`, {episodes: data})
+            axios.put(`/api/${this.type}/redownload`, {media: data})
                 .catch((err) => {
                   console.log(err)
-                  this.error = 'Impossible send request for re-download this anime'
+                  this.error = `Impossible send request for re-download this ${this.type}`
                 })
                 .finally(() => {
                   this.isLoadingReDownload = false;
@@ -203,7 +212,7 @@ export default {
     },
     remove(){
       this.isLoadingDelete = true;
-      axios.delete(`/api/anime/delete?anime=${this.item.name}`)
+      axios.delete(`/api/${this.type}/delete?name=${this.item.name}`)
           .then(res => {
             this.closeAndUpdate();
           })

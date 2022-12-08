@@ -4,7 +4,7 @@ import axios from "axios";
 const API_BASE = process.env.API_BASE_URL;
 
 export default defineEventHandler(async (event) => {
-    const {search} = getQuery(event)
-    const {data} = await axios.get(`${API_BASE}/anime/names/${search}`);
+    const {url} = getQuery(event)
+    const {data} = await axios.post(`${API_BASE}/manga/download`, {url});
     return data;
 })

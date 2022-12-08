@@ -32,18 +32,24 @@
         </template>
         <template v-else>
           <v-sheet
-              v-for="episode in episodes"
-              :key="episode.id"
+              v-for="media in episodes"
+              :key="media.id"
               class="mt-3 pa-2 rounded card-download"
               color="secondary"
               elevation="10"
           >
-            <div class="pa-1">
-              <span>Episode: {{episode.numberEpisodeCurrent}}</span>
+            <div class="pa-1 d-flex flex-column">
+              <template v-if="type === 'anime'">
+                <span>Episode: {{media.numberEpisodeCurrent}}</span>
+              </template>
+              <template v-else>
+                <span>Volume: {{media.currentVolume}}</span>
+                <span>Chapter: {{media.currentChapter}}</span>
+              </template>
             </div>
             <progressBar
-                :item="episode"
-                type="anime"
+                :item="media"
+                :type="type"
             />
           </v-sheet>
         </template>
@@ -53,7 +59,7 @@
 </template>
 
 <script>
-import progressBar from "./progressBar";
+import progressBar from "./progressBarAnime";
 import alert from "./alert";
 
 import lodash from "../mixins/lodash";
@@ -62,13 +68,14 @@ import _ from 'lodash'
 import axios from "axios";
 
 export default {
-  name: "statusDownloadAnime",
+  name: "statusDownload",
   components:{
     progressBar,
     alert
   },
   props:[
-      'item'
+      'item',
+      'type'
   ],
   mixins:[
     lodash
@@ -91,7 +98,7 @@ export default {
         setTimeout(() => {
           if(_.isNil(this.item.urlPageDownload))
           {
-            axios(`/api/anime-episode?name=${this.item.name}`, {timeout: this.TIMEOUT})
+            axios(`/api/${this.type}/${this.type === 'anime'? 'episode' : 'chapter'}?name=${this.item.name}`, {timeout: this.TIMEOUT})
                 .then(res => {
                   const {data} = res;
                   this.episodes = data;

@@ -22,34 +22,33 @@
 
 <script>
 import lodash from '/mixins/lodash'
+
 export default {
-  name: "progressBar",
+  name: "progressBarAnime",
   props: [
     'item',
     'type'
   ],
-  mixins:[
+  mixins: [
     lodash
   ],
   computed: {
     getStatus() {
-      if (this.type === 'anime') {
-        switch (this.item.stateDownload) {
-          case 'downloading':
-            return 'primary';
-          case 'conversioning':
-            return 'info';
-          case 'completed':
-            return 'success';
-          case 'failed':
-            return 'error';
-          case 'wait conversion':
-            return 'gray';
-          case 'pending':
-            return 'warning';
-          default:
-            return 'gray';
-        }
+      switch (this.item.stateDownload) {
+        case 'downloading':
+          return 'primary';
+        case 'conversioning':
+          return 'info';
+        case 'completed':
+          return 'success';
+        case 'failed':
+          return 'error';
+        case 'wait conversion':
+          return 'gray';
+        case 'pending':
+          return 'warning';
+        default:
+          return 'gray';
       }
     }
   }

@@ -5,6 +5,6 @@ const API_BASE = process.env.API_BASE_URL;
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
-    const {data} = await axios.put(`${API_BASE}/anime/redownload`, body.media);
+    const {data} = await axios.put(`${API_BASE}/manga/redownload`, body.media);
     return data;
 })
