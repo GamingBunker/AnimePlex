@@ -8,7 +8,7 @@
       <v-card-item>
         <v-btn
             color="primary"
-            @click="$emit('closeDialog')"
+            @click="close()"
             class="my-1 mr-1"
         >
           <v-icon
@@ -45,17 +45,35 @@
           <v-btn
               color="warning"
               class="mr-1"
+              @click="reDownload()"
           >
-            <v-icon>
-              $redownload
-            </v-icon>
+            <template v-if="isLoadingReDownload">
+              <v-progress-circular
+                indeterminate
+              />
+            </template>
+            <template
+              v-else
+            >
+              <v-icon>
+                $redownload
+              </v-icon>
+            </template>
           </v-btn>
           <v-btn
               color="error"
+              @click="remove()"
           >
-            <v-icon>
-              $trash
-            </v-icon>
+            <template v-if="isLoadingDelete">
+              <v-progress-circular
+                indeterminate
+              />
+            </template>
+            <template v-else>
+              <v-icon>
+                $trash
+              </v-icon>
+            </template>
           </v-btn>
         </template>
       </v-card-item>
@@ -120,6 +138,8 @@ export default {
       activator: true,
       type: '',
       isLoadingDownload:false,
+      isLoadingReDownload: false,
+      isLoadingDelete:false,
       error:null
     }
   },
@@ -131,7 +151,7 @@ export default {
   },
   computed: {
     getImage() {
-      if (!_.isNil(this.item.image) && this.item.image.indexOf('/9j/') !== -1)
+      if (_.isNil(this.item.urlPageDownload))
         return 'data:image/jpg;base64,' + this.ConvertBase64(this.item.image);
 
       return this.item.image;
@@ -158,6 +178,48 @@ export default {
             this.isLoadingDownload = false;
             this.error = 'Impossible send request for download this anime'
           })
+    },
+    reDownload(){
+      this.isLoadingReDownload = true;
+      this.error = null;
+
+      axios(`/api/anime-episode?name=${this.item.name}`)
+          .then(res => {
+            const {data} = res;
+
+            axios.put(`/api/anime/redownload`, {episodes: data})
+                .catch((err) => {
+                  console.log(err)
+                  this.error = 'Impossible send request for re-download this anime'
+                })
+                .finally(() => {
+                  this.isLoadingReDownload = false;
+                })
+          })
+          .catch(err => {
+            console.log(err)
+            this.error = true;
+          })
+    },
+    remove(){
+      this.isLoadingDelete = true;
+      axios.delete(`/api/anime/delete?anime=${this.item.name}`)
+          .then(res => {
+            this.closeAndUpdate();
+          })
+        .catch((err) => {
+          console.log(err)
+          this.error = 'Impossible send request for re-download this anime'
+        })
+        .finally(() => {
+          this.isLoadingDelete = false;
+        })
+    },
+    closeAndUpdate(){
+      this.$emit('closeDialogAndUpdate');
+    },
+    close(){
+      this.$emit('closeDialog');
     }
   }
 }
@@ -174,6 +236,7 @@ export default {
 .card-title {
   overflow-wrap: break-word !important;
   position: relative;
+  width: calc(100% - 30px);
   top: -65px;
   left: 15px;
   color: white;

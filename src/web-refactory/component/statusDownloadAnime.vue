@@ -1,5 +1,6 @@
 <template>
   <v-expansion-panels
+      v-if="checkNull(this.item.urlPageDownload)"
       v-model="showStatus"
       class="mt-3"
   >
@@ -80,6 +81,9 @@ export default {
       error:null,
       TIMEOUT: 2000
     }
+  },
+  updated() {
+    this.date = new Date();
   },
   watch:{
     date:{

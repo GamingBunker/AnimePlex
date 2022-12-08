@@ -7,7 +7,10 @@
       striped
   >
     <template v-slot:default="{ value }">
-      <template v-if="this.item.stateDownload.toUpperCase() === 'DOWNLOADING'">
+      <template v-if="checkNull(item.stateDownload)">
+        <strong>NOT YET PROCESSED</strong>
+      </template>
+      <template v-else-if="item.stateDownload.toUpperCase() === 'DOWNLOADING'">
         <strong>{{ this.item.percentualDownload }} %</strong>
       </template>
       <template v-else>
@@ -18,11 +21,15 @@
 </template>
 
 <script>
+import lodash from '/mixins/lodash'
 export default {
   name: "progressBar",
   props: [
     'item',
     'type'
+  ],
+  mixins:[
+    lodash
   ],
   computed: {
     getStatus() {

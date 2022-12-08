@@ -4,7 +4,7 @@
     class="mr-2 ml-1 my-2"
   >
     <v-img
-        :src="item.image.indexOf('/9j/') !== -1? 'data:image/jpg;base64,'+ConvertBase64(item.image) : item.image"
+        :src="!item.urlPageDownload? 'data:image/jpg;base64,'+ConvertBase64(item.image) : item.image"
         class="card-img-top rounded-top"
         height="400"
         cover
@@ -27,6 +27,7 @@
     :item="checkNull(data)? item : data"
     @closeDialog="closeDialog"
     @updateData="updateData"
+    @closeDialogAndUpdate="$emit('closeDialogAndUpdate')"
   />
 </template>
 

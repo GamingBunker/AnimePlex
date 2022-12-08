@@ -57,6 +57,7 @@
                 v-for="item in pages[page - 1]"
                 :key="item.name"
                 :item="item"
+                @closeDialogAndUpdate="clickSearch()"
             />
           </div>
         </div>
@@ -170,6 +171,9 @@ export default {
     clickSearch() {
       this.isLoading = true;
       switch (this.getCurrentSelectSearch) {
+        case 'all':
+          this.getAll();
+          break;
         case "search-local":
           this.searchLocal();
           break;
