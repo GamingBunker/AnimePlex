@@ -3,6 +3,7 @@ FROM node:16.14
 WORKDIR /app
 
 COPY ["src/web/", "./"]
+COPY ["src/web/.env_template", "./.env"]
 
 COPY . .
 

@@ -3,6 +3,7 @@ FROM arm32v7/node:16.14
 WORKDIR /app
 
 COPY ["src/web/", "./"]
+COPY ["src/web/.env_template", "./.env"]
 
 COPY . .
 
@@ -12,4 +13,4 @@ RUN npm run build
 EXPOSE 3000
 
 
-CMD [ "npm", "preview"]
+CMD [ "npm", "run", "preview"]

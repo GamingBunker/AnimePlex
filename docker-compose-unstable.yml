@@ -87,11 +87,11 @@ services:
     container_name: WebAnimeSaturn
     environment:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
-      API_BASE_URL: 'http://<ip api>:5000'
-      SOCKET_PATH: "ws://<ip server-room>:5001/room"
-      HTTP_PATH: 'http://<ip http-server>:5002'
-      BASE_PATH: "/public"
-      SHARE_ROOM: "<you-ip>:6000"
+      API_BASE_URL_BASE: "http://<ip api>:5000"
+      SOCKET_PATH_BASE: "ws://<ip server-room>:5001/room"
+      HTTP_PATH_BASE: "http://<ip http-server>:5002"
+      BASE_PATH_BASE: "/public"
+      SHARE_ROOM_BASE: "http://<you-ip>:3000"
     ports:
       - 3000:3000
     depends_on:
