@@ -17,7 +17,7 @@ export default defineNuxtConfig({
             socketBase: process.env.SOCKET_PATH,
             httpBase: process.env.HTTP_PATH,
             basePath: process.env.BASE_PATH,
-            webBase: process.env.SHARE_ROOM'
+            webBase: process.env.SHARE_ROOM
         }
     }
 })
