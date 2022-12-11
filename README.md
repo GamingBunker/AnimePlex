@@ -41,20 +41,20 @@ Questo progetto verrà utilizzato per gli utenti che vorranno visualizzare e sca
 ```sh
 example:
     #--- API ---
-    HOST_API: "localhost" #localhost [default]
-    PORT_API : "33333" #5000 [default]
-    PROTOCOL_API: "https" or "http" #http [default]
-    
-    #--- WebSocket ---
-    HOST_WS: "ws://localhost:1111/path" #ws://localhost:1234/room [default]
-    
+    API_BASE_URL: 'http://localhost:3333' #http://localhost:5000 [default]
+
+    #--- General ---
+    NODE_TLS_REJECT_UNAUTHORIZED: 0
+
     #--- Path ---
-    BASE_PATH: "/path" #"/" [default]
-    HOST_HTTP_SERVER: "localhost" #localhost [default]
-    PORT_HTTP_SERVER: "33333" #8080 [default]
+    HTTP_PATH: 'http://localhost:3333' #http://localhost:5001 [default]
+    BASE_PATH: "/path" #"/public" [default]
+
+    #--- WebSocket ---
+    SOCKET_PATH: "ws://localhost:1111/path" #ws://localhost:1234/room [default]
     
     #--- Share link ---
-    SHARE_ROOM: "localhost:33333" #localhost:3000 [default]
+    SHARE_ROOM: "http://localhost:33333" #http://localhost:3000 [default]
 ```
 
 ## 🧮Api Service

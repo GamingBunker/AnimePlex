@@ -86,12 +86,11 @@ services:
     restart: unless-stopped
     container_name: WebAnimeSaturn
     environment:
-      HOST_API: "<ip api>"
-      PORT_API : "5000"
-      HOST_WS: "ws://<ip server-room>:5001/room"
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+      API_BASE_URL: 'http://<ip api>:5000'
+      SOCKET_PATH: "ws://<ip server-room>:5001/room"
+      HTTP_PATH: 'http://<ip http-server>:5002'
       BASE_PATH: "/public"
-      HOST_HTTP_SERVER: "<ip http-server>"
-      PORT_HTTP_SERVER: "5002"
       SHARE_ROOM: "<you-ip>:6000"
     ports:
       - 3000:3000

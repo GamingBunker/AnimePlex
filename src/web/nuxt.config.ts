@@ -14,10 +14,10 @@ export default defineNuxtConfig({
     },
     runtimeConfig:{
         public: {
-            socketBase: process.env.SOCKET_PATH,
-            httpBase: process.env.HTTP_PATH,
+            socketBase: process.env.SOCKET_PATH || 'ws://localhost:1234/room',
+            httpBase: process.env.HTTP_PATH || 'http://localhost:5001',
             basePath: process.env.BASE_PATH || '/public',
-            webBase: process.env.WEB_PATH || 'http://localhost:3000'
+            webBase: process.env.SHARE_ROOM || 'http://localhost:3000'
         }
     }
 })
