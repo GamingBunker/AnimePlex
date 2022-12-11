@@ -79,13 +79,14 @@
           </v-btn>
         </template>
       </v-card-item>
-      <template v-if="error">
-        <alert
-          type="error"
-          :text="error"
-          class="ma-2"
-        />
-      </template>
+      <v-card-item class="pa-2">
+        <template v-if="error">
+          <alert
+              type="error"
+              :text="error"
+          />
+        </template>
+      </v-card-item>
       <v-card-title class="px-0">
         <v-img
             :src="getImage"
@@ -136,6 +137,10 @@ export default {
     statusDownload,
     alert
   },
+  emits:[
+    'closeDialogAndUpdate',
+    'updateData'
+  ],
   props: [
     'item'
   ],
@@ -218,7 +223,7 @@ export default {
           })
         .catch((err) => {
           console.log(err)
-          this.error = 'Impossible send request for re-download this anime'
+          this.error = `Impossible send request for re-download this ${this.type}`
         })
         .finally(() => {
           this.isLoadingDelete = false;

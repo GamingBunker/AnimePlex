@@ -89,3 +89,10 @@ export default {
   color: white !important;
 }
 </style>
+<style>
+#main {
+  background-image: url("/images/background.jpg");
+  background-repeat: repeat-y;
+  background-size: contain;
+}
+</style>

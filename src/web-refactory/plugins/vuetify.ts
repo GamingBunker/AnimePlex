@@ -46,7 +46,11 @@ export default defineNuxtPlugin(nuxtApp => {
                 trash: 'fa-trash-can',
                 sortUp: 'fa-angle-up',
                 sortDown: 'fa-angle-down',
-                error: 'fa-circle-exclamation'
+                error: 'fa-circle-exclamation',
+                clapperboard:'fa-clapperboard',
+                user: 'fa-user',
+                crown: 'fa-crown',
+                share: 'fa-square-share-nodes'
             },
             sets: {
                 fa

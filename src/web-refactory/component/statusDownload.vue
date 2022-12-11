@@ -51,6 +51,40 @@
                 :item="media"
                 :type="type"
             />
+            <template v-if="media.stateDownload && media.stateDownload.toUpperCase() === 'COMPLETED'">
+              <template v-if="type === 'anime'">
+              <div class="my-3">
+                <NuxtLink :to="'/room?type=anime&episode='+media.id">
+                  <v-btn
+                      color="primary"
+                      block
+                  >
+                    <v-icon
+                        color="white"
+                    >
+                      $clapperboard
+                    </v-icon>
+                  </v-btn>
+                </NuxtLink>
+              </div>
+            </template>
+              <template v-else>
+                <div class="my-3">
+                  <NuxtLink :to="'/room?type=manga&chapter='+media.id">
+                    <v-btn
+                        color="primary"
+                        block
+                    >
+                      <v-icon
+                          color="white"
+                      >
+                        $book
+                      </v-icon>
+                    </v-btn>
+                  </NuxtLink>
+                </div>
+              </template>
+            </template>
           </v-sheet>
         </template>
       </v-expansion-panel-text>
@@ -121,5 +155,12 @@ export default {
 <style scoped>
 .card-download{
   color: white !important;
+}
+.btn-room{
+  background-color: #90cbd3;
+  padding: 10px;
+  text-decoration: none;
+  color: white;
+  border-radius: 5px;
 }
 </style>

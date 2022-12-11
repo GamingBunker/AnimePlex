@@ -44,11 +44,11 @@ export default {
         case 'failed':
           return 'error';
         case 'wait conversion':
-          return 'gray';
+          return 'grey';
         case 'pending':
           return 'warning';
         default:
-          return 'gray';
+          return 'grey';
       }
     }
   }

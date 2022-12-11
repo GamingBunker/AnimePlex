@@ -16,11 +16,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-#main{
-  background-image: url("/images/background.jpg");
-  background-repeat: repeat-y;
-  background-size: contain;
-}
-</style>

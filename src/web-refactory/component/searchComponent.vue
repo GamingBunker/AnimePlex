@@ -26,6 +26,7 @@
           append-inner-icon="$search"
           :loading="isLoading"
           @click:append-inner="clickSearch()"
+          v-on:keydown.enter="clickSearch()"
       />
     </div>
     <div>

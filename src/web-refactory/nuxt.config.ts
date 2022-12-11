@@ -11,5 +11,13 @@ export default defineNuxtConfig({
     ],
     build: {
         transpile: ['vuetify'],
+    },
+    runtimeConfig:{
+        public: {
+            socketBase: process.env.SOCKET_PATH,
+            httpBase: process.env.HTTP_PATH,
+            basePath: process.env.BASE_PATH || '/public',
+            webBase: process.env.WEB_PATH || 'http://localhost:3000'
+        }
     }
 })
