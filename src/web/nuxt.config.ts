@@ -12,10 +12,12 @@ export default defineNuxtConfig({
     build: {
         transpile: ['vuetify'],
     },
-    publicRuntimeConfig:{
-        socketBase: process.env.SOCKET_PATH_BASE,
-        httpBase: process.env.HTTP_PATH_BASE,
-        basePath: process.env.BASE_PATH_BASE,
-        webBase: process.env.SHARE_ROOM_BASE
+    runtimeConfig:{
+        public: {
+            socketBase: process.env.NUXT_SOCKET_PATH_BASE,
+            httpBase: process.env.NUXT_HTTP_PATH_BASE,
+            basePath: process.env.NUXT_BASE_PATH_BASE,
+            webBase: process.env.NUXT_SHARE_ROOM_BASE
+        }
     }
 })
