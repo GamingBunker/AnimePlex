@@ -1,7 +1,7 @@
 import {defineEventHandler, getQuery} from "h3";
 import axios from "axios";
 
-const API_BASE = process.env.API_BASE_URL;
+const API_BASE = process.env.API_BASE_URL_BASE;
 
 export default defineEventHandler(async (event) => {
     const {id} = getQuery(event)
