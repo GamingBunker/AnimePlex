@@ -14,10 +14,10 @@ export default defineNuxtConfig({
     },
     runtimeConfig:{
         public: {
-            socketBase: process.env.NUXT_SOCKET_PATH_BASE,
-            httpBase: process.env.NUXT_HTTP_PATH_BASE,
-            basePath: process.env.NUXT_BASE_PATH_BASE,
-            webBase: process.env.NUXT_SHARE_ROOM_BASE
+            socketBase: process.env.SOCKET_PATH,
+            httpBase: process.env.API_BASE_URL,
+            basePath: process.env.BASE_PATH,
+            webBase: process.env.SHARE_ROOM
         }
     }
 })

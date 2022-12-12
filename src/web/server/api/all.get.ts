@@ -1,7 +1,7 @@
 import {defineEventHandler} from "h3";
 import axios from "axios";
 
-const API_BASE = process.env.NUXT_API_BASE_URL_BASE;
+const API_BASE = process.env.API_BASE_URL;
 
 export default defineEventHandler(async (event) => {
     const {data} = await axios.get(`${API_BASE}/all`);

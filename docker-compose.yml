@@ -86,7 +86,6 @@ services:
     restart: unless-stopped
     container_name: WebAnimeSaturn
     environment:
-      NODE_TLS_REJECT_UNAUTHORIZED: 0
       API_BASE_URL: 'http://<ip api>:5000'
       SOCKET_PATH: "ws://<ip server-room>:5001/room"
       HTTP_PATH: 'http://<ip http-server>:5002'
