@@ -84,13 +84,15 @@ services:
   web:
     image: kju7pwd2/animeplex-web
     restart: unless-stopped
-    container_name: WebAnimeSaturn
+    container_name: web
     environment:
       API_BASE_URL: 'http://<ip api>:5000'
       SOCKET_PATH: "ws://<ip server-room>:5001/room"
       HTTP_PATH: 'http://<ip http-server>:5002'
       BASE_PATH: "/public"
-      SHARE_ROOM: "<you-ip>:6000"
+      SHARE_ROOM: "<you-ip>:3000"
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+    command: bash -c "npm run build && node .output/server/index.mjs"
     ports:
       - 3000:3000
     depends_on:
